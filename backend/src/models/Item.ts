@@ -3,7 +3,7 @@ import { Temporal } from '@js-temporal/polyfill'
 
 export interface IItem extends Document {
   name: string
-  img?: string
+  image?: string
   barcode: string
   amount: number
   quantity?: string
@@ -16,7 +16,7 @@ export interface IItem extends Document {
 
 const ItemSchema = new Schema<IItem>({
   name: { type: String, required: true, index: true },
-  img: { type: String },
+  image: { type: String },
   barcode: { type: String, index: true },
   amount: { type: Number, required: true, default: 1 },
   quantity: { type: String, default: '' },
