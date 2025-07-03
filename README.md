@@ -1,11 +1,5 @@
 # Inventoria
 
-## Setup
-
-```bash
-docker exec -it mongo mongosh --eval "rs.initiate()"
-```
-
 ## Add
 
 - name\*
