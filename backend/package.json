@@ -19,6 +19,7 @@
     "dotenv": "^17.0.1",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
+    "minio": "^8.0.5",
     "mongoose": "^8.16.1"
   }
 }
