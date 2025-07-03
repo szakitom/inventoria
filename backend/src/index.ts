@@ -1,4 +1,4 @@
-import './env.js' // This runs dotenv.config() before anything else
+import './env.js'
 
 import mongoose from 'mongoose'
 import app from './app'
