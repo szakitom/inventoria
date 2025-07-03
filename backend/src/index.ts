@@ -1,5 +1,4 @@
-import dotenv from 'dotenv-flow'
-dotenv.config()
+import './env.js' // This runs dotenv.config() before anything else
 
 import mongoose from 'mongoose'
 import app from './app'
