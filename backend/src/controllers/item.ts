@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import { Temporal } from '@js-temporal/polyfill'
 import { Item, Shelf } from '../models'
 import { getProduct } from './OpenFoodFacts'
+import { deleteFile } from './minio'
 
 export const getItems = async (req, res, next) => {
   try {
@@ -95,6 +96,10 @@ export const createItem: RequestHandler = async (req, res, next) => {
     if (session.inTransaction()) {
       await session.abortTransaction()
     }
+    const { image } = req.body
+    if (image) {
+      deleteFile(image)
+    }
     next(err)
   } finally {
     session.endSession()
@@ -117,6 +122,9 @@ export const deleteItem = async (req, res, next) => {
     )
     await session.commitTransaction()
     res.json({ message: 'Item deleted successfully' })
+    if (item.image) {
+      deleteFile(item.image)
+    }
   } catch (err) {
     if (session.inTransaction()) {
       await session.abortTransaction()
