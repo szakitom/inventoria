@@ -1,4 +1,5 @@
 import { Document, Schema, model } from 'mongoose'
+import { Temporal } from '@js-temporal/polyfill'
 
 export interface IItem extends Document {
   name: string
@@ -28,6 +29,28 @@ const ItemSchema = new Schema<IItem>({
     required: true,
   },
   openFoodFacts: { type: Object, select: false },
+})
+
+ItemSchema.virtual('expiresIn').get(function (this: IItem) {
+  if (!this.expiration) {
+    return null
+  }
+  const today = Temporal.Now.plainDateTimeISO()
+
+  const expirationISO = this.expiration.toISOString()
+  const expiration =
+    Temporal.Instant.from(expirationISO).toZonedDateTimeISO('UTC')
+
+  const diff = today.until(expiration, {
+    largestUnit: 'days',
+    smallestUnit: 'days',
+  })
+  const roundedDiff = diff.round({
+    largestUnit: 'days',
+    smallestUnit: 'days',
+  })
+
+  return roundedDiff.days
 })
 
 ItemSchema.set('toJSON', {
