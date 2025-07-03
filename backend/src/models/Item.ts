@@ -5,25 +5,29 @@ export interface IItem extends Document {
   img?: string
   barcode: string
   amount: number
-  quantity?: number
+  quantity?: string
   expiration?: Date
   createdAt: Date
   owner?: string
-  location: string
+  location: Schema.Types.ObjectId
   openFoodFacts?: object
 }
 
 const ItemSchema = new Schema<IItem>({
   name: { type: String, required: true, index: true },
   img: { type: String },
-  barcode: { type: String, required: true, unique: true },
+  barcode: { type: String, index: true },
   amount: { type: Number, required: true, default: 1 },
-  quantity: { type: Number, default: 1 },
+  quantity: { type: String, default: '' },
   expiration: { type: Date },
   createdAt: { type: Date, default: Date.now },
-  owner: { type: String, index: true },
-  location: { type: String, required: true, index: true },
-  openFoodFacts: { type: Object },
+  owner: { type: String },
+  location: {
+    type: Schema.Types.ObjectId,
+    ref: 'Shelf',
+    required: true,
+  },
+  openFoodFacts: { type: Object, select: false },
 })
 
 ItemSchema.set('toJSON', {
