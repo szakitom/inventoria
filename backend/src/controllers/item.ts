@@ -1,20 +1,14 @@
 import { RequestHandler } from 'express'
+import mongoose from 'mongoose'
 import { Temporal } from '@js-temporal/polyfill'
 import { Item, Shelf } from '../models'
-import mongoose from 'mongoose'
 import { getProduct } from './OpenFoodFacts'
 
 export const getItems = async (req, res, next) => {
   try {
     if (req.query.sort) {
-      const sort = req.query.sort as string
-      const sortOptions = sort.split(',').reduce((acc, field) => {
-        const [key, order] = field.startsWith('-')
-          ? [field.slice(1), -1]
-          : [field, 1]
-        acc[key] = order
-        return acc
-      }, {})
+      const { sort } = req.query
+      const sortOptions = getSortOptions(sort)
       const items = await Item.find().sort(sortOptions)
       return res.json(items)
     } else {
@@ -32,6 +26,11 @@ export const searchItems = async (req, res, next) => {
     if (!term) {
       return res.status(400).json({ error: 'Search term is required' })
     }
+    let sortOptions: { [key: string]: 1 | -1 } = { expiration: 1 }
+    if (req.query.sort) {
+      const { sort } = req.query
+      sortOptions = getSortOptions(sort)
+    }
     const regex = new RegExp(term, 'i')
     const items = await Item.find({
       $or: [
@@ -39,7 +38,7 @@ export const searchItems = async (req, res, next) => {
         { barcode: regex },
         { 'openFoodFacts.product_name': regex },
       ],
-    }).sort({ expiration: 1 })
+    }).sort(sortOptions)
     if (items.length === 0) {
       return res.status(404).json({ error: 'No items found' })
     }
@@ -80,7 +79,7 @@ export const createItem: RequestHandler = async (req, res, next) => {
           ...req.body,
           expiration: expirationDate,
           openFoodFacts: offData,
-          name: offData?.product_name ?? req.body.name,
+          name: offData?.product_name || req.body.name || barcode,
         },
       ],
       { session }
@@ -205,3 +204,12 @@ const getFullDate = (date: string): string => {
   const fullDate = Temporal.PlainDate.from({ year: currentYear, month, day })
   return fullDate.toString()
 }
+
+const getSortOptions = (sort: string): { [key: string]: 1 | -1 } =>
+  sort.split(',').reduce((acc, field) => {
+    const [key, order] = field.startsWith('-')
+      ? [field.slice(1), -1 as const]
+      : [field, 1 as const]
+    acc[key] = order
+    return acc
+  }, {} as { [key: string]: 1 | -1 })
