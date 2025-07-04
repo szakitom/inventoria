@@ -1,5 +1,9 @@
 # Inventoria
 
+```bash
+mkcert -uninstall
+```
+
 ## Add
 
 - name\*
