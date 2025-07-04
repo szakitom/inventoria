@@ -80,7 +80,7 @@ export const createItem: RequestHandler = async (req, res, next) => {
           ...req.body,
           expiration: expirationDate,
           openFoodFacts: offData,
-          name: offData?.product_name || req.body.name || barcode,
+          name: req.body.name || offData?.product_name || barcode,
         },
       ],
       { session }
