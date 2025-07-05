@@ -1,73 +1,46 @@
-import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react'
+import BarcodeScanner from './BarcodeScanner'
 
 function App() {
-  const [status, setStatus] = useState<string | undefined>()
-  const [error, setError] = useState<string | undefined>()
+  const [barcode, setBarcode] = useState<string | null>(null)
+  const [isScannerActive, setIsScannerActive] = useState<boolean>(true)
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const resp = await fetch('/api/heartbeat')
-        if (!resp.ok) {
-          throw new Error('Wrong response')
-        }
-        const data = await resp.json()
-        setStatus(data.connection)
-      } catch (error: unknown) {
-        setStatus('error')
-        setError(error instanceof Error ? error.message : String(error))
-      }
-    }
-    getData()
-  }, [])
-
-  const getStatus = () => {
-    switch (status) {
-      case 'ok':
-        return 'green'
-      case 'error':
-        return 'red'
-      default:
-        return 'yellow'
-    }
+  // Handle barcode detection
+  const handleBarcode = (value: string) => {
+    setBarcode(value)
+    // setIsScannerActive(false)
+    console.log(`Barcode detected: ${value}`)
   }
 
+  // // Reset scanner for next use
+  // const resetScanner = () => {
+  //   setBarcode(null)
+  //   // Small delay before activating the scanner again to ensure proper cleanup
+  //   setTimeout(() => {
+  //     setIsScannerActive(true)
+  //   }, 100)
+  // }
+
+  // // Clean up effect when component unmounts
+  // useEffect(() => {
+  //   return () => {
+  //     // Final cleanup when App component unmounts
+  //     console.log('App component unmounting, ensuring camera is released')
+  //   }
+  // }, [])
+
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <div className="button">
-          <p>Connection to backend</p>
-          <div
-            style={{
-              marginLeft: 10,
-              background: getStatus(),
-              width: 20,
-              borderRadius: 100,
-              aspectRatio: 1,
-            }}
-          />
+    <div className="app-container">
+      {!barcode ? (
+        <BarcodeScanner onBarcode={handleBarcode} />
+      ) : (
+        <div className="results-container">
+          <h2>Scan Result</h2>
+          <p>{barcode}</p>
+          {/* <button onClick={resetScanner}>Scan Another</button> */}
         </div>
-        {error && <div style={{ color: 'red' }}>{error}</div>}
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      )}
+    </div>
   )
 }
 
