@@ -517,7 +517,24 @@ const TesseractDemo = () => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     const image = imageRef.current
-    if (!canvas || !ctx || !image) return
+
+    if (!canvas || !ctx || !image) {
+      console.log('Cannot draw canvas - missing element:', {
+        hasCanvas: !!canvas,
+        hasContext: !!ctx,
+        hasImage: !!image,
+      })
+      return
+    }
+
+    // Ensure canvas dimensions match the image
+    if (
+      canvas.width !== image.naturalWidth ||
+      canvas.height !== image.naturalHeight
+    ) {
+      canvas.width = image.naturalWidth
+      canvas.height = image.naturalHeight
+    }
 
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -722,123 +739,175 @@ const TesseractDemo = () => {
     }
   }
 
-  // New handler for image file upload
+  // New handler for image file upload with improved reliability
   const onImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('Image upload triggered')
     const file = e.target.files?.[0]
-    if (!file) return
+    if (!file) {
+      console.log('No file selected')
+      return
+    }
 
-    const reader = new FileReader()
-    reader.onload = async () => {
-      const dataUrl = reader.result as string
+    console.log('File selected:', file.name, file.type, file.size)
+
+    // Clean up first - important for reliable operation
+    if (preprocessedImageUrl) {
+      URL.revokeObjectURL(
+        preprocessedImageUrl.startsWith('blob:') ? preprocessedImageUrl : ''
+      )
+    }
+
+    // Reset any previous processing state
+    wordBoxesRef.current = []
+    selectedWordsRef.current = []
+    setPreprocessedImageUrl(null)
+
+    let upscaledCanvas = null
+    let preprocessedCanvas = null
+    let worker = null
+
+    try {
+      // Read file as data URL
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = (e) => {
+          console.error('Error reading file:', e)
+          reject(new Error('Failed to read file'))
+        }
+        reader.readAsDataURL(file)
+      })
+
+      console.log('File read successfully, image loading...')
       setUploadedImage(dataUrl)
       setShowWebcam(false)
+      setShowPreprocessed(false)
 
-      const image = new Image()
-      image.src = dataUrl
-      await image.decode()
+      // Load image with proper error handling
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = (e) => {
+          console.error('Error loading image:', e)
+          reject(new Error('Failed to load image'))
+        }
+        img.src = dataUrl
+      })
+
+      console.log(
+        `Image loaded successfully: ${image.naturalWidth}x${image.naturalHeight}`
+      )
+
+      // Store the image in the ref
       imageRef.current = image
 
       const canvas = canvasRef.current
-      if (!canvas) return
+      if (!canvas) {
+        console.error('Canvas reference not available')
+        return
+      }
+
+      // Set canvas dimensions
       canvas.width = image.naturalWidth
       canvas.height = image.naturalHeight
+      console.log(`Canvas dimensions set to: ${canvas.width}x${canvas.height}`)
 
-      // Use the same preprocessing approach as the camera capture
       // Step 1: Upscale the image to improve OCR quality
+      console.log('Starting image upscaling...')
       const upscaleFactor = 2 // Explicit scale factor for 300dpi
-      const upscaledCanvas = upscaleImageTo300Dpi(image, upscaleFactor)
+      upscaledCanvas = upscaleImageTo300Dpi(image, upscaleFactor)
+      console.log('Image upscaled successfully')
 
       // Step 2: Apply the user-selected preprocessing method
       console.log(
         `Using preprocessing mode for uploaded image: ${preprocessingMode}`
       )
-      const preprocessedCanvas = preprocessImage(
-        upscaledCanvas,
-        preprocessingMode
-      )
+      preprocessedCanvas = preprocessImage(upscaledCanvas, preprocessingMode)
+      console.log('Preprocessing completed successfully')
 
       // Save the preprocessed image for preview
       setPreprocessedImageUrl(preprocessedCanvas.toDataURL('image/png'))
       setShowPreprocessed(false)
 
-      let worker
-      try {
-        worker = await createWorker(['hun', 'eng'], 1, {
-          logger: (m) => console.log(m),
-        })
+      worker = await createWorker(['hun', 'eng'], 1, {
+        logger: (m) => console.log(m),
+      })
 
-        await worker.setParameters({
-          tessedit_ocr_engine_mode: OEM.LSTM_ONLY,
-          tessedit_pageseg_mode: PSM.SPARSE_TEXT_OSD,
-        })
+      await worker.setParameters({
+        tessedit_ocr_engine_mode: OEM.LSTM_ONLY,
+        tessedit_pageseg_mode: PSM.SPARSE_TEXT_OSD,
+      })
 
-        const ret = await worker.recognize(
-          preprocessedCanvas,
-          {},
-          { blocks: true }
-        )
+      const ret = await worker.recognize(
+        preprocessedCanvas,
+        {},
+        { blocks: true }
+      )
 
-        if (!ret.data.blocks || ret.data.blocks.length === 0) {
-          alert('No text detected. Please try another image.')
-          return
-        }
+      if (!ret.data.blocks || ret.data.blocks.length === 0) {
+        alert('No text detected. Please try another image.')
+        return
+      }
 
-        // Type definition for Tesseract.js blocks
-        type Block = {
-          paragraphs: Array<{
-            lines: Array<{
-              words: Array<{
-                text: string
-                bbox: { x0: number; y0: number; x1: number; y1: number }
-              }>
+      // Type definition for Tesseract.js blocks
+      type Block = {
+        paragraphs: Array<{
+          lines: Array<{
+            words: Array<{
+              text: string
+              bbox: { x0: number; y0: number; x1: number; y1: number }
             }>
           }>
-        }
+        }>
+      }
 
-        // Use the same scale factor that was used for upscaling the image
-        const scaleFactor = upscaleFactor
+      // Use the same scale factor that was used for upscaling the image
+      const scaleFactor = upscaleFactor
 
-        // Convert Tesseract results to our WordBox format and adjust coordinates for the upscaling
-        const words = ret.data.blocks
-          .flatMap((block: Block) =>
-            block.paragraphs.flatMap((paragraph: Block['paragraphs'][0]) =>
-              paragraph.lines.flatMap(
-                (line: Block['paragraphs'][0]['lines'][0]) => line.words
-              )
+      // Convert Tesseract results to our WordBox format and adjust coordinates for the upscaling
+      const words = ret.data.blocks
+        .flatMap((block: Block) =>
+          block.paragraphs.flatMap((paragraph: Block['paragraphs'][0]) =>
+            paragraph.lines.flatMap(
+              (line: Block['paragraphs'][0]['lines'][0]) => line.words
             )
           )
-          .map(
-            (
-              word: {
-                text: string
-                bbox: { x0: number; y0: number; x1: number; y1: number }
-              },
-              i: number
-            ) => ({
-              text: word.text,
-              // Scale down the bbox coordinates to match the original image size
-              bbox: {
-                x0: Math.round(word.bbox.x0 / scaleFactor),
-                y0: Math.round(word.bbox.y0 / scaleFactor),
-                x1: Math.round(word.bbox.x1 / scaleFactor),
-                y1: Math.round(word.bbox.y1 / scaleFactor),
-              },
-              index: i,
-            })
-          )
+        )
+        .map(
+          (
+            word: {
+              text: string
+              bbox: { x0: number; y0: number; x1: number; y1: number }
+            },
+            i: number
+          ) => ({
+            text: word.text,
+            // Scale down the bbox coordinates to match the original image size
+            bbox: {
+              x0: Math.round(word.bbox.x0 / scaleFactor),
+              y0: Math.round(word.bbox.y0 / scaleFactor),
+              x1: Math.round(word.bbox.x1 / scaleFactor),
+              y1: Math.round(word.bbox.y1 / scaleFactor),
+            },
+            index: i,
+          })
+        )
 
-        wordBoxesRef.current = words
-        selectedWordsRef.current = []
-        drawCanvas(words, [])
-      } finally {
-        // Clean up worker
-        if (worker) await worker.terminate()
-        // Clean up canvases to prevent memory leaks
-        disposeCanvas(upscaledCanvas)
-        disposeCanvas(preprocessedCanvas)
-      }
+      wordBoxesRef.current = words
+      selectedWordsRef.current = []
+      drawCanvas(words, [])
+    } catch (error) {
+      console.error('Error processing image:', error)
+      alert(
+        'Failed to process image. Please try again or use a different image.'
+      )
+    } finally {
+      // Clean up worker
+      if (worker) await worker.terminate()
+      // Clean up canvases to prevent memory leaks
+      disposeCanvas(upscaledCanvas)
+      disposeCanvas(preprocessedCanvas)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -899,6 +968,8 @@ const TesseractDemo = () => {
   }
 
   const resetCapture = () => {
+    console.log('Resetting capture state')
+
     // Clean up any existing preprocessed image
     if (preprocessedImageUrl) {
       // Clear the URL to allow garbage collection
@@ -906,6 +977,25 @@ const TesseractDemo = () => {
         preprocessedImageUrl.startsWith('blob:') ? preprocessedImageUrl : ''
       )
       setPreprocessedImageUrl(null)
+    }
+
+    // Clear the image reference to ensure proper reinitialization
+    if (imageRef.current) {
+      // Release image resources
+      imageRef.current.src = ''
+      imageRef.current = null
+    }
+
+    // Clear canvas if it exists
+    const canvas = canvasRef.current
+    if (canvas) {
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+      }
+      // Reset canvas dimensions
+      canvas.width = 1
+      canvas.height = 1
     }
 
     // Reset states
@@ -918,8 +1008,22 @@ const TesseractDemo = () => {
     // Reset the webcam component
     setWebcamKey((prev) => prev + 1)
 
+    // Try to find and reset the file input manually
+    try {
+      const fileInputs = document.querySelectorAll('input[type="file"]')
+      fileInputs.forEach((input) => {
+        if (input instanceof HTMLInputElement) {
+          input.value = ''
+        }
+      })
+    } catch (err) {
+      console.warn('Could not reset file input element:', err)
+    }
+
     // Force re-render to ensure UI updates
     forceUpdate((x) => x + 1)
+
+    console.log('Capture state reset complete')
   }
 
   return (
@@ -1025,8 +1129,39 @@ const TesseractDemo = () => {
           <div style={{ marginTop: '1rem' }}>
             <label>
               Or upload image for OCR:{' '}
-              <input type="file" accept="image/*" onChange={onImageUpload} />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={onImageUpload}
+                // Add a key to ensure the input is re-rendered when resetting
+                key={`file-input-${webcamKey}`}
+                id="ocr-file-input"
+                onClick={(e) => {
+                  // Reset the input value to ensure onChange fires even with the same file
+                  ;(e.target as HTMLInputElement).value = ''
+                  console.log('File input cleared on click')
+                }}
+              />
             </label>
+            <button
+              onClick={() => {
+                const fileInput = document.getElementById(
+                  'ocr-file-input'
+                ) as HTMLInputElement
+                if (fileInput) {
+                  fileInput.click()
+                }
+              }}
+              style={{ marginLeft: '8px' }}
+            >
+              Browse Files
+            </button>
+            <div
+              style={{ fontSize: '0.8rem', marginTop: '0.3rem', color: 'gray' }}
+            >
+              If the same file doesn't work on retake, try selecting a different
+              file first.
+            </div>
           </div>
         </>
       ) : (
@@ -1094,9 +1229,29 @@ const TesseractDemo = () => {
             <strong>Selected (in reading order):</strong>{' '}
             {selectedText || '[none]'}
           </p>
-          <button onClick={resetCapture} style={{ marginTop: '1rem' }}>
-            Retake
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <button onClick={resetCapture}>Retake</button>
+            <button
+              onClick={() => {
+                // Reset first to clear state
+                resetCapture()
+
+                // Short delay to ensure the reset completed before opening file dialog
+                setTimeout(() => {
+                  const fileInput = document.getElementById(
+                    'ocr-file-input'
+                  ) as HTMLInputElement
+                  if (fileInput) {
+                    // Clear any existing value and trigger file dialog
+                    fileInput.value = ''
+                    fileInput.click()
+                  }
+                }, 100)
+              }}
+            >
+              Upload New Image
+            </button>
+          </div>
           <div
             style={{
               fontSize: '0.8rem',
