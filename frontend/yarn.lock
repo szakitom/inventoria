@@ -435,6 +435,11 @@
   dependencies:
     "@swc/counter" "^0.1.3"
 
+"@techstark/opencv-js@^4.11.0-release.1":
+  version "4.11.0-release.1"
+  resolved "https://registry.yarnpkg.com/@techstark/opencv-js/-/opencv-js-4.11.0-release.1.tgz#7f86b93a974658515351d20bc075e58e71478080"
+  integrity sha512-d5h8cMiSbbnme5+I1ta4++EJ3mkca1zkVNh0A4+5ASJYOmO5OhVPRX3oPnNzs9I3KyGVX7QeFU8gVoI7I0w8RQ==
+
 "@types/estree@1.0.8", "@types/estree@^1.0.6":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"
