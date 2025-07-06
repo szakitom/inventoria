@@ -125,6 +125,21 @@ const TesseractDemo = () => {
     }
   }, [isOpenCvLoaded])
 
+  // Effect to ensure canvas is redrawn when toggling between views
+  useEffect(() => {
+    if (
+      !showPreprocessed &&
+      wordBoxesRef.current.length > 0 &&
+      imageRef.current
+    ) {
+      // Need a small delay to ensure canvas is ready
+      const timer = setTimeout(() => {
+        drawCanvas(wordBoxesRef.current, selectedWordsRef.current)
+      }, 50)
+      return () => clearTimeout(timer)
+    }
+  }, [showPreprocessed])
+
   // Additional fallback effect that runs if OpenCV isn't available after a delay
   useEffect(() => {
     if (!isOpenCvLoaded) {
@@ -1018,7 +1033,13 @@ const TesseractDemo = () => {
         <>
           <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem' }}>
             <button
-              onClick={() => setShowPreprocessed(false)}
+              onClick={() => {
+                setShowPreprocessed(false)
+                // Redraw the canvas when switching back to original view
+                setTimeout(() => {
+                  drawCanvas(wordBoxesRef.current, selectedWordsRef.current)
+                }, 0)
+              }}
               style={{
                 fontWeight: !showPreprocessed ? 'bold' : 'normal',
                 backgroundColor: !showPreprocessed ? '#e0e0e0' : 'transparent',
@@ -1038,19 +1059,8 @@ const TesseractDemo = () => {
             </button>
           </div>
 
-          {showPreprocessed && preprocessedImageUrl ? (
-            <img
-              src={preprocessedImageUrl}
-              alt="Preprocessed"
-              style={{
-                minWidth: '100%',
-                width: '100%',
-                height: 'auto',
-                marginTop: '0.5rem',
-                display: 'block',
-              }}
-            />
-          ) : (
+          <div style={{ position: 'relative', width: '100%' }}>
+            {/* Always keep the canvas in the DOM but toggle its visibility */}
             <canvas
               ref={canvasRef}
               onClick={handleClick}
@@ -1060,10 +1070,25 @@ const TesseractDemo = () => {
                 height: 'auto',
                 marginTop: '0.5rem',
                 cursor: 'pointer',
-                display: 'block',
+                display: showPreprocessed ? 'none' : 'block',
               }}
             />
-          )}
+
+            {/* Show preprocessed image when selected */}
+            {showPreprocessed && preprocessedImageUrl && (
+              <img
+                src={preprocessedImageUrl}
+                alt="Preprocessed"
+                style={{
+                  minWidth: '100%',
+                  width: '100%',
+                  height: 'auto',
+                  marginTop: '0.5rem',
+                  display: 'block',
+                }}
+              />
+            )}
+          </div>
 
           <p>
             <strong>Selected (in reading order):</strong>{' '}
