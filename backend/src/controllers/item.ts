@@ -68,12 +68,22 @@ export const createItem: RequestHandler = async (req, res, next) => {
   try {
     const { barcode, location, expiration } = req.body
     let offData
+    let expirationDate: string | null = null
     try {
       offData = await getProduct(barcode)
     } catch (error) {
       offData = null
     }
-    const expirationDate = getFullDate(expiration)
+    try {
+      if (expiration?.month && expiration?.day) {
+        expirationDate = getFullDate(expiration)
+      }
+    } catch (error) {
+      expirationDate = null
+      return res.status(400).json({
+        error: 'Invalid expiration date format. Please provide a valid date.',
+      })
+    }
     const item = await Item.create(
       [
         {
@@ -204,12 +214,15 @@ export const moveItem = async (req, res, next) => {
   }
 }
 
-const getFullDate = (date: string): string => {
-  const [month, day] = date.split('/').map(Number)
-
-  const currentYear = Temporal.Now.plainDateISO().year
-
-  const fullDate = Temporal.PlainDate.from({ year: currentYear, month, day })
+const getFullDate = ({
+  year = Temporal.Now.plainDateISO().year,
+  month,
+  day,
+}): string => {
+  const fullDate = Temporal.PlainDate.from(
+    { year, month, day },
+    { overflow: 'reject' }
+  )
   return fullDate.toString()
 }
 

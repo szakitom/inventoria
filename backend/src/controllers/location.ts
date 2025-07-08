@@ -50,6 +50,8 @@ export const createLocation = async (req, res, next) => {
 export const getLocations = async (req, res, next) => {
   try {
     const locations = await Location.find()
+      .populate('shelves', 'name')
+      .sort({ name: 1 })
     res.json(locations)
   } catch (err) {
     next(err)
