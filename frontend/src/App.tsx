@@ -1,9 +1,9 @@
-import TesseractDemo from './TesseractDemo'
+import Simple from './Simple'
 
 function App() {
   return (
     <div className="app-container">
-      <TesseractDemo />
+      <Simple />
     </div>
   )
 }

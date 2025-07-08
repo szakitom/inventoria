@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.4",
     "@techstark/opencv-js": "^4.11.0-release.1",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
