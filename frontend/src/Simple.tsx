@@ -7,6 +7,120 @@ import {
 import { useState, useRef, useEffect } from 'react'
 import BarcodeScanner from './BarcodeScanner'
 
+// Define styles object for reuse
+const styles = {
+  container: {
+    padding: '20px',
+    margin: '0 auto',
+    maxWidth: '500px',
+    width: '100%',
+    display: 'flex' as const,
+    flexDirection: 'column' as const,
+    alignItems: 'center' as const,
+  },
+  formGroup: {
+    marginBottom: '15px',
+    width: '100%',
+  },
+  label: {
+    display: 'block',
+    marginBottom: '8px',
+    fontWeight: 'bold',
+    fontSize: '14px',
+  },
+  input: {
+    width: '100%',
+    padding: '12px',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    fontSize: '16px',
+    boxSizing: 'border-box' as const,
+  },
+  select: {
+    width: '100%',
+    padding: '12px',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    fontSize: '16px',
+    backgroundColor: 'white',
+    boxSizing: 'border-box' as const,
+  },
+  button: {
+    padding: '12px 20px',
+    backgroundColor: '#4a76dd',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    cursor: 'pointer',
+    width: '100%',
+    marginTop: '10px',
+  },
+  scanButton: {
+    padding: '10px',
+    backgroundColor: '#4a76dd',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    marginLeft: '10px',
+    cursor: 'pointer',
+  },
+  inputGroup: {
+    display: 'flex',
+    gap: '10px',
+    width: '100%',
+  },
+  dateInput: {
+    width: 'calc(33.33% - 7px)',
+    padding: '12px',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    fontSize: '16px',
+    boxSizing: 'border-box' as const,
+  },
+  barcodeContainer: {
+    display: 'flex',
+    width: '100%',
+  },
+  barcodeInput: {
+    flex: 1,
+    padding: '12px',
+    border: '1px solid #ddd',
+    borderRadius: '8px 0 0 8px',
+    fontSize: '16px',
+    boxSizing: 'border-box' as const,
+  },
+  dialogContent: {
+    position: 'fixed' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    height: '100vh',
+    zIndex: 1000,
+  },
+  dialogHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '15px 20px',
+    borderBottom: '1px solid #eee',
+  },
+  dialogTitle: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    margin: 0,
+  },
+  cancelButton: {
+    padding: '8px 15px',
+    backgroundColor: '#f1f1f1',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
+}
+
 const Simple = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [barcode, setBarcode] = useState('')
@@ -16,7 +130,19 @@ const Simple = () => {
   const [expirationMonth, setExpirationMonth] = useState('')
   const [expirationDay, setExpirationDay] = useState('')
   const [expirationYear, setExpirationYear] = useState('2025')
-  const [locations, setLocations] = useState([])
+  // Define types for location and shelf data
+  interface Shelf {
+    id: string
+    name: string
+  }
+
+  interface Location {
+    id: string
+    name: string
+    shelves: Shelf[]
+  }
+
+  const [locations, setLocations] = useState<Location[]>([])
   const [selectedLocation, setSelectedLocation] = useState('')
   const [selectedShelf, setSelectedShelf] = useState('')
 
@@ -88,115 +214,160 @@ const Simple = () => {
   }, [])
 
   return (
-    <>
-      <form
-        style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px' }}
-      >
-        <label>Barcode</label>
-        <span>
-          <input value={barcode} onChange={(e) => setBarcode(e.target.value)} />
-          <button onClick={() => setIsOpen(true)}>Get barcode</button>
-        </span>
+    <div style={styles.container}>
+      <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Barcode</label>
+          <div style={styles.barcodeContainer}>
+            <input
+              style={styles.barcodeInput}
+              value={barcode}
+              type="number"
+              onChange={(e) => setBarcode(e.target.value)}
+              placeholder="Enter barcode"
+            />
+            <button
+              type="button"
+              style={styles.scanButton}
+              onClick={(e) => {
+                e.preventDefault()
+                setIsOpen(true)
+              }}
+            >
+              Scan
+            </button>
+          </div>
+        </div>
+
         <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'white',
-              height: '100vh',
-            }}
-          >
+          <div style={styles.dialogContent}>
             <DialogPanel>
-              <DialogTitle>Barcode</DialogTitle>
-              <div>
-                <button onClick={() => setIsOpen(false)}>Cancel</button>
+              <div style={styles.dialogHeader}>
+                <DialogTitle as="h3" style={styles.dialogTitle}>
+                  Scan Barcode
+                </DialogTitle>
+                <button
+                  style={styles.cancelButton}
+                  onClick={() => setIsOpen(false)}
+                >
+                  Cancel
+                </button>
               </div>
               <BarcodeScanner onBarcode={handleCode} />
             </DialogPanel>
           </div>
         </Dialog>
-        <label>Name*</label>
-        <input
-          required
-          placeholder="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <label>Amount*</label>
-        <input
-          value={amount}
-          type="text"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          required
-          onChange={(e) => setAmount(Number(e.target.value))}
-        />
-        <label>Quantity</label>
-        <input value={quantity} onChange={(e) => setQuantity(e.target.value)} />
-        <label>Expiration Date</label>
-        <input
-          type="text"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          min={1}
-          max={12}
-          value={expirationMonth}
-          placeholder="MM"
-          onChange={(e) => {
-            const value = e.target.value
-            setExpirationMonth(value)
-            // Auto-advance to the day field when 2 digits are entered
-            if (value.length === 2 && expirationDayRef.current) {
-              expirationDayRef.current.focus()
-            }
-          }}
-          maxLength={2}
-        />
-        <input
-          ref={expirationDayRef}
-          type="text"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          value={expirationDay}
-          placeholder="DD"
-          min={1}
-          max={31}
-          onChange={(e) => {
-            const value = e.target.value
-            setExpirationDay(value)
-            // Auto-advance to the year field when 2 digits are entered
-            if (value.length === 2 && expirationYearRef.current) {
-              expirationYearRef.current.focus()
-            }
-          }}
-          maxLength={2}
-        />
-        <input
-          ref={expirationYearRef}
-          type="number"
-          value={expirationYear}
-          onChange={(e) => setExpirationYear(e.target.value)}
-        />
-        <label>Location*</label>
-        <select
-          required
-          value={selectedLocation}
-          onChange={(e) => setSelectedLocation(e.target.value)}
-        >
-          <option value="">Select Location</option>
-          {locations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
-          ))}
-        </select>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Name*</label>
+          <input
+            style={styles.input}
+            required
+            placeholder="Product name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Amount*</label>
+          <input
+            style={styles.input}
+            value={amount}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            placeholder="Enter amount"
+            required
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Quantity</label>
+          <input
+            style={styles.input}
+            value={quantity}
+            placeholder="Enter quantity"
+            onChange={(e) => setQuantity(e.target.value)}
+          />
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Expiration Date</label>
+          <div style={styles.inputGroup}>
+            <input
+              style={styles.dateInput}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              min={1}
+              max={12}
+              value={expirationMonth}
+              placeholder="MM"
+              onChange={(e) => {
+                const value = e.target.value
+                setExpirationMonth(value)
+                // Auto-advance to the day field when 2 digits are entered
+                if (value.length === 2 && expirationDayRef.current) {
+                  expirationDayRef.current.focus()
+                }
+              }}
+              maxLength={2}
+            />
+            <input
+              ref={expirationDayRef}
+              style={styles.dateInput}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={expirationDay}
+              placeholder="DD"
+              min={1}
+              max={31}
+              onChange={(e) => {
+                const value = e.target.value
+                setExpirationDay(value)
+                // Auto-advance to the year field when 2 digits are entered
+                if (value.length === 2 && expirationYearRef.current) {
+                  expirationYearRef.current.focus()
+                }
+              }}
+              maxLength={2}
+            />
+            <input
+              ref={expirationYearRef}
+              style={styles.dateInput}
+              type="number"
+              placeholder="YYYY"
+              value={expirationYear}
+              onChange={(e) => setExpirationYear(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Location*</label>
+          <select
+            style={styles.select}
+            required
+            value={selectedLocation}
+            onChange={(e) => setSelectedLocation(e.target.value)}
+          >
+            <option value="">Select Location</option>
+            {locations.map((location) => (
+              <option key={location.id} value={location.id}>
+                {location.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {selectedLocation && (
-          <>
-            <label>Shelf</label>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Shelf*</label>
             <select
+              style={styles.select}
               required
               value={selectedShelf}
               onChange={(e) => setSelectedShelf(e.target.value)}
@@ -210,13 +381,21 @@ const Simple = () => {
                   </option>
                 ))}
             </select>
-          </>
+          </div>
         )}
-        {selectedShelf && name && amount && (
-          <button onClick={handleSubmit}>Submit</button>
-        )}
+
+        <button
+          type="submit"
+          style={{
+            ...styles.button,
+            opacity: selectedShelf && name && amount ? 1 : 0.5,
+          }}
+          disabled={!selectedShelf || !name || !amount}
+        >
+          Add Item
+        </button>
       </form>
-    </>
+    </div>
   )
 }
 
