@@ -42,7 +42,6 @@ const styles = {
     border: '1px solid #ddd',
     borderRadius: '8px',
     fontSize: '16px',
-    backgroundColor: 'white',
     boxSizing: 'border-box' as const,
   },
   button: {
@@ -149,6 +148,8 @@ const Simple = () => {
   // Create refs for expiration date fields
   const expirationDayRef = useRef<HTMLInputElement>(null)
   const expirationYearRef = useRef<HTMLInputElement>(null)
+  const expirationMonthRef = useRef<HTMLInputElement>(null)
+  const nameRef = useRef<HTMLInputElement>(null)
 
   const getLocations = async () => {
     try {
@@ -207,6 +208,9 @@ const Simple = () => {
     setQuantity('')
     setExpirationMonth('')
     setExpirationDay('')
+    if (nameRef.current) {
+      nameRef.current?.focus()
+    }
   }
 
   useEffect(() => {
@@ -257,6 +261,15 @@ const Simple = () => {
             </DialogPanel>
           </div>
         </Dialog>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Quantity</label>
+          <input
+            style={styles.input}
+            value={quantity}
+            placeholder="Enter quantity"
+            onChange={(e) => setQuantity(e.target.value)}
+          />
+        </div>
 
         <div style={styles.formGroup}>
           <label style={styles.label}>Name*</label>
@@ -264,6 +277,7 @@ const Simple = () => {
             style={styles.input}
             required
             placeholder="Product name"
+            ref={nameRef}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -284,18 +298,22 @@ const Simple = () => {
         </div>
 
         <div style={styles.formGroup}>
-          <label style={styles.label}>Quantity</label>
-          <input
-            style={styles.input}
-            value={quantity}
-            placeholder="Enter quantity"
-            onChange={(e) => setQuantity(e.target.value)}
-          />
-        </div>
-
-        <div style={styles.formGroup}>
           <label style={styles.label}>Expiration Date</label>
           <div style={styles.inputGroup}>
+            <input
+              ref={expirationYearRef}
+              style={styles.dateInput}
+              type="number"
+              placeholder="YYYY"
+              value={expirationYear}
+              onChange={(e) => {
+                const value = e.target.value
+                setExpirationYear(e.target.value)
+                if (value.length === 4 && expirationMonthRef.current) {
+                  expirationMonthRef.current.focus()
+                }
+              }}
+            />
             <input
               style={styles.dateInput}
               type="text"
@@ -304,6 +322,7 @@ const Simple = () => {
               min={1}
               max={12}
               value={expirationMonth}
+              ref={expirationMonthRef}
               placeholder="MM"
               onChange={(e) => {
                 const value = e.target.value
@@ -328,20 +347,8 @@ const Simple = () => {
               onChange={(e) => {
                 const value = e.target.value
                 setExpirationDay(value)
-                // Auto-advance to the year field when 2 digits are entered
-                if (value.length === 2 && expirationYearRef.current) {
-                  expirationYearRef.current.focus()
-                }
               }}
               maxLength={2}
-            />
-            <input
-              ref={expirationYearRef}
-              style={styles.dateInput}
-              type="number"
-              placeholder="YYYY"
-              value={expirationYear}
-              onChange={(e) => setExpirationYear(e.target.value)}
             />
           </div>
         </div>
