@@ -6,5 +6,6 @@ const router = Router()
 router.post('/', locationsController.createLocation)
 router.get('/', locationsController.getLocations)
 router.get('/:id', locationsController.getLocation)
+router.get('/:id/:shelf', locationsController.getLocationShelf)
 
 export default router

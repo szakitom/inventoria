@@ -61,18 +61,28 @@ export const getLocations = async (req, res, next) => {
 export const getLocation = async (req, res, next) => {
   try {
     const { id } = req.params
-    const location = await Location.findById(id).populate({
-      path: 'shelves',
-      select: 'name items',
-      populate: {
-        path: 'items',
-      },
-    })
+    const location = await Location.findById(id).populate('shelves')
 
     if (!location) {
       return res.status(404).json({ error: 'Location not found' })
     }
     res.json(location)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const getLocationShelf = async (req, res, next) => {
+  try {
+    const { id: location_id, shelf: shelf_id } = req.params
+    const [location, shelf] = await Promise.all([
+      Location.findById(location_id).select('name'),
+      Shelf.findById(shelf_id).populate('items'),
+    ])
+    if (!shelf) {
+      return res.status(404).json({ error: 'Shelf not found' })
+    }
+    res.json({ ...shelf.toJSON({ virtuals: true }), location })
   } catch (err) {
     next(err)
   }
