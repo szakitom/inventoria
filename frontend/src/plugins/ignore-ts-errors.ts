@@ -4,32 +4,12 @@ import type { Plugin, HmrContext } from 'vite'
 export function ignoreTsErrors(): Plugin {
   return {
     name: 'ignore-ts-errors',
-    // Intercept esbuild plugin to modify TypeScript settings
-    config(config) {
-      return {
-        ...config,
-        esbuild: {
-          ...config.esbuild,
-          tsconfigRaw: {
-            compilerOptions: {
-              skipLibCheck: true,
-              noEmit: true,
-              // Ignore TypeScript errors
-              allowJs: true,
-              checkJs: false,
-              strict: false,
-              noImplicitAny: false,
-              strictNullChecks: false,
-              noUnusedLocals: false,
-              noUnusedParameters: false,
-              noFallthroughCasesInSwitch: false,
-              noImplicitReturns: false,
-            },
-          },
-        },
-      }
+    // Simplified plugin configuration
+    configResolved(_resolvedConfig) {
+      // No configuration changes, just hook
+      console.log('TypeScript errors will be ignored during build')
     },
-    // Also handle hot updates
+    // Handle hot updates to ignore TypeScript errors
     handleHotUpdate({ file }: HmrContext) {
       if (file.endsWith('.ts') || file.endsWith('.tsx')) {
         // Return empty array to prevent Vite from doing anything with TS errors

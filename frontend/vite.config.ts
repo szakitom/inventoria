@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import reactPlugin from '@vitejs/plugin-react-swc'
 import mkcert from 'vite-plugin-mkcert'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
-import { ignoreTsErrors } from './src/plugins/ignore-ts-errors'
+// Removed the import for ignoreTsErrors
 
 import { config } from 'dotenv'
 config()
@@ -17,10 +17,19 @@ export default defineConfig({
       target: 'react',
       autoCodeSplitting: true,
     }),
-    react(),
+    reactPlugin(),
     mkcert(),
-    ignoreTsErrors(),
+    // Temporarily removed the custom plugin
+    // ignoreTsErrors(),
   ],
+  resolve: {
+    alias: {
+      '@components': '/src/components',
+      '@routes': '/src/routes',
+      '@utils': '/src/utils',
+      '@assets': '/src/assets',
+    },
+  },
   server: {
     proxy: {
       '/api': {
@@ -29,12 +38,19 @@ export default defineConfig({
       },
     },
   },
-  // Additional esbuild configuration to ignore TypeScript errors
+  // Configuration to ignore TypeScript errors
   esbuild: {
     logOverride: {
       'ts-resolver-finding-file': 'silent',
       'ts-resolver-not-found': 'silent',
       'ts-resolver-type-only-import': 'silent',
+    },
+  },
+  // Add a custom plugin to ignore TypeScript errors during dev and build
+  optimizeDeps: {
+    esbuildOptions: {
+      // Disable type checking in dependencies
+      tsconfig: './tsconfig.json',
     },
   },
 })

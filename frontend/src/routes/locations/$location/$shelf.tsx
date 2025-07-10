@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import Item from '../../../components/Item'
+import Item from '@components/Item'
 
 export const Route = createFileRoute('/locations/$location/$shelf')({
   component: RouteComponent,
