@@ -19,7 +19,6 @@ export const Route = createFileRoute('/locations/$location/$shelf')({
 function RouteComponent() {
   const shelf = Route.useLoaderData()
   const { location } = Route.useParams()
-  console.log(shelf)
 
   return (
     <div>
