@@ -11,6 +11,7 @@ console.log(`Using backend URL: ${process.env.BACKEND_URL}`)
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/',
   plugins: [
     tanstackRouter({
       target: 'react',
