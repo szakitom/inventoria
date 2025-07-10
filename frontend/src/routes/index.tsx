@@ -8,7 +8,14 @@ function Index() {
   return (
     <div className="p-2">
       <h3>Welcome Home!</h3>
-      <Link to="/locations">Locations</Link>
+      <nav>
+        <li>
+          <Link to="/locations">Locations</Link>
+        </li>
+        <li>
+          <Link to="/items/add">Add Item</Link>
+        </li>
+      </nav>
     </div>
   )
 }

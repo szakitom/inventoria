@@ -1,8 +1,8 @@
-name: 'inventoria-prod'
+name: 'inventoria'
 services:
   minio:
     image: quay.io/minio/minio
-    container_name: minio
+    container_name: minio-prod
     command: server /data --console-address ":9001"
     ports:
       - '9000:9000' # S3 API
@@ -16,7 +16,7 @@ services:
 
   mc:
     image: minio/mc
-    container_name: minio-client
+    container_name: minio-client-prod
     depends_on:
       - minio
     entrypoint: >
@@ -30,7 +30,7 @@ services:
 
   mongo:
     image: mongo
-    container_name: mongo
+    container_name: mongo-prod
     ports:
       - '27017:27017'
     volumes:
@@ -40,7 +40,7 @@ services:
 
   mongo-init:
     image: mongo
-    container_name: mongo-init
+    container_name: mongo-init-prod
     depends_on:
       - mongo
     restart: 'no'
@@ -57,7 +57,7 @@ services:
 
   backend:
     build: ./backend
-    container_name: inventoria-backend
+    container_name: inventoria-backend-prod
     ports:
       - '3001:3000' # exposed as 3001 externally
     depends_on:
@@ -69,9 +69,9 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: inventoria-frontend
+    container_name: inventoria-frontend-prod
     ports:
-      - '3000:3000'
+      - '3000:80'
     depends_on:
       - backend
     env_file:

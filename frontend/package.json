@@ -6,6 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:ignore-errors": "tsc --noEmit false && vite build",
+    "build:force": "vite build",
+    "build:prod": "tsc -p tsconfig.prod.json && vite build",
+    "build:no-check": "TSC_COMPILE_ON_ERROR=true vite build",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview"
   },

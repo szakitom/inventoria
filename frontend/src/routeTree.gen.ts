@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
+import { Route as ItemsAddRouteImport } from './routes/items/add'
 import { Route as LocationsLocationIndexRouteImport } from './routes/locations/$location/index'
 import { Route as LocationsLocationShelfRouteImport } from './routes/locations/$location/$shelf'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const LocationsIndexRoute = LocationsIndexRouteImport.update({
   id: '/locations/',
   path: '/locations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItemsAddRoute = ItemsAddRouteImport.update({
+  id: '/items/add',
+  path: '/items/add',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocationsLocationIndexRoute = LocationsLocationIndexRouteImport.update({
@@ -37,12 +43,14 @@ const LocationsLocationShelfRoute = LocationsLocationShelfRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/items/add': typeof ItemsAddRoute
   '/locations': typeof LocationsIndexRoute
   '/locations/$location/$shelf': typeof LocationsLocationShelfRoute
   '/locations/$location': typeof LocationsLocationIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/items/add': typeof ItemsAddRoute
   '/locations': typeof LocationsIndexRoute
   '/locations/$location/$shelf': typeof LocationsLocationShelfRoute
   '/locations/$location': typeof LocationsLocationIndexRoute
@@ -50,6 +58,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/items/add': typeof ItemsAddRoute
   '/locations/': typeof LocationsIndexRoute
   '/locations/$location/$shelf': typeof LocationsLocationShelfRoute
   '/locations/$location/': typeof LocationsLocationIndexRoute
@@ -58,18 +67,21 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/items/add'
     | '/locations'
     | '/locations/$location/$shelf'
     | '/locations/$location'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/items/add'
     | '/locations'
     | '/locations/$location/$shelf'
     | '/locations/$location'
   id:
     | '__root__'
     | '/'
+    | '/items/add'
     | '/locations/'
     | '/locations/$location/$shelf'
     | '/locations/$location/'
@@ -77,6 +89,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ItemsAddRoute: typeof ItemsAddRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
   LocationsLocationShelfRoute: typeof LocationsLocationShelfRoute
   LocationsLocationIndexRoute: typeof LocationsLocationIndexRoute
@@ -98,6 +111,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/items/add': {
+      id: '/items/add'
+      path: '/items/add'
+      fullPath: '/items/add'
+      preLoaderRoute: typeof ItemsAddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/locations/$location/': {
       id: '/locations/$location/'
       path: '/locations/$location'
@@ -117,6 +137,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ItemsAddRoute: ItemsAddRoute,
   LocationsIndexRoute: LocationsIndexRoute,
   LocationsLocationShelfRoute: LocationsLocationShelfRoute,
   LocationsLocationIndexRoute: LocationsLocationIndexRoute,

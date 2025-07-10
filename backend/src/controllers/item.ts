@@ -62,7 +62,7 @@ export const getItem = async (req, res, next) => {
   }
 }
 
-export const createItem: RequestHandler = async (req, res, next) => {
+export const createItem = async (req, res, next) => {
   const session = await mongoose.startSession()
   session.startTransaction()
   try {

@@ -18,6 +18,40 @@ const Item = ({ data }: { data: { id: string; name: string } }) => {
     }
   }
 
+  const handleIncrease = async () => {
+    const response = await fetch(`/api/items/${data.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ amount: data.amount + 1 }),
+    })
+    if (!response.ok) {
+      alert('Failed to increase item amount')
+      return
+    }
+    alert('Item amount increased successfully')
+  }
+
+  const handleDecrease = async () => {
+    if (data.amount <= 0) {
+      alert('Amount cannot be less than 0')
+      return
+    }
+    const response = await fetch(`/api/items/${data.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ amount: data.amount - 1 }),
+    })
+    if (!response.ok) {
+      alert('Failed to decrease item amount')
+      return
+    }
+    alert('Item amount decreased successfully')
+  }
+
   console.log(data)
 
   return (
@@ -36,7 +70,12 @@ const Item = ({ data }: { data: { id: string; name: string } }) => {
           </>
         )}
       </ul>
-      {data.amount === 1 && <button onClick={handleApprove}>delete</button>}
+      <>
+        <button onClick={handleDecrease}>-</button>
+        <span>{data.amount}</span>
+        <button onClick={handleIncrease}>+</button>
+      </>
+      <button onClick={handleApprove}>delete</button>
     </div>
   )
 }
