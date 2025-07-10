@@ -1,9 +1,4 @@
-import {
-  Description,
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-} from '@headlessui/react'
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { useState, useRef, useEffect } from 'react'
 import BarcodeScanner from './BarcodeScanner'
 
