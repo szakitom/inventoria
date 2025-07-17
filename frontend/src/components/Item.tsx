@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/button'
+
 const Item = ({ data }: { data: { id: string; name: string } }) => {
   const handleDelete = async () => {
     const response = await fetch(`/api/items/${data.id}`, {
@@ -71,9 +73,9 @@ const Item = ({ data }: { data: { id: string; name: string } }) => {
         )}
       </ul>
       <>
-        <button onClick={handleDecrease}>-</button>
+        <Button onClick={handleDecrease}>-</Button>
         <span>{data.amount}</span>
-        <button onClick={handleIncrease}>+</button>
+        <Button onClick={handleIncrease}>+</Button>
       </>
       <button onClick={handleApprove}>delete</button>
     </div>
