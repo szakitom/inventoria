@@ -1,4 +1,3 @@
-import { RequestHandler } from 'express'
 import mongoose from 'mongoose'
 import { Temporal } from '@js-temporal/polyfill'
 import { Item, Shelf } from '../models'
@@ -6,16 +5,46 @@ import { getProduct } from './OpenFoodFacts'
 import { deleteFile } from './minio'
 
 export const getItems = async (req, res, next) => {
+  // TODO: cursor based pagination
   try {
+    let sortOptions: { [key: string]: 1 | -1 } = { name: 1 }
+    let limit = 10
+    let page = 1
+    let regex: RegExp | null = null
     if (req.query.sort) {
-      const { sort } = req.query
-      const sortOptions = getSortOptions(sort)
-      const items = await Item.find().sort(sortOptions)
-      return res.json(items)
-    } else {
-      const items = await Item.find().sort({ expiration: 1 })
-      res.json(items)
+      sortOptions = getSortOptions(req.query.sort)
     }
+    if (req.query.page) {
+      page = parseInt(req.query.page as string, 10)
+    }
+    if (req.query.limit) {
+      limit = parseInt(req.query.limit as string, 10)
+    }
+    if (req.query.search) {
+      regex = new RegExp(req.query.search, 'i')
+    }
+
+    const baseQuery = {
+      $or: [
+        { name: regex },
+        { barcode: regex },
+        { 'openFoodFacts.product_name': regex },
+      ],
+    }
+
+    const [items, total] = await Promise.all([
+      Item.find(baseQuery)
+        .collation({ locale: 'hu', strength: 2 })
+        .sort(sortOptions)
+        .limit(limit)
+        .skip((page - 1) * limit),
+      Item.countDocuments(baseQuery),
+    ])
+    res.json({
+      items,
+      total,
+      pages: Math.ceil(total / limit),
+    })
   } catch (err) {
     next(err)
   }

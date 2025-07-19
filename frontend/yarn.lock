@@ -1235,6 +1235,11 @@
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-file-routes/-/virtual-file-routes-1.121.21.tgz#5ff6bbb62b21d22d911a302c5a8ef1e98f6183f1"
   integrity sha512-3nuYsTyaq6ZN7jRZ9z6Gj3GXZqBOqOT0yzd/WZ33ZFfv4yVNIvsa5Lw+M1j3sgyEAxKMqGu/FaNi7FCjr3yOdw==
 
+"@tanstack/zod-adapter@^1.128.4":
+  version "1.128.4"
+  resolved "https://registry.yarnpkg.com/@tanstack/zod-adapter/-/zod-adapter-1.128.4.tgz#b75e2aa877126bf94f29331b06bec9ef4469a638"
+  integrity sha512-gaZPrhJUiwtnGE52jFu9z6WKL0VQu0HshtKfw0fB6cYh/MjesD3KLefbCaWYmZ2ESSLLaYEWJ5/P5V7S0WONng==
+
 "@techstark/opencv-js@^4.11.0-release.1":
   version "4.11.0-release.1"
   resolved "https://registry.yarnpkg.com/@techstark/opencv-js/-/opencv-js-4.11.0-release.1.tgz#7f86b93a974658515351d20bc075e58e71478080"
