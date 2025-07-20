@@ -1,11 +1,13 @@
 import {
+  Await,
   createFileRoute,
+  defer,
   Link,
   stripSearchParams,
   useNavigate,
 } from '@tanstack/react-router'
 import { zodValidator } from '@tanstack/zod-adapter'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, use, useEffect, useMemo, useRef, useState } from 'react'
 import { z } from 'zod'
 
 interface Item {
@@ -13,6 +15,12 @@ interface Item {
   name: string
   barcode: string
   expiration: string
+  location?: string
+}
+
+interface Location {
+  id: string | number
+  name: string
 }
 
 const defaultValues = {
@@ -20,6 +28,7 @@ const defaultValues = {
   page: 1,
   limit: 10,
   search: '',
+  locations: [] as string[],
 }
 
 const productSearchSchema = z.object({
@@ -29,19 +38,22 @@ const productSearchSchema = z.object({
   page: z.number().int().min(1).default(defaultValues.page),
   limit: z.number().int().min(1).default(defaultValues.limit),
   search: z.string().default(defaultValues.search),
+  locations: z.array(z.string()).default(defaultValues.locations),
 })
 
-const fetchPosts = async ({
+const fetchItems = async ({
   sort,
   page,
   limit,
   search,
+  locations,
   signal,
 }: {
   sort: string
   page: number
   limit: number
   search: string
+  locations?: string[]
   signal: AbortSignal
 }) => {
   if (signal.aborted) {
@@ -50,14 +62,23 @@ const fetchPosts = async ({
   console.log(
     'Fetching items with filter:',
     sort,
-    `/api/items?sort=${sort}&page=${page}&limit=${limit}&search=${search}`
+    `/api/items?sort=${sort}&page=${page}&limit=${limit}&search=${search}&locations=${locations?.join(',')}`
   )
   const res = await fetch(
-    `/api/items?sort=${sort}&page=${page}&limit=${limit}&search=${search}`,
+    `/api/items?sort=${sort}&page=${page}&limit=${limit}&search=${search}&locations=${locations?.join(',')}`,
     { signal }
   )
   if (!res.ok) throw new Error('Failed to fetch posts')
   const data = await res.json()
+  return data
+}
+
+const fetchLocations = async () => {
+  console.log('Fetching locations from /api/locations')
+  const res = await fetch('/api/locations')
+  if (!res.ok) throw new Error('Failed to fetch locations')
+  const data = await res.json()
+  console.log('Locations fetched:', data)
   return data
 }
 
@@ -70,20 +91,29 @@ export const Route = createFileRoute('/')({
   beforeLoad: ({ search }) => {
     console.log('Search parameters:', search)
   },
-  loaderDeps: ({ search: { sort, limit, page, search } }) => ({
+  loaderDeps: ({ search: { sort, limit, page, search, locations } }) => ({
     sort,
     limit,
     page,
     search,
+    locations,
   }),
-  loader: async ({ abortController, deps: { sort, limit, page, search } }) =>
-    fetchPosts({
-      sort,
-      limit,
-      page,
-      search,
-      signal: abortController.signal,
-    }),
+  loader: async ({
+    abortController,
+    deps: { sort, limit, page, search, locations },
+  }) => {
+    return {
+      items: await fetchItems({
+        sort,
+        limit,
+        page,
+        search,
+        locations,
+        signal: abortController.signal,
+      }),
+      deferredSlowData: defer(fetchLocations()),
+    }
+  },
 })
 
 function Index() {
@@ -96,11 +126,18 @@ function Index() {
       page: rawSearch.page,
       limit: rawSearch.limit,
       search: rawSearch.search,
+      locations: rawSearch.locations || [],
     }
-  }, [rawSearch.sort, rawSearch.page, rawSearch.limit, rawSearch.search])
-  const { sort, page = 1, limit = 10, search } = currentSearch
-  const data = Route.useLoaderData()
-  const { total, pages, items } = data || { total: 0, items: [] as Item[] }
+  }, [
+    rawSearch.sort,
+    rawSearch.page,
+    rawSearch.limit,
+    rawSearch.search,
+    rawSearch.locations,
+  ])
+  const { sort, page = 1, limit = 10, search, locations } = currentSearch
+  const { items: pageItems, deferredSlowData } = Route.useLoaderData()
+  const { total, pages, items } = pageItems || { total: 0, items: [] as Item[] }
   const sortValue = sort?.replace(/^-/, '') || defaultValues.sort
   const direction = sort?.startsWith('-') ? '-' : ''
   const navigate = useNavigate({ from: Route.fullPath })
@@ -137,6 +174,37 @@ function Index() {
           <Link to="/items/add">Add Item</Link>
         </li>
       </nav>
+      <select
+        multiple
+        value={locations}
+        onChange={(e) => {
+          const selectedLocations = e.target.value
+          console.log('Selected locations:', selectedLocations)
+          navigate({
+            search: {
+              ...currentSearch,
+              locations: Array.from(
+                e.target.selectedOptions,
+                (option) => option.value
+              ),
+            },
+          })
+        }}
+      >
+        <Suspense fallback={<option disabled>Loading locations...</option>}>
+          <Await promise={deferredSlowData}>
+            {(locations: Location[]) =>
+              locations.map((location: Location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))
+            }
+          </Await>
+        </Suspense>
+      </select>
+      <br />
+
       <main>
         <div>
           <label>

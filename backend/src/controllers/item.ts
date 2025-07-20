@@ -1,11 +1,11 @@
 import mongoose from 'mongoose'
 import { Temporal } from '@js-temporal/polyfill'
-import { Item, Shelf } from '../models'
+import { Item, Location, Shelf } from '../models'
 import { getProduct } from './OpenFoodFacts'
 import { deleteFile } from './minio'
 
 export const getItems = async (req, res, next) => {
-  // TODO: cursor based pagination
+  // IDEA: cursor based pagination
   try {
     let sortOptions: { [key: string]: 1 | -1 } = { name: 1 }
     let limit = 10
@@ -23,13 +23,29 @@ export const getItems = async (req, res, next) => {
     if (req.query.search) {
       regex = new RegExp(req.query.search, 'i')
     }
-
-    const baseQuery = {
+    let baseQuery: any = {
       $or: [
         { name: regex },
         { barcode: regex },
         { 'openFoodFacts.product_name': regex },
       ],
+    }
+    if (req.query.locations) {
+      const locationIds = req.query.locations.split(',')
+
+      // Get shelves from the selected locations
+      const locations = await Location.find(
+        { _id: { $in: locationIds } },
+        'shelves'
+      )
+      const shelfIds = locations.flatMap((loc) =>
+        loc.shelves.map((s) => s.toString())
+      )
+
+      baseQuery = {
+        ...baseQuery,
+        location: { $in: shelfIds },
+      }
     }
 
     const [items, total] = await Promise.all([
