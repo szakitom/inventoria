@@ -1,4 +1,4 @@
-import { useId, useTransition } from 'react'
+import { useEffect, useId, useRef, useTransition } from 'react'
 import { useNavigate, type AnyRoute } from '@tanstack/react-router'
 import {
   Pagination as PaginationShad,
@@ -33,6 +33,18 @@ const Pagination = ({ route }: PaginationProps) => {
   const { pages: pageCount } = data.items
   const { page: currentPage, limit } = search
   const [isPending, startTransition] = useTransition()
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const activePageRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (activePageRef.current) {
+      activePageRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      })
+    }
+  }, [currentPage])
 
   const id = useId()
 
@@ -40,7 +52,7 @@ const Pagination = ({ route }: PaginationProps) => {
 
   const goToPage = (page: number) => {
     startTransition(() => {
-      navigate({ search: { ...search, page: page } })
+      navigate({ search: { ...search, page } })
     })
   }
 
@@ -66,7 +78,7 @@ const Pagination = ({ route }: PaginationProps) => {
         <Select value={limit.toString()} onValueChange={changeLimit}>
           <SelectTrigger
             id={id}
-            className="cursor-pointer select-none"
+            className="cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-labelledby={id}
           >
             <SelectValue placeholder="Items per page" />
@@ -115,7 +127,10 @@ const Pagination = ({ route }: PaginationProps) => {
               </PaginationItem>
             </div>
 
-            <div className="flex items-center gap-2 w-full justify-center overflow-x-auto scrollbar-hide">
+            <div
+              className="flex items-center gap-2 w-full justify-center overflow-x-auto scrollbar-hide"
+              ref={scrollContainerRef}
+            >
               {visiblePages.map((page, idx) =>
                 page === '...' ? (
                   <PaginationItem key={`ellipsis-${idx}`}>
@@ -128,12 +143,16 @@ const Pagination = ({ route }: PaginationProps) => {
                     </PaginationLink>
                   </PaginationItem>
                 ) : (
-                  <PaginationNumber
+                  <div
                     key={page}
-                    page={page}
-                    currentPage={currentPage}
-                    handleClick={() => goToPage(page)}
-                  />
+                    ref={page === currentPage ? activePageRef : null}
+                  >
+                    <PaginationNumber
+                      page={page}
+                      currentPage={currentPage}
+                      handleClick={() => goToPage(page)}
+                    />
+                  </div>
                 )
               )}
             </div>
@@ -225,7 +244,7 @@ const PaginationNumber = ({
       <PaginationLink
         onClick={handleClick}
         isActive={page === currentPage}
-        className="cursor-pointer select-none"
+        className="cursor-pointer select-none focus:outline-none data-[active=true]:bg-blue-500 data-[active=true]:text-white"
         aria-current={page === currentPage ? 'page' : undefined}
       >
         {page}
