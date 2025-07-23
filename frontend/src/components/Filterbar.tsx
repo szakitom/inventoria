@@ -1,5 +1,5 @@
 import { useNavigate, type AnyRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import {
   Select,
   SelectContent,
@@ -27,6 +27,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 interface FilterbarProps {
   route: AnyRoute
@@ -41,6 +42,7 @@ const Filterbar = ({ route }: FilterbarProps) => {
     search: searchTerm,
     locations: selectedLocations,
   } = search
+  const id = useId()
   const direction = directionSort.startsWith('-') ? '-' : '+'
   const sort = directionSort.replace(/^-/, '')
   const [searchValue, setSearchValue] = useState(searchTerm || '')
@@ -84,58 +86,76 @@ const Filterbar = ({ route }: FilterbarProps) => {
     })
   }
 
+  const resetFilters = () => {
+    setSearchValue('')
+    setLocations([])
+    navigate({ search: {} as never })
+  }
+
   return (
-    <nav className="w-full flex gap-4 items-center justify-center p-2 md:p-4 bg-white rounded-md shadow-sm">
-      <div className="flex w-full gap-2">
-        <div className="flex flex-row items-center gap-2">
-          <Label>Sort by</Label>
-          <Select value={sort} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-[150px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              {Item.baseSortOptions.map((field) => (
-                <SelectItem key={field.value} value={field.value}>
-                  {field.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            value={direction}
-            onValueChange={handleDirectionChange}
-            aria-label="Sort direction"
-          >
-            <ToggleGroupItem
-              value="+"
-              aria-label="Ascending order"
-              className="cursor-pointer px-3 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+    <nav className="w-full flex flex-col md:flex-row gap-3 md:gap-4 items-start md:items-center justify-between p-3 md:p-4 bg-white rounded-md shadow-sm">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 w-full">
+            <Label
+              htmlFor={id}
+              className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
             >
-              {sort.includes('name') ? (
-                <ArrowDownAZ size={16} />
-              ) : (
-                <ArrowDown01 size={16} />
-              )}
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="-"
-              aria-label="Descending order"
-              className="cursor-pointer px-3 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+              Sort by
+            </Label>
+            <Select value={sort} onValueChange={handleSortChange}>
+              <SelectTrigger
+                id={id}
+                className="w-full md:w-[200px] focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              >
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                {Item.baseSortOptions.map((field) => (
+                  <SelectItem key={field.value} value={field.value}>
+                    {field.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              value={direction}
+              onValueChange={handleDirectionChange}
+              aria-label="Sort direction"
             >
-              {sort.includes('name') ? (
-                <ArrowUpAZ size={16} />
-              ) : (
-                <ArrowUp01 size={16} />
-              )}
-            </ToggleGroupItem>
-          </ToggleGroup>
+              <ToggleGroupItem
+                value="+"
+                aria-label="Ascending"
+                className="cursor-pointer px-2 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+              >
+                {sort.includes('name') ? (
+                  <ArrowDownAZ size={16} />
+                ) : (
+                  <ArrowDown01 size={16} />
+                )}
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="-"
+                aria-label="Descending"
+                className="cursor-pointer px-2 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+              >
+                {sort.includes('name') ? (
+                  <ArrowUpAZ size={16} />
+                ) : (
+                  <ArrowUp01 size={16} />
+                )}
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+
+          <ResetButton onClick={resetFilters} className="flex md:hidden" />
         </div>
 
         <Input
           placeholder="Search"
-          className="min-w-[160px] max-w-[280px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full sm:w-[200px] md:w-[240px] focus:ring-2 focus:ring-blue-500"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
@@ -148,31 +168,41 @@ const Filterbar = ({ route }: FilterbarProps) => {
           optionLabel="name"
           optionValue="id"
           onSelect={setLocations}
-          className="max-w-[200px]"
+          className="w-full sm:w-[200px] max-w-full"
         />
       </div>
-      <Tooltip>
-        <TooltipTrigger>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Reset filters"
-            className="cursor-pointer"
-            onClick={() => {
-              setSearchValue('')
-              setLocations([])
-              navigate({ search: {} as never })
-            }}
-          >
-            <RotateCcw size={20} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Reset</p>
-        </TooltipContent>
-      </Tooltip>
+
+      <ResetButton onClick={resetFilters} className="hidden md:flex" />
     </nav>
   )
 }
 
 export default Filterbar
+
+const ResetButton = ({
+  onClick,
+  className,
+}: {
+  onClick: () => void
+  className?: string
+}) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button
+        variant="outline"
+        size="icon"
+        aria-label="Reset filters"
+        className={cn(
+          'self-end md:self-center cursor-pointer hover:bg-gray-100',
+          className
+        )}
+        onClick={onClick}
+      >
+        <RotateCcw size={20} />
+      </Button>
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>Reset</p>
+    </TooltipContent>
+  </Tooltip>
+)
