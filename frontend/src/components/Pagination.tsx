@@ -69,7 +69,7 @@ const Pagination = ({ route }: PaginationProps) => {
   }
 
   return (
-    <nav className="flex flex-col md:flex-row items-center md:space-x-4 p-4 gap-4 w-full">
+    <footer className="flex flex-col md:flex-row items-center md:space-x-4 p-4 gap-4 w-full">
       <div className="flex items-center gap-2 w-full md:w-[250px] mr-0 justify-between md:justify-evenly">
         <Label htmlFor={id} className="cursor-pointer h-full w-full">
           Rows per page
@@ -185,7 +185,7 @@ const Pagination = ({ route }: PaginationProps) => {
           </PaginationContent>
         </PaginationShad>
       ) : null}
-    </nav>
+    </footer>
   )
 }
 

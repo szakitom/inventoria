@@ -93,87 +93,89 @@ const Filterbar = ({ route }: FilterbarProps) => {
   }
 
   return (
-    <nav className="w-full flex flex-col md:flex-row gap-3 md:gap-4 items-start md:items-center justify-between p-3 md:p-4 bg-white rounded-md shadow-sm">
-      <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 w-full">
-            <Label
-              htmlFor={id}
-              className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
-            >
-              Sort by
-            </Label>
-            <Select value={sort} onValueChange={handleSortChange}>
-              <SelectTrigger
-                id={id}
-                className="w-full md:w-[200px] focus:ring-2 focus:ring-blue-500 cursor-pointer"
+    <header className="sticky top-0 z-10 bg-white shadow-sm">
+      <nav className="bg-white w-full flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 w-full">
+              <Label
+                htmlFor={id}
+                className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
               >
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                {Item.baseSortOptions.map((field) => (
-                  <SelectItem key={field.value} value={field.value}>
-                    {field.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              value={direction}
-              onValueChange={handleDirectionChange}
-              aria-label="Sort direction"
-            >
-              <ToggleGroupItem
-                value="+"
-                aria-label="Ascending"
-                className="cursor-pointer px-2 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                Sort by
+              </Label>
+              <Select value={sort} onValueChange={handleSortChange}>
+                <SelectTrigger
+                  id={id}
+                  className="w-full md:w-[200px] focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                >
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Item.baseSortOptions.map((field) => (
+                    <SelectItem key={field.value} value={field.value}>
+                      {field.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                value={direction}
+                onValueChange={handleDirectionChange}
+                aria-label="Sort direction"
               >
-                {sort.includes('name') ? (
-                  <ArrowDownAZ size={16} />
-                ) : (
-                  <ArrowDown01 size={16} />
-                )}
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="-"
-                aria-label="Descending"
-                className="cursor-pointer px-2 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
-              >
-                {sort.includes('name') ? (
-                  <ArrowUpAZ size={16} />
-                ) : (
-                  <ArrowUp01 size={16} />
-                )}
-              </ToggleGroupItem>
-            </ToggleGroup>
+                <ToggleGroupItem
+                  value="+"
+                  aria-label="Ascending"
+                  className="cursor-pointer px-2 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                >
+                  {sort.includes('name') ? (
+                    <ArrowDownAZ size={16} />
+                  ) : (
+                    <ArrowDown01 size={16} />
+                  )}
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="-"
+                  aria-label="Descending"
+                  className="cursor-pointer px-2 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                >
+                  {sort.includes('name') ? (
+                    <ArrowUpAZ size={16} />
+                  ) : (
+                    <ArrowUp01 size={16} />
+                  )}
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+
+            <ResetButton onClick={resetFilters} className="flex md:hidden" />
           </div>
 
-          <ResetButton onClick={resetFilters} className="flex md:hidden" />
+          <Input
+            placeholder="Search"
+            className="w-full sm:w-[200px] md:w-[240px] focus:ring-2 focus:ring-blue-500"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+
+          <Multiselect
+            options={data}
+            value={locations}
+            selectedText="location selected"
+            dataKey="locations"
+            optionLabel="name"
+            optionValue="id"
+            onSelect={setLocations}
+            className="w-full sm:w-[200px] max-w-full"
+          />
         </div>
 
-        <Input
-          placeholder="Search"
-          className="w-full sm:w-[200px] md:w-[240px] focus:ring-2 focus:ring-blue-500"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-        />
-
-        <Multiselect
-          options={data}
-          value={locations}
-          selectedText="location selected"
-          dataKey="locations"
-          optionLabel="name"
-          optionValue="id"
-          onSelect={setLocations}
-          className="w-full sm:w-[200px] max-w-full"
-        />
-      </div>
-
-      <ResetButton onClick={resetFilters} className="hidden md:flex" />
-    </nav>
+        <ResetButton onClick={resetFilters} className="hidden md:flex" />
+      </nav>
+    </header>
   )
 }
 
