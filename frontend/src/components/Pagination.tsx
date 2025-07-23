@@ -57,19 +57,27 @@ const Pagination = ({ route }: PaginationProps) => {
   }
 
   return (
-    <nav className="flex items-center space-x-4 p-4">
-      <div className="flex items-center gap-2 w-[220px]">
-        <Label htmlFor={id} className="">
+    <nav className="flex flex-col md:flex-row items-center md:space-x-4 p-4 gap-4 w-full">
+      <div className="flex items-center gap-2 w-full md:w-[250px] mr-0 justify-between md:justify-evenly">
+        <Label htmlFor={id} className="cursor-pointer h-full w-full">
           Rows per page
         </Label>
 
         <Select value={limit.toString()} onValueChange={changeLimit}>
-          <SelectTrigger id={id} className="">
+          <SelectTrigger
+            id={id}
+            className="cursor-pointer select-none"
+            aria-labelledby={id}
+          >
             <SelectValue placeholder="Items per page" />
           </SelectTrigger>
-          <SelectContent className="">
+          <SelectContent>
             {Item.pageLimitOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value.toString()}>
+              <SelectItem
+                className="cursor-pointer"
+                key={option.value}
+                value={option.value.toString()}
+              >
                 {option.name}
               </SelectItem>
             ))}
@@ -77,86 +85,87 @@ const Pagination = ({ route }: PaginationProps) => {
         </Select>
       </div>
 
-      <Spinner
-        className={cn(
-          'w-6 h-6 text-muted-foreground',
-          isPending ? 'visible' : 'invisible'
-        )}
-      />
-
-      <PaginationShad className="w-full items-center">
-        <PaginationContent className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-2">
-            <PaginationItem>
-              <PaginationLink
-                aria-label="Go to first page"
-                size="icon"
-                className={cn(
-                  'cursor-pointer',
-                  currentPage <= 1 && 'pointer-events-none opacity-50'
-                )}
-                onClick={() => goToPage(1)}
-              >
-                <ChevronFirstIcon className="h-4 w-4" />
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => goToPage(Math.max(1, currentPage - 1))}
-                aria-disabled={currentPage <= 1}
-                tabIndex={currentPage <= 1 ? -1 : undefined}
-                className={cn(
-                  'cursor-pointer select-none',
-                  currentPage <= 1 && 'pointer-events-none opacity-50'
-                )}
-              />
-            </PaginationItem>
-          </div>
-
-          <div className="flex items-center gap-2 w-full justify-center">
-            {visiblePages.map((page, idx) =>
-              page === '...' ? (
-                <PaginationItem key={`ellipsis-${idx}`}>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              ) : (
-                <PaginationNumber
-                  key={page}
-                  page={page}
-                  currentPage={currentPage}
-                  handleClick={() => goToPage(page)}
+      {pageCount > 1 ? (
+        <PaginationShad className="w-full items-center">
+          <PaginationContent className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <PaginationItem>
+                <PaginationLink
+                  aria-label="Go to first page"
+                  size="icon"
+                  className={cn(
+                    'cursor-pointer hidden md:visible',
+                    currentPage <= 1 && 'pointer-events-none opacity-50'
+                  )}
+                  onClick={() => goToPage(1)}
+                >
+                  <ChevronFirstIcon className="h-4 w-4" />
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => goToPage(Math.max(1, currentPage - 1))}
+                  aria-disabled={currentPage <= 1}
+                  tabIndex={currentPage <= 1 ? -1 : undefined}
+                  className={cn(
+                    'cursor-pointer select-none',
+                    currentPage <= 1 && 'pointer-events-none opacity-50'
+                  )}
                 />
-              )
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => goToPage(Math.min(pageCount, currentPage + 1))}
-                aria-disabled={currentPage >= pageCount}
-                tabIndex={currentPage >= pageCount ? -1 : undefined}
-                className={cn(
-                  'cursor-pointer select-none',
-                  currentPage >= pageCount && 'pointer-events-none opacity-50'
-                )}
-              />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink
-                aria-label="Go to last page"
-                size="icon"
-                className={cn(
-                  'cursor-pointer',
-                  currentPage >= pageCount && 'pointer-events-none opacity-50'
-                )}
-                onClick={() => goToPage(pageCount)}
-              >
-                <ChevronLastIcon className="h-4 w-4" />
-              </PaginationLink>
-            </PaginationItem>
-          </div>
-        </PaginationContent>
-      </PaginationShad>
+              </PaginationItem>
+            </div>
+
+            <div className="flex items-center gap-2 w-full justify-center overflow-x-auto scrollbar-hide">
+              {visiblePages.map((page, idx) =>
+                page === '...' ? (
+                  <PaginationItem key={`ellipsis-${idx}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : isPending && page === currentPage ? (
+                  <PaginationItem key={page}>
+                    <PaginationLink isActive className="cursor-default">
+                      <Spinner className="w-4 h-4" />
+                    </PaginationLink>
+                  </PaginationItem>
+                ) : (
+                  <PaginationNumber
+                    key={page}
+                    page={page}
+                    currentPage={currentPage}
+                    handleClick={() => goToPage(page)}
+                  />
+                )
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => goToPage(Math.min(pageCount, currentPage + 1))}
+                  aria-disabled={currentPage >= pageCount}
+                  tabIndex={currentPage >= pageCount ? -1 : undefined}
+                  className={cn(
+                    'cursor-pointer select-none',
+                    currentPage >= pageCount && 'pointer-events-none opacity-50'
+                  )}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink
+                  aria-label="Go to last page"
+                  size="icon"
+                  className={cn(
+                    'cursor-pointer hidden md:visible',
+                    currentPage >= pageCount && 'pointer-events-none opacity-50'
+                  )}
+                  onClick={() => goToPage(pageCount)}
+                >
+                  <ChevronLastIcon className="h-4 w-4" />
+                </PaginationLink>
+              </PaginationItem>
+            </div>
+          </PaginationContent>
+        </PaginationShad>
+      ) : null}
     </nav>
   )
 }
@@ -216,7 +225,7 @@ const PaginationNumber = ({
       <PaginationLink
         onClick={handleClick}
         isActive={page === currentPage}
-        className="cursor-pointer"
+        className="cursor-pointer select-none"
         aria-current={page === currentPage ? 'page' : undefined}
       >
         {page}
