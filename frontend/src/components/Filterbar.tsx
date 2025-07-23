@@ -21,6 +21,12 @@ import useDebounce from '@/hooks/useDebounce'
 import { Item } from '@utils/item'
 import Multiselect from '@/components/MultiSelect'
 import { arraysEqual } from '@utils/index'
+import { Label } from '@components/ui/label'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 interface FilterbarProps {
   route: AnyRoute
@@ -59,71 +65,81 @@ const Filterbar = ({ route }: FilterbarProps) => {
     }
   }, [debouncedSearchValue, debouncedLocations, navigate, search])
 
-  return (
-    <div>
-      <pre>{JSON.stringify(search, null, 2)}</pre>
+  const handleSortChange = (value: string) => {
+    navigate({
+      search: {
+        ...search,
+        sort: direction === '-' ? `-${value}` : value,
+      },
+    })
+  }
 
-      <div className="flex items-center gap-4">
-        <Select
-          value={sort}
-          onValueChange={(value) =>
-            navigate({
-              search: {
-                ...search,
-                sort: value,
-              },
-            })
-          }
-        >
-          <SelectTrigger className="w-[180px] cursor-pointer">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            {Item.baseSortOptions.map((field) => (
-              <SelectItem key={field.value} value={field.value}>
-                {field.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <ToggleGroup type="single" variant="outline" value={direction}>
-          <ToggleGroupItem
-            value="+"
-            aria-label="Ascending order"
-            className="cursor-pointer"
-            onClick={() =>
-              navigate({
-                search: {
-                  ...search,
-                  sort: sort.startsWith('-') ? sort.replace(/^-/, '') : sort,
-                },
-              })
-            }
+  const handleDirectionChange = (value: string) => {
+    const newSort = value === '-' ? `-${sort}` : sort
+    navigate({
+      search: {
+        ...search,
+        sort: newSort,
+      },
+    })
+  }
+
+  return (
+    <nav className="w-full flex gap-4 items-center justify-center p-2 md:p-4 bg-white rounded-md shadow-sm">
+      <div className="flex w-full gap-2">
+        <div className="flex flex-row items-center gap-2">
+          <Label>Sort by</Label>
+          <Select value={sort} onValueChange={handleSortChange}>
+            <SelectTrigger className="w-[150px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              {Item.baseSortOptions.map((field) => (
+                <SelectItem key={field.value} value={field.value}>
+                  {field.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            value={direction}
+            onValueChange={handleDirectionChange}
+            aria-label="Sort direction"
           >
-            {sort.includes('name') ? <ArrowDownAZ /> : <ArrowDown01 />}
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="-"
-            aria-label="Descending order"
-            className="cursor-pointer"
-            onClick={() =>
-              navigate({
-                search: {
-                  ...search,
-                  sort: sort.startsWith('-') ? sort : `-${sort}`,
-                },
-              })
-            }
-          >
-            {sort.includes('name') ? <ArrowUpAZ /> : <ArrowUp01 />}
-          </ToggleGroupItem>
-        </ToggleGroup>
+            <ToggleGroupItem
+              value="+"
+              aria-label="Ascending order"
+              className="cursor-pointer px-3 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+            >
+              {sort.includes('name') ? (
+                <ArrowDownAZ size={16} />
+              ) : (
+                <ArrowDown01 size={16} />
+              )}
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="-"
+              aria-label="Descending order"
+              className="cursor-pointer px-3 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+            >
+              {sort.includes('name') ? (
+                <ArrowUpAZ size={16} />
+              ) : (
+                <ArrowUp01 size={16} />
+              )}
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
         <Input
           placeholder="Search"
-          className="w-[180px]"
+          className="min-w-[160px] max-w-[280px] focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
+
         <Multiselect
           options={data}
           value={locations}
@@ -131,24 +147,31 @@ const Filterbar = ({ route }: FilterbarProps) => {
           dataKey="locations"
           optionLabel="name"
           optionValue="id"
-          onSelect={(selectedOptions) => {
-            setLocations(selectedOptions)
-          }}
+          onSelect={setLocations}
+          className="max-w-[200px]"
         />
-        <Button
-          variant="outline"
-          size="icon"
-          className="cursor-pointer"
-          onClick={() => {
-            setSearchValue('')
-            setLocations([])
-            navigate({ search: {} as never })
-          }}
-        >
-          <RotateCcw />
-        </Button>
       </div>
-    </div>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Reset filters"
+            className="cursor-pointer"
+            onClick={() => {
+              setSearchValue('')
+              setLocations([])
+              navigate({ search: {} as never })
+            }}
+          >
+            <RotateCcw size={20} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Reset</p>
+        </TooltipContent>
+      </Tooltip>
+    </nav>
   )
 }
 

@@ -26,6 +26,7 @@ interface MultiselectProps {
   optionLabel: string
   optionValue: string
   onSelect: (selected: string[]) => void
+  className?: string
 }
 
 interface OptionsProps {
@@ -45,6 +46,7 @@ const Multiselect = ({
   optionLabel,
   optionValue,
   onSelect,
+  className,
 }: MultiselectProps) => {
   const [open, setOpen] = useState(false)
   const memoizedData = useDeferredValue(options)
@@ -78,50 +80,46 @@ const Multiselect = ({
   }
 
   return (
-    <div className="w-full max-w-xs">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            id={id}
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className=" w-full justify-between cursor-pointer hover:bg-transparent"
-          >
-            <span>
-              <Badge variant="outline">
-                {selected.length === 0 ? 'All' : selected.length}
-              </Badge>
-              &nbsp;{selectedText}
-            </span>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild className={className}>
+        <Button
+          id={id}
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="flex items-center justify-between cursor-pointer hover:bg-transparent"
+        >
+          <span className="flex items-center">
+            <Badge variant="outline">
+              {selected.length === 0 ? 'All' : selected.length}
+            </Badge>
+            &nbsp;{selectedText}
+          </span>
 
-            <ChevronsUpDownIcon
-              size={16}
-              className="text-muted-foreground/80 shrink-0"
-              aria-hidden="true"
-            />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
-          <Command>
-            <CommandList>
-              <Suspense
-                fallback={<CommandItem disabled>Loading...</CommandItem>}
-              >
-                <Options
-                  data={memoizedData}
-                  onSelect={handleSelect}
-                  selected={selected}
-                  dataKey={dataKey}
-                  optionLabel={optionLabel}
-                  optionValue={optionValue}
-                />
-              </Suspense>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
+          <ChevronsUpDownIcon
+            size={16}
+            className="text-muted-foreground/80 shrink-0"
+            aria-hidden="true"
+          />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
+        <Command>
+          <CommandList>
+            <Suspense fallback={<CommandItem disabled>Loading...</CommandItem>}>
+              <Options
+                data={memoizedData}
+                onSelect={handleSelect}
+                selected={selected}
+                dataKey={dataKey}
+                optionLabel={optionLabel}
+                optionValue={optionValue}
+              />
+            </Suspense>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }
 
