@@ -1,5 +1,5 @@
-import { useNavigate, useRouter, type AnyRoute } from '@tanstack/react-router'
-import { Suspense, use, useEffect, useState } from 'react'
+import { useNavigate, type AnyRoute } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import {
   Select,
   SelectContent,
@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Input } from '@/components/ui/input'
+import { Input } from '@components/ui/input'
 import {
   ArrowDown01,
   ArrowDownAZ,
@@ -16,9 +16,11 @@ import {
   ArrowUpAZ,
   RotateCcw,
 } from 'lucide-react'
-import { Button } from './ui/button'
+import { Button } from '@components/ui/button'
 import useDebounce from '@/hooks/useDebounce'
 import { Item } from '@utils/item'
+import Multiselect from '@/components/MultiSelect'
+import { arraysEqual } from '@utils/index'
 
 interface FilterbarProps {
   route: AnyRoute
@@ -32,7 +34,6 @@ const Filterbar = ({ route }: FilterbarProps) => {
     sort: directionSort,
     search: searchTerm,
     locations: selectedLocations,
-    limit,
   } = search
   const direction = directionSort.startsWith('-') ? '-' : '+'
   const sort = directionSort.replace(/^-/, '')
@@ -40,12 +41,19 @@ const Filterbar = ({ route }: FilterbarProps) => {
   const [locations, setLocations] = useState<string[]>(selectedLocations || [])
   const debouncedSearchValue = useDebounce(searchValue, 300)
   const debouncedLocations = useDebounce(locations, 300)
-  const router = useRouter()
+
+  useEffect(() => {
+    setSearchValue(searchTerm || '')
+  }, [searchTerm])
+
+  useEffect(() => {
+    setLocations(selectedLocations || [])
+  }, [selectedLocations])
 
   useEffect(() => {
     const shouldNavigate =
       debouncedSearchValue !== search.search ||
-      JSON.stringify(debouncedLocations) !== JSON.stringify(search.locations)
+      !arraysEqual(debouncedLocations, search.locations)
 
     if (shouldNavigate) {
       navigate({
@@ -57,7 +65,7 @@ const Filterbar = ({ route }: FilterbarProps) => {
         },
       })
     }
-  }, [debouncedSearchValue, debouncedLocations, navigate, search, searchTerm])
+  }, [debouncedSearchValue, debouncedLocations, navigate, search])
 
   return (
     <div>
@@ -124,51 +132,17 @@ const Filterbar = ({ route }: FilterbarProps) => {
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        <select
-          className="w-[180px] cursor-pointer"
-          multiple
+        <Multiselect
+          options={data}
           value={locations}
-          onChange={(e) => {
-            setLocations(
-              [...e.target.selectedOptions].map((option) =>
-                typeof option === 'string' ? option : option.value
-              )
-            )
+          selectedText="location selected"
+          dataKey="locations"
+          optionLabel="name"
+          optionValue="id"
+          onSelect={(selectedOptions) => {
+            setLocations(selectedOptions)
           }}
-        >
-          <Suspense
-            fallback={
-              <option disabled value="__loading__">
-                Loading locations…
-              </option>
-            }
-          >
-            <LocationOptions data={data} />
-          </Suspense>
-        </select>
-        <Select
-          value={limit.toString()}
-          onValueChange={(value) => {
-            navigate({
-              search: {
-                ...search,
-                limit: parseInt(value),
-                page: 1,
-              },
-            })
-          }}
-        >
-          <SelectTrigger className="w-[180px] cursor-pointer">
-            <SelectValue placeholder="Items per page" />
-          </SelectTrigger>
-          <SelectContent>
-            {Item.pageLimitOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value.toString()}>
-                {option.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        />
         <Button
           variant="outline"
           size="icon"
@@ -177,7 +151,6 @@ const Filterbar = ({ route }: FilterbarProps) => {
             setSearchValue('')
             setLocations([])
             navigate({ search: {} as never })
-            router.invalidate()
           }}
         >
           <RotateCcw />
@@ -188,24 +161,3 @@ const Filterbar = ({ route }: FilterbarProps) => {
 }
 
 export default Filterbar
-
-interface Location {
-  id: string
-  name: string
-}
-
-interface LocationOptionsProps {
-  data: {
-    locations: Promise<Location[]>
-  }
-}
-
-const LocationOptions = ({ data }: LocationOptionsProps) => {
-  const locations = use(data.locations)
-
-  return locations.map((location) => (
-    <option key={location.id} value={location.id}>
-      {location.name}
-    </option>
-  ))
-}
