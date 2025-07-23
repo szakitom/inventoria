@@ -43,14 +43,6 @@ const Filterbar = ({ route }: FilterbarProps) => {
   const debouncedLocations = useDebounce(locations, 300)
 
   useEffect(() => {
-    setSearchValue(searchTerm || '')
-  }, [searchTerm])
-
-  useEffect(() => {
-    setLocations(selectedLocations || [])
-  }, [selectedLocations])
-
-  useEffect(() => {
     const shouldNavigate =
       debouncedSearchValue !== search.search ||
       !arraysEqual(debouncedLocations, search.locations)
