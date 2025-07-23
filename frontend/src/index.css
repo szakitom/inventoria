@@ -118,3 +118,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Add this to your global styles */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
