@@ -48,18 +48,22 @@ export const getItems = async (req, res, next) => {
       }
     }
 
+    const query = Item.find(baseQuery)
+      .collation({ locale: 'hu', strength: 2 })
+      .sort(sortOptions)
+
+    if (limit !== 0) {
+      query.limit(limit).skip((page - 1) * limit)
+    }
+
     const [items, total] = await Promise.all([
-      Item.find(baseQuery)
-        .collation({ locale: 'hu', strength: 2 })
-        .sort(sortOptions)
-        .limit(limit)
-        .skip((page - 1) * limit),
+      query,
       Item.countDocuments(baseQuery),
     ])
     res.json({
       items,
       total,
-      pages: Math.ceil(total / limit),
+      pages: limit === 0 ? 1 : Math.ceil(total / limit),
     })
   } catch (err) {
     next(err)
