@@ -1,4 +1,5 @@
 import Filterbar from '@components/Filterbar'
+import Items from '@components/Items'
 import Pagination from '@components/Pagination'
 import {
   createFileRoute,
@@ -44,7 +45,7 @@ function Index() {
   return (
     <main>
       <Filterbar route={Route} />
-
+      <Items />
       <Pagination route={Route} />
     </main>
   )
