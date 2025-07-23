@@ -51,6 +51,14 @@ export const getItems = async (req, res, next) => {
     const query = Item.find(baseQuery)
       .collation({ locale: 'hu', strength: 2 })
       .sort(sortOptions)
+      .populate({
+        path: 'location',
+        select: 'name',
+        populate: {
+          path: 'location',
+          select: 'name',
+        },
+      })
 
     if (limit !== 0) {
       query.limit(limit).skip((page - 1) * limit)
