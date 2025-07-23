@@ -9,6 +9,16 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 import { cn } from '@/lib/utils'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Item } from '@utils/item'
+import { useId } from 'react'
 
 interface PaginationProps {
   route: AnyRoute
@@ -19,15 +29,41 @@ const Pagination = ({ route }: PaginationProps) => {
   const data = route.useLoaderData()
   const navigate = useNavigate({ from: route.fullPath })
   const { pages: pageCount } = data.items
-  const { page: currentPage } = search
-  const pages = Array.from({ length: pageCount }, (_, index) => index + 1)
-
-  if (pageCount <= 1) {
-    return null
-  }
+  const { page: currentPage, limit } = search
+  const pages = Array.from(
+    { length: pageCount },
+    (_, index) => index + 1
+  ).slice(0, 5)
+  const id = useId()
 
   return (
-    <nav>
+    <nav className="flex items-center justify-between gap-8">
+      <div className="flex items-center gap-3">
+        <Label htmlFor={id}>Items per page</Label>
+        <Select
+          value={limit.toString()}
+          onValueChange={(value) => {
+            navigate({
+              search: {
+                ...search,
+                limit: parseInt(value),
+                page: 1,
+              },
+            })
+          }}
+        >
+          <SelectTrigger id={id} className="w-[180px] cursor-pointer">
+            <SelectValue placeholder="Items per page" />
+          </SelectTrigger>
+          <SelectContent>
+            {Item.pageLimitOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value.toString()}>
+                {option.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <PaginationShad>
         <PaginationContent>
           <PaginationItem>
