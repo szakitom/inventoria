@@ -136,22 +136,27 @@ const Pagination = ({ route }: PaginationProps) => {
                   <PaginationItem key={`ellipsis-${idx}`}>
                     <PaginationEllipsis />
                   </PaginationItem>
-                ) : isPending && page === currentPage ? (
-                  <PaginationItem key={page}>
-                    <PaginationLink isActive className="cursor-default">
-                      <Spinner className="w-4 h-4" />
-                    </PaginationLink>
-                  </PaginationItem>
                 ) : (
                   <div
                     key={page}
                     ref={page === currentPage ? activePageRef : null}
                   >
-                    <PaginationNumber
-                      page={page}
-                      currentPage={currentPage}
-                      handleClick={() => goToPage(page)}
-                    />
+                    {isPending && page === currentPage ? (
+                      <PaginationItem key={page}>
+                        <PaginationLink isActive className="cursor-default">
+                          <Spinner
+                            isPending={isPending}
+                            className="text-muted-foreground"
+                          />
+                        </PaginationLink>
+                      </PaginationItem>
+                    ) : (
+                      <PaginationNumber
+                        page={page}
+                        currentPage={currentPage}
+                        handleClick={() => goToPage(page)}
+                      />
+                    )}
                   </div>
                 )
               )}
