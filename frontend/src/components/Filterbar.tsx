@@ -1,5 +1,5 @@
 import { useNavigate, type AnyRoute } from '@tanstack/react-router'
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useState, useTransition } from 'react'
 import {
   Select,
   SelectContent,
@@ -28,6 +28,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+import { Spinner } from './ui/spinner'
 
 interface FilterbarProps {
   route: AnyRoute
@@ -49,6 +50,7 @@ const Filterbar = ({ route }: FilterbarProps) => {
   const [locations, setLocations] = useState<string[]>(selectedLocations || [])
   const debouncedSearchValue = useDebounce(searchValue, 300)
   const debouncedLocations = useDebounce(locations, 300)
+  const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
     const shouldNavigate =
@@ -56,46 +58,54 @@ const Filterbar = ({ route }: FilterbarProps) => {
       !arraysEqual(debouncedLocations, search.locations)
 
     if (shouldNavigate) {
-      navigate({
-        search: {
-          ...search,
-          search: debouncedSearchValue,
-          locations: debouncedLocations,
-          page: 1,
-        },
+      startTransition(() => {
+        navigate({
+          search: {
+            ...search,
+            search: debouncedSearchValue,
+            locations: debouncedLocations,
+            page: 1,
+          },
+        })
       })
     }
   }, [debouncedSearchValue, debouncedLocations, navigate, search])
 
   const handleSortChange = (value: string) => {
-    navigate({
-      search: {
-        ...search,
-        sort: direction === '-' ? `-${value}` : value,
-      },
+    startTransition(() => {
+      navigate({
+        search: {
+          ...search,
+          sort: direction === '-' ? `-${value}` : value,
+        },
+      })
     })
   }
 
   const handleDirectionChange = (value: string) => {
     const newSort = value === '-' ? `-${sort}` : sort
-    navigate({
-      search: {
-        ...search,
-        sort: newSort,
-      },
+    startTransition(() => {
+      navigate({
+        search: {
+          ...search,
+          sort: newSort,
+        },
+      })
     })
   }
 
   const resetFilters = () => {
     setSearchValue('')
     setLocations([])
-    navigate({ search: {} as never })
+    startTransition(() => {
+      navigate({ search: {} as never })
+    })
   }
 
   return (
     <header className="sticky top-0 z-10 bg-white shadow-sm">
       <nav className="bg-white w-full flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 shadow-sm">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:items-center">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 w-full">
               <Label
@@ -151,6 +161,11 @@ const Filterbar = ({ route }: FilterbarProps) => {
               </ToggleGroup>
             </div>
 
+            <Spinner
+              isPending={isPending}
+              className="text-muted-foreground md:hidden "
+            />
+
             <ResetButton onClick={resetFilters} className="flex md:hidden" />
           </div>
 
@@ -170,6 +185,10 @@ const Filterbar = ({ route }: FilterbarProps) => {
             optionValue="id"
             onSelect={setLocations}
             className="w-full sm:w-[200px] max-w-full"
+          />
+          <Spinner
+            isPending={isPending}
+            className="text-muted-foreground hidden md:flex "
           />
         </div>
 
