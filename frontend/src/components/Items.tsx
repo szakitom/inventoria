@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
+import Item from './Item'
 
 const variants = {
   enter: (direction: 'next' | 'prev') => ({
@@ -14,7 +15,7 @@ const variants = {
   }),
 }
 
-interface IItem {
+export interface IItem {
   id: string
   name: string
   location: {
@@ -27,7 +28,7 @@ interface IItem {
   quantity?: string | number
   expiration?: string
   createdAt: string
-  expiresIn?: string
+  expiresIn?: number
   amount?: string | number
 }
 
@@ -38,7 +39,6 @@ const Items = ({ navigate }: { navigate: any }) => {
   const {
     items: { items: incomingItems, pages: totalPages },
   } = route.useLoaderData()
-  console.log(route.useLoaderData())
   const search = route.useSearch()
   const page = search.page
   // const navigate = useNavigate({ from: '/' })
@@ -62,7 +62,7 @@ const Items = ({ navigate }: { navigate: any }) => {
 
   return (
     <AnimatePresence mode="wait" custom={direction}>
-      <div className="relative overflow-hidden w-full">
+      <div className="relative overflow-hidden w-full p-4">
         <motion.div
           key={page}
           drag="x"
@@ -106,7 +106,6 @@ const Items = ({ navigate }: { navigate: any }) => {
           {items.map((item: IItem) => (
             <div
               key={item.id}
-              className="p-4 border-b"
               onClick={(e) => {
                 if (isDraggingRef.current) {
                   e.preventDefault()
@@ -114,30 +113,7 @@ const Items = ({ navigate }: { navigate: any }) => {
                 }
               }}
             >
-              <h3 className="text-lg font-semibold">{item.name}</h3>
-              <p className="text-sm text-gray-600">
-                Location: {item.location.location.name}
-              </p>
-              <p className="text-sm text-gray-600">
-                Shelf: {item.location.name}
-              </p>
-              <p className="text-sm text-gray-600">Barcode: {item.barcode}</p>
-              <p className="text-sm text-gray-600">
-                Quantity: {item.quantity || 'N/A'}
-              </p>
-              <p className="text-sm text-gray-600">
-                Expiration: {item.expiration || 'N/A'}
-              </p>
-              <p className="text-sm text-gray-600">
-                Created At: {new Date(item.createdAt).toLocaleDateString()}
-              </p>
-              <p className="text-sm text-gray-600">
-                Expires In: {item.expiresIn || 'N/A'}
-              </p>
-              <p className="text-sm text-gray-600">
-                Amount: {item.amount || 'N/A'}
-              </p>
-              <p className="text-sm text-gray-600">ID: {item.id}</p>
+              <Item item={item} />
             </div>
           ))}
         </motion.div>
