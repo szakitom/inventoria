@@ -1,5 +1,5 @@
 import { useNavigate, type AnyRoute } from '@tanstack/react-router'
-import { useEffect, useId, useState, useTransition } from 'react'
+import { useEffect, useId, useState } from 'react'
 import {
   Select,
   SelectContent,
@@ -32,12 +32,16 @@ import { Spinner } from './ui/spinner'
 
 interface FilterbarProps {
   route: AnyRoute
+  navigate: (
+    options: Parameters<ReturnType<typeof useNavigate>>[0]
+  ) => Promise<void>
+  isPending?: boolean
 }
 
-const Filterbar = ({ route }: FilterbarProps) => {
+const Filterbar = ({ route, navigate, isPending }: FilterbarProps) => {
   const search = route.useSearch()
   const data = route.useLoaderData()
-  const navigate = useNavigate({ from: route.fullPath })
+  // const navigate = useNavigate({ from: route.fullPath })
   const {
     sort: directionSort,
     search: searchTerm,
@@ -50,7 +54,6 @@ const Filterbar = ({ route }: FilterbarProps) => {
   const [locations, setLocations] = useState<string[]>(selectedLocations || [])
   const debouncedSearchValue = useDebounce(searchValue, 300)
   const debouncedLocations = useDebounce(locations, 300)
-  const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
     const shouldNavigate =
@@ -58,48 +61,40 @@ const Filterbar = ({ route }: FilterbarProps) => {
       !arraysEqual(debouncedLocations, search.locations)
 
     if (shouldNavigate) {
-      startTransition(() => {
-        navigate({
-          search: {
-            ...search,
-            search: debouncedSearchValue,
-            locations: debouncedLocations,
-            page: 1,
-          },
-        })
+      navigate({
+        search: {
+          ...search,
+          search: debouncedSearchValue,
+          locations: debouncedLocations,
+          page: 1,
+        },
       })
     }
   }, [debouncedSearchValue, debouncedLocations, navigate, search])
 
   const handleSortChange = (value: string) => {
-    startTransition(() => {
-      navigate({
-        search: {
-          ...search,
-          sort: direction === '-' ? `-${value}` : value,
-        },
-      })
+    navigate({
+      search: {
+        ...search,
+        sort: direction === '-' ? `-${value}` : value,
+      },
     })
   }
 
   const handleDirectionChange = (value: string) => {
     const newSort = value === '-' ? `-${sort}` : sort
-    startTransition(() => {
-      navigate({
-        search: {
-          ...search,
-          sort: newSort,
-        },
-      })
+    navigate({
+      search: {
+        ...search,
+        sort: newSort,
+      },
     })
   }
 
   const resetFilters = () => {
     setSearchValue('')
     setLocations([])
-    startTransition(() => {
-      navigate({ search: {} as never })
-    })
+    navigate({ search: {} as never })
   }
 
   return (
@@ -162,7 +157,7 @@ const Filterbar = ({ route }: FilterbarProps) => {
             </div>
 
             <Spinner
-              isPending={isPending}
+              isPending={isPending || false}
               className="text-muted-foreground md:hidden "
             />
 
@@ -187,7 +182,7 @@ const Filterbar = ({ route }: FilterbarProps) => {
             className="w-full sm:w-[200px] max-w-full"
           />
           <Spinner
-            isPending={isPending}
+            isPending={isPending || false}
             className="text-muted-foreground hidden md:flex "
           />
         </div>

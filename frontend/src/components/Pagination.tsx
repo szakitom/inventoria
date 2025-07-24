@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useTransition } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { useNavigate, type AnyRoute } from '@tanstack/react-router'
 import {
   Pagination as PaginationShad,
@@ -24,15 +24,18 @@ import { Spinner } from './ui/spinner'
 
 interface PaginationProps {
   route: AnyRoute
+  navigate: (
+    options: Parameters<ReturnType<typeof useNavigate>>[0]
+  ) => Promise<void>
+  isPending?: boolean
 }
 
-const Pagination = ({ route }: PaginationProps) => {
+const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
   const search = route.useSearch()
   const data = route.useLoaderData()
-  const navigate = useNavigate({ from: route.fullPath })
+  // const navigate = useNavigate({ from: route.fullPath })
   const { pages: pageCount } = data.items
   const { page: currentPage, limit } = search
-  const [isPending, startTransition] = useTransition()
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const activePageRef = useRef<HTMLDivElement | null>(null)
 
@@ -51,20 +54,16 @@ const Pagination = ({ route }: PaginationProps) => {
   const visiblePages = getVisiblePages(currentPage, pageCount)
 
   const goToPage = (page: number) => {
-    startTransition(() => {
-      navigate({ search: { ...search, page } })
-    })
+    navigate({ search: { ...search, page } })
   }
 
   const changeLimit = (value: string) => {
-    startTransition(() => {
-      navigate({
-        search: {
-          ...search,
-          limit: parseInt(value),
-          page: 1,
-        },
-      })
+    navigate({
+      search: {
+        ...search,
+        limit: parseInt(value),
+        page: 1,
+      },
     })
   }
 

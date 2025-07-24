@@ -5,10 +5,13 @@ import {
   createFileRoute,
   defer,
   stripSearchParams,
+  useNavigate,
 } from '@tanstack/react-router'
+
 import { zodValidator } from '@tanstack/zod-adapter'
 import { fetchItems, fetchLocations } from '@utils/api'
 import { Item } from '@utils/item'
+import { useTransition } from 'react'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -40,13 +43,27 @@ export const Route = createFileRoute('/')({
     }
   },
 })
-
 function Index() {
+  const [isPending, startTransition] = useTransition()
+  const navigate = useNavigate({ from: Route.fullPath })
+
+  const handleNavigate = async (options: Parameters<typeof navigate>[0]) => {
+    await startTransition(() => navigate(options))
+  }
+
   return (
     <main>
-      <Filterbar route={Route} />
-      <Items />
-      <Pagination route={Route} />
+      <Filterbar
+        route={Route}
+        navigate={handleNavigate}
+        isPending={isPending}
+      />
+      <Items navigate={handleNavigate} />
+      <Pagination
+        route={Route}
+        navigate={handleNavigate}
+        isPending={isPending}
+      />
     </main>
   )
 }
