@@ -1,3 +1,5 @@
+import type { IItem } from '@components/Items'
+
 export const fetchItems = async ({
   sort,
   page,
@@ -33,4 +35,24 @@ export const fetchLocations = async ({ signal }: { signal: AbortSignal }) => {
   if (!res.ok) throw new Error('Failed to fetch locations')
   const data = await res.json()
   return data
+}
+
+export const deleteItem = async (itemId: string) => {
+  const res = await fetch(`/api/items/${itemId}`, {
+    method: 'DELETE',
+  })
+  if (!res.ok) throw new Error('Failed to delete item')
+  return res.json()
+}
+
+export const updateItem = async (itemId: string, data: Partial<IItem>) => {
+  const res = await fetch(`/api/items/${itemId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Failed to update item')
+  return res.json()
 }
