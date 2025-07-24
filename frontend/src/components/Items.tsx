@@ -15,12 +15,20 @@ const variants = {
   }),
 }
 
+export const LocationType = {
+  Freezer: 'Freezer',
+  Refrigerator: 'Refrigerator',
+  Pantry: 'Pantry',
+  Other: 'Other',
+} as const
+
 export interface IItem {
   id: string
   name: string
   location: {
     location: {
       name: string
+      type: (typeof LocationType)[keyof typeof LocationType]
     }
     name: string
   }

@@ -15,10 +15,12 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import Barcode from 'react-barcode'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import {
   ChevronDownIcon,
+  Info,
   MapPin,
   MoreVertical,
   Move,
@@ -33,21 +35,22 @@ import { cn } from '@/lib/utils'
 import { Label } from '@components/ui/label'
 import { motion, AnimatePresence } from 'motion/react'
 import AmountInput from './ui/amountinput'
-import type { IItem } from './Items'
+import { LocationType, type IItem } from './Items'
 import { Separator } from './ui/separator'
 import SaveButton from './Savebutton'
 import MoveDialog from './MoveDialog'
 import DeleteDialog from './DeleteDialog'
+import { deleteItem, updateItem } from '@utils/api'
+import { useRouter } from '@tanstack/react-router'
 
-// TODO: add enum types for location
 const getLocationIcon = (type: string) => {
-  if (type.toLowerCase().includes('mélyhűtő')) {
+  if (type === LocationType.Freezer) {
     return Snowflake
   }
-  if (type.toLowerCase().includes('erkély')) {
+  if (type === LocationType.Refrigerator) {
     return Refrigerator
   }
-  if (type.toLowerCase().includes('spájz')) {
+  if (type === LocationType.Pantry) {
     return Rows3
   }
   return MapPin
@@ -70,10 +73,11 @@ const getExpirationStatus = (expiresIn: number | undefined) => {
 
 const Item = ({ item }: { item: IItem }) => {
   const [isExpanded, setExpanded] = useState(false)
-  const LocationIcon = getLocationIcon(item.location.location.name)
+  const LocationIcon = getLocationIcon(item.location.location.type)
   const [amount, setAmount] = useState(Number(item.amount) || 0)
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [isMoveDialogOpen, setMoveDialogOpen] = useState(false)
+  const router = useRouter()
 
   const status = getExpirationStatus(item.expiresIn)
 
@@ -84,9 +88,14 @@ const Item = ({ item }: { item: IItem }) => {
   const dataChanged = item.amount !== amount
 
   const handleSaveChanges = async () => {
-    console.log('Save changes', { itemId: item.id, amount })
-    await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API call
-    // TODO: Implement actual save logic
+    try {
+      await updateItem(item.id, { amount })
+      router.invalidate()
+      toast.success('Changes saved successfully!')
+    } catch (error) {
+      toast.error('Failed to save changes')
+      console.error('Error saving item:', error)
+    }
   }
 
   const handleMoveItem = async () => {
@@ -95,9 +104,14 @@ const Item = ({ item }: { item: IItem }) => {
   }
 
   const handleDeleteItem = async () => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    // TODO: Implement actual delete logic
+    try {
+      await deleteItem(item.id)
+      router.invalidate()
+      toast.success('Item deleted successfully!')
+    } catch (error) {
+      toast.error('Failed to delete item')
+      console.log('Error deleting item:', error)
+    }
   }
 
   return (
