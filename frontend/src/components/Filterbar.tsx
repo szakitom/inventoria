@@ -98,7 +98,8 @@ const Filterbar = ({ route, navigate, isPending }: FilterbarProps) => {
   }
 
   return (
-    <header className="sticky top-0 z-10 bg-white shadow-sm">
+    // TODO: measure height of header and use it here
+    <header className="sticky top-[60px] z-10 bg-white shadow-sm">
       <nav className="bg-white w-full flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 shadow-sm">
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:items-center">
           <div className="flex items-center justify-between gap-2">
