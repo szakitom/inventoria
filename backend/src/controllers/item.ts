@@ -56,7 +56,7 @@ export const getItems = async (req, res, next) => {
         select: 'name',
         populate: {
           path: 'location',
-          select: 'name',
+          select: 'name type',
         },
       })
 

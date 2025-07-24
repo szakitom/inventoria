@@ -47,6 +47,23 @@ export const createLocation = async (req, res, next) => {
   }
 }
 
+export const updateLocation = async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const location = await Location.findByIdAndUpdate(id, req.body, {
+      new: true,
+    })
+    if (!location) {
+      return res.status(404).json({ error: 'Item not found' })
+    }
+
+    res.json(location)
+  } catch (err) {
+    next(err)
+  }
+}
+
 export const getLocations = async (req, res, next) => {
   try {
     const locations = await Location.find()
