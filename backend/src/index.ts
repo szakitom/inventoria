@@ -25,3 +25,5 @@ const startServer = async () => {
 }
 
 startServer()
+
+// TODO: add swagger documentation

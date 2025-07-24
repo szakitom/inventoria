@@ -23,6 +23,7 @@ import {
   MapPin,
   MoreVertical,
   Move,
+  Pencil,
   Refrigerator,
   Rows3,
   Snowflake,
@@ -69,6 +70,8 @@ const getExpirationStatus = (expiresIn: number | undefined) => {
 
   return { color: 'text-green-500', border: 'border-muted' }
 }
+
+// TODO: move dialogs to items context
 
 const Item = ({ item }: { item: IItem }) => {
   const [isExpanded, setExpanded] = useState(false)
@@ -164,6 +167,13 @@ const Item = ({ item }: { item: IItem }) => {
                 >
                   <Move />
                   <span>Move</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => alert('Not implemented yet')}
+                  className="cursor-pointer"
+                >
+                  <Pencil />
+                  <span>Edit</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
 
