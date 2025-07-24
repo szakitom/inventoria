@@ -19,7 +19,7 @@ import {
 import { Button } from '@components/ui/button'
 import useDebounce from '@/hooks/useDebounce'
 import { Item } from '@utils/item'
-import Multiselect from '@/components/MultiSelect'
+import Multiselect from '@/components/Multiselect'
 import { arraysEqual } from '@utils/index'
 import { Label } from '@components/ui/label'
 import {

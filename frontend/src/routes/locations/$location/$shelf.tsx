@@ -31,9 +31,7 @@ function RouteComponent() {
       {shelf.items && shelf.items.length > 0 ? (
         <ul>
           {shelf.items.map((item: { id: string; name: string }) => (
-            <li key={item.id}>
-              <Item data={item} />
-            </li>
+            <li key={item.id}>{JSON.stringify(item)}</li>
           ))}
         </ul>
       ) : (

@@ -20,7 +20,6 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   ChevronDownIcon,
-  Info,
   MapPin,
   MoreVertical,
   Move,
