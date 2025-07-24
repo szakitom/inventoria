@@ -1,84 +1,279 @@
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu'
+import Barcode from 'react-barcode'
+
 import { Button } from '@/components/ui/button'
+import {
+  ChevronDownIcon,
+  MapPin,
+  MoreVertical,
+  Move,
+  Refrigerator,
+  Rows3,
+  Snowflake,
+  Trash2,
+  X,
+} from 'lucide-react'
+import { useState } from 'react'
+import { cn } from '@/lib/utils'
+import { Label } from '@components/ui/label'
+import { motion, AnimatePresence } from 'motion/react'
+import AmountInput from './ui/amountinput'
+import type { IItem } from './Items'
+import { Separator } from './ui/separator'
+import SaveButton from './Savebutton'
+import MoveDialog from './MoveDialog'
+import DeleteDialog from './DeleteDialog'
 
-const Item = ({ data }: { data: { id: string; name: string } }) => {
-  const handleDelete = async () => {
-    const response = await fetch(`/api/items/${data.id}`, {
-      method: 'DELETE',
-    })
-    if (!response.ok) {
-      alert('Failed to delete item')
-      return
+// TODO: add enum types for location
+const getLocationIcon = (type: string) => {
+  if (type.toLowerCase().includes('mélyhűtő')) {
+    return Snowflake
+  }
+  if (type.toLowerCase().includes('erkély')) {
+    return Refrigerator
+  }
+  if (type.toLowerCase().includes('spájz')) {
+    return Rows3
+  }
+  return MapPin
+}
+
+const getExpirationStatus = (expiresIn: number | undefined) => {
+  if (!expiresIn)
+    return {
+      color: 'text-gray-500',
+      border: 'border-muted',
     }
-    // tanstack router will automatically refresh the page
-    // or you can use a state management solution to remove the item from the list
-    alert('Item deleted successfully')
+  if (expiresIn < 0) return { color: 'text-red-500', border: 'border-red-300' }
+  if (expiresIn <= 30)
+    return { color: 'text-yellow-500', border: 'border-yellow-300' }
+  if (expiresIn <= 60)
+    return { color: 'text-orange-500', border: 'border-orange-300' }
+
+  return { color: 'text-green-500', border: 'border-muted' }
+}
+
+const Item = ({ item }: { item: IItem }) => {
+  const [isExpanded, setExpanded] = useState(false)
+  const LocationIcon = getLocationIcon(item.location.location.name)
+  const [amount, setAmount] = useState(Number(item.amount) || 0)
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isMoveDialogOpen, setMoveDialogOpen] = useState(false)
+
+  const status = getExpirationStatus(item.expiresIn)
+
+  const handleAmountChange = (newAmount: number) => {
+    setAmount(newAmount)
   }
 
-  const handleApprove = async () => {
-    if (confirm('Are you sure you want to delete this item?')) {
-      await handleDelete()
-    }
+  const dataChanged = item.amount !== amount
+
+  const handleSaveChanges = async () => {
+    console.log('Save changes', { itemId: item.id, amount })
+    await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulate API call
+    // TODO: Implement actual save logic
   }
 
-  const handleIncrease = async () => {
-    const response = await fetch(`/api/items/${data.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ amount: data.amount + 1 }),
-    })
-    if (!response.ok) {
-      alert('Failed to increase item amount')
-      return
-    }
-    alert('Item amount increased successfully')
+  const handleMoveItem = async () => {
+    console.log('Move item', item.id)
+    alert('Move item functionality not implemented yet')
   }
 
-  const handleDecrease = async () => {
-    if (data.amount <= 0) {
-      alert('Amount cannot be less than 0')
-      return
-    }
-    const response = await fetch(`/api/items/${data.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ amount: data.amount - 1 }),
-    })
-    if (!response.ok) {
-      alert('Failed to decrease item amount')
-      return
-    }
-    alert('Item amount decreased successfully')
+  const handleDeleteItem = async () => {
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // TODO: Implement actual delete logic
   }
-
-  console.log(data)
 
   return (
-    <div>
-      <h3>{data.name}</h3>
-      <ul>
-        <li>
-          {data.amount} x {data.quantity || 'db'}
-        </li>
-        {data.expiration && (
-          <>
-            <li>
-              Expiration: {new Date(data.expiration).toLocaleDateString()}
-            </li>
-            <li>Expires in: {data.expiresIn} days</li>
-          </>
-        )}
-      </ul>
-      <>
-        <Button onClick={handleDecrease}>-</Button>
-        <span>{data.amount}</span>
-        <Button onClick={handleIncrease}>+</Button>
-      </>
-      <button onClick={handleApprove}>delete</button>
-    </div>
+    <Card
+      className={cn(
+        'p-3 flex flex-col gap-2 overflow-hidden transition-border',
+        status.border,
+        dataChanged ? ' border-sky-500' : ''
+      )}
+    >
+      <DeleteDialog
+        isOpen={isDeleteDialogOpen}
+        onChange={setDeleteDialogOpen}
+        onSubmit={handleDeleteItem}
+      />
+      <MoveDialog
+        isOpen={isMoveDialogOpen}
+        onChange={setMoveDialogOpen}
+        onSubmit={handleMoveItem}
+      />
+      <CardHeader className="p-0 pb-0 gap-0">
+        <div className="flex items-start justify-between">
+          <div className="min-w-0">
+            <CardTitle className="text-base font-semibold leading-tight truncate">
+              {item.name}
+            </CardTitle>
+            <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1 truncate">
+              <LocationIcon className="h-4 w-4 text-blue-500" />
+              <span className="truncate">
+                {item.location.location.name}
+                <Badge variant="outline" className="ml-2">
+                  {item.location.name.replace('Shelf', '')}
+                </Badge>
+              </span>
+            </div>
+          </div>
+
+          {dataChanged ? (
+            <SaveButton onClick={handleSaveChanges} />
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="cursor-pointer">
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-28">
+                <DropdownMenuItem
+                  onClick={() => setMoveDialogOpen(true)}
+                  className="cursor-pointer"
+                >
+                  <Move />
+                  <span>Move</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  variant="destructive"
+                  className="cursor-pointer"
+                  onClick={() => setDeleteDialogOpen(true)}
+                >
+                  <Trash2 />
+                  <span>Delete</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      </CardHeader>
+
+      <Separator className="" />
+      <CardContent className="p-0 text-sm">
+        <div className="space-y-2">
+          <AmountInput value={amount} onChange={handleAmountChange} />
+          <div className="flex items-center gap-2">
+            <span>
+              <Label className="">Amount:</Label>
+            </span>
+            <Badge className="bg-muted-foreground text-white font-bold text-sm font-mono">
+              {amount}
+            </Badge>
+            {item.quantity && (
+              <>
+                <X className="text-foreground w-4 h-4" />
+                <Badge className="bg-muted text-foreground text-sm">
+                  {item.quantity || 'pcs'}
+                </Badge>
+              </>
+            )}
+          </div>
+          <div
+            className={cn(
+              'flex items-center gap-2',
+              item.expiresIn ? 'visible' : 'invisible'
+            )}
+          >
+            <span>
+              <Label>Expires In:</Label>
+            </span>
+            <span
+              className={cn(
+                'text-gray-600 text-sm font-semibold',
+                status.color
+              )}
+            >
+              <span className="font-mono">{item.expiresIn}</span>
+              <span className="ml-1">days</span>
+            </span>
+          </div>
+        </div>
+      </CardContent>
+
+      <CardFooter className="bg-muted -mx-3 -mb-3 p-0">
+        <Collapsible
+          className="w-full"
+          open={isExpanded}
+          onOpenChange={() => setExpanded(!isExpanded)}
+        >
+          <CollapsibleTrigger className="w-full px-3 py-2 flex justify-between items-center cursor-pointer">
+            <span className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Details</span>
+            </span>
+            <ChevronDownIcon
+              className={cn(
+                'h-4 w-4 transition-transform',
+                isExpanded ? 'rotate-180' : ''
+              )}
+            />
+          </CollapsibleTrigger>
+          <AnimatePresence initial={false}>
+            {isExpanded && (
+              <motion.div
+                key="content"
+                initial={{ maxHeight: 0, opacity: 0 }}
+                animate={{ maxHeight: 300, opacity: 1 }}
+                exit={{ maxHeight: 0, opacity: 0 }}
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                className="overflow-hidden px-3 py-2 text-foreground"
+              >
+                <div className="flex flex-col gap-2">
+                  {item.expiration && (
+                    <div className="w-full flex items-center justify-between mb-2">
+                      <Label>Expiration:</Label>
+                      <span className="text-sm">
+                        {new Date(item.expiration).toLocaleDateString('hu-HU')}
+                      </span>
+                    </div>
+                  )}
+                  {item.createdAt && (
+                    <div className="w-full flex items-center justify-between mb-2">
+                      <Label>Added At:</Label>
+                      <span className="text-sm">
+                        {new Date(item.createdAt).toLocaleDateString('hu-HU')}
+                      </span>
+                    </div>
+                  )}
+                  {item.barcode && (
+                    <div className="flex w-full flex-col">
+                      <div className="w-full flex items-center justify-between mb-2">
+                        <Label>Barcode:</Label>
+                        <span className="text-sm font-mono">
+                          {item.barcode}
+                        </span>
+                      </div>
+                      <div className="w-full rounded-sm bg-white text-white font-mono flex items-center justify-center p-0">
+                        <Barcode value={item.barcode} background="white" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Collapsible>
+      </CardFooter>
+    </Card>
   )
 }
 export default Item
