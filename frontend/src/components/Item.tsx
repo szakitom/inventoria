@@ -200,7 +200,7 @@ const Item = ({ item }: { item: IItem }) => {
               <Label className="">Amount:</Label>
             </span>
             <Badge className="bg-muted-foreground text-white font-bold text-sm font-mono">
-              {amount}
+              {item.amount}
             </Badge>
             {item.quantity && (
               <>
