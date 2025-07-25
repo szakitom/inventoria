@@ -74,6 +74,8 @@ const Items = ({ navigate }: { navigate: any }) => {
     setItems(incomingItems)
   }, [incomingItems])
 
+  // TODO: show number of items and currently displayed amount
+
   return (
     <AnimatePresence mode="wait" custom={direction}>
       <div className="relative overflow-hidden w-full p-4">
