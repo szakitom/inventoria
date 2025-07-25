@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from './ui/button'
 import { getRouteApi } from '@tanstack/react-router'
-import { use, useId, useState } from 'react'
+import { Suspense, use, useId, useState } from 'react'
 import { getLocationIcon } from '@utils/index'
 import { Badge } from './ui/badge'
 import {
@@ -19,7 +19,6 @@ import {
   SelectValue,
 } from './ui/select'
 import { Label } from './ui/label'
-import { on } from 'events'
 
 interface Location {
   id: string
@@ -57,7 +56,6 @@ const MoveDialog = ({
 }: MoveDialogProps) => {
   const route = getRouteApi('/')
   const data = route.useLoaderData()
-  const locations = use(data.locations)
   const LocationIcon = getLocationIcon(
     item?.location?.location?.type || 'default'
   )
@@ -120,12 +118,28 @@ const MoveDialog = ({
             >
               <SelectValue placeholder="Location" />
             </SelectTrigger>
+
             <SelectContent>
-              {locations.map((location: Location) => (
-                <SelectItem key={location.id} value={location.id}>
-                  {location.name}
-                </SelectItem>
-              ))}
+              <Suspense
+                fallback={
+                  <SelectItem disabled value="__loading__">
+                    Loading...
+                  </SelectItem>
+                }
+              >
+                <SuspendedOptions
+                  data={data.locations}
+                  filterFn={(list: Location[]) => list}
+                  mapFn={(item) => {
+                    const loc = item as Location
+                    return {
+                      key: loc.id,
+                      value: loc.id,
+                      label: loc.name,
+                    }
+                  }}
+                />
+              </Suspense>
             </SelectContent>
           </Select>
           {selectedLocation && (
@@ -144,17 +158,32 @@ const MoveDialog = ({
                   <SelectValue placeholder="Select a Shelf" />
                 </SelectTrigger>
                 <SelectContent>
-                  {locations
-                    .find((l: Location) => l.id === selectedLocation)
-                    .shelves.map((shelf: Shelf) => (
-                      <SelectItem
-                        key={shelf.id}
-                        value={shelf.id}
-                        disabled={shelf.id === currentShelf.id}
-                      >
-                        {shelf.name}
+                  <Suspense
+                    fallback={
+                      <SelectItem disabled value="__loading__">
+                        Loading...
                       </SelectItem>
-                    ))}
+                    }
+                  >
+                    <SuspendedOptions
+                      data={data.locations}
+                      filterFn={(list: Location[]) => {
+                        const location = list.find(
+                          (l) => l.id === selectedLocation
+                        )
+                        return location?.shelves ?? []
+                      }}
+                      mapFn={(item) => {
+                        const shelf = item as Shelf
+                        return {
+                          key: shelf.id,
+                          value: shelf.id,
+                          label: shelf.name,
+                          disabled: shelf.id === currentShelf.id,
+                        }
+                      }}
+                    />
+                  </Suspense>
                 </SelectContent>
               </Select>
             </>
@@ -182,3 +211,44 @@ const MoveDialog = ({
 }
 
 export default MoveDialog
+
+interface SuspendedOptionsProps<T = unknown> {
+  data: Promise<T> | T
+  filterFn?: (data: T) => Array<unknown>
+  mapFn: (item: unknown) => {
+    key: string
+    value: string
+    label: string
+    disabled?: boolean
+  }
+}
+
+const SuspendedOptions = <T,>({
+  data,
+  filterFn = (d) => d as unknown[],
+  mapFn,
+}: SuspendedOptionsProps<T>) => {
+  const resolved = use(data instanceof Promise ? data : Promise.resolve(data))
+  const list = filterFn(resolved)
+
+  if (!list || list.length === 0) {
+    return (
+      <SelectItem value="" disabled>
+        No options available
+      </SelectItem>
+    )
+  }
+
+  return (
+    <>
+      {list.map((item) => {
+        const { key, value, label, disabled } = mapFn(item)
+        return (
+          <SelectItem key={key} value={value} disabled={disabled}>
+            {label}
+          </SelectItem>
+        )
+      })}
+    </>
+  )
+}
