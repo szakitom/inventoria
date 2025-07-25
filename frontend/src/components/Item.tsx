@@ -20,13 +20,9 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   ChevronDownIcon,
-  MapPin,
   MoreVertical,
   Move,
   Pencil,
-  Refrigerator,
-  Rows3,
-  Snowflake,
   Trash2,
   X,
 } from 'lucide-react'
@@ -35,39 +31,13 @@ import { cn } from '@/lib/utils'
 import { Label } from '@components/ui/label'
 import { motion, AnimatePresence } from 'motion/react'
 import AmountInput from './ui/amountinput'
-import { LocationType, type IItem } from './Items'
+import { type IItem } from './Items'
 import { Separator } from './ui/separator'
 import SaveButton from './Savebutton'
 import { deleteItem, updateItem } from '@utils/api'
 import { useRouter } from '@tanstack/react-router'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
-
-const getLocationIcon = (type: string) => {
-  if (type === LocationType.Freezer) {
-    return Snowflake
-  }
-  if (type === LocationType.Refrigerator) {
-    return Refrigerator
-  }
-  if (type === LocationType.Pantry) {
-    return Rows3
-  }
-  return MapPin
-}
-
-const getExpirationStatus = (expiresIn: number | undefined) => {
-  if (!expiresIn && expiresIn !== 0)
-    return {
-      color: 'text-gray-500',
-      border: 'border-muted',
-    }
-  if (expiresIn <= 0) return { color: 'text-red-500', border: 'border-red-300' }
-  if (expiresIn <= 30)
-    return { color: 'text-yellow-500', border: 'border-yellow-300' }
-  if (expiresIn <= 60)
-    return { color: 'text-orange-500', border: 'border-orange-300' }
-  return { color: 'text-green-500', border: 'border-muted' }
-}
+import { getExpirationStatus, getLocationIcon } from '@utils/index'
 
 const Item = ({ item }: { item: IItem }) => {
   const [isExpanded, setExpanded] = useState(false)
@@ -152,6 +122,7 @@ const Item = ({ item }: { item: IItem }) => {
                       onSubmit: async () => {
                         await handleMoveItem()
                       },
+                      data: item,
                     })
                   }
                   className="cursor-pointer"
@@ -231,6 +202,7 @@ const Item = ({ item }: { item: IItem }) => {
         </div>
       </CardContent>
 
+      {/* TODO: if we have an image display it in a separated tab next to barcode: HINT: cherry */}
       <CardFooter className="bg-muted -mx-3 -mb-3 p-0">
         <Collapsible
           className="w-full"
