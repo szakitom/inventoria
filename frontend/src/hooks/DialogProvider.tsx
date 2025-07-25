@@ -11,7 +11,7 @@ type DialogProps = Record<string, unknown>
 interface BaseDialogProps {
   isOpen: boolean
   onCancel: () => void
-  onSubmit: () => void
+  onSubmit: (params?: unknown) => void
   [key: string]: unknown
 }
 
@@ -62,9 +62,9 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
                 }
                 close()
               }}
-              onSubmit={() => {
+              onSubmit={(params: unknown) => {
                 if (typeof props?.onSubmit === 'function') {
-                  props.onSubmit()
+                  props.onSubmit(params)
                 }
                 close()
               }}

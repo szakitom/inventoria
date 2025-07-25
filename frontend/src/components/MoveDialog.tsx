@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from './ui/select'
 import { Label } from './ui/label'
+import { on } from 'events'
 
 interface Location {
   id: string
@@ -35,7 +36,7 @@ interface Shelf {
 interface MoveDialogProps {
   isOpen: boolean
   onCancel: () => void
-  onSubmit: () => Promise<void>
+  onSubmit: (shelfId: string) => Promise<void>
   data?: {
     location?: {
       location?: {
@@ -80,6 +81,10 @@ const MoveDialog = ({
 
   const handleShelfChange = (value: string) => {
     setShelf(value)
+  }
+
+  const handleSubmit = async () => {
+    onSubmit(selectedShelf)
   }
 
   if (!isOpen) return null
@@ -165,7 +170,7 @@ const MoveDialog = ({
           </Button>
           <Button
             className="cursor-pointer bg-blue-500 hover:bg-blue-600"
-            onClick={onSubmit}
+            onClick={handleSubmit}
             disabled={!selectedShelf}
           >
             Move
