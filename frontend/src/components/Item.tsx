@@ -57,17 +57,16 @@ const getLocationIcon = (type: string) => {
 }
 
 const getExpirationStatus = (expiresIn: number | undefined) => {
-  if (!expiresIn)
+  if (!expiresIn && expiresIn !== 0)
     return {
       color: 'text-gray-500',
       border: 'border-muted',
     }
-  if (expiresIn < 0) return { color: 'text-red-500', border: 'border-red-300' }
+  if (expiresIn <= 0) return { color: 'text-red-500', border: 'border-red-300' }
   if (expiresIn <= 30)
     return { color: 'text-yellow-500', border: 'border-yellow-300' }
   if (expiresIn <= 60)
     return { color: 'text-orange-500', border: 'border-orange-300' }
-
   return { color: 'text-green-500', border: 'border-muted' }
 }
 
