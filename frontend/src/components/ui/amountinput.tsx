@@ -65,7 +65,7 @@ export default function AmountInput({
         value={isNaN(inputValue) ? '' : inputValue}
         onChange={handleChange}
         ref={inputRef}
-        className="h-9 w-full text-center border-none focus-visible:ring-0 focus-visible:ring-offset-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="h-9 w-full text-center border-none focus-visible:ring-0 focus-visible:ring-offset-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-none"
       />
       <Button
         variant="ghost"
