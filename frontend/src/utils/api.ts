@@ -56,3 +56,15 @@ export const updateItem = async (itemId: string, data: Partial<IItem>) => {
   if (!res.ok) throw new Error('Failed to update item')
   return res.json()
 }
+
+export const moveItem = async (itemId: string, location: string) => {
+  const res = await fetch(`/api/items/${itemId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ location }),
+  })
+  if (!res.ok) throw new Error('Failed to move item')
+  return res.json()
+}

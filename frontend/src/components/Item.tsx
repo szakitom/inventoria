@@ -34,7 +34,7 @@ import AmountInput from './ui/amountinput'
 import { type IItem } from './Items'
 import { Separator } from './ui/separator'
 import SaveButton from './Savebutton'
-import { deleteItem, updateItem } from '@utils/api'
+import { deleteItem, moveItem, updateItem } from '@utils/api'
 import { useRouter } from '@tanstack/react-router'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { getExpirationStatus, getLocationIcon } from '@utils/index'
@@ -65,9 +65,15 @@ const Item = ({ item }: { item: IItem }) => {
     }
   }
 
-  const handleMoveItem = async () => {
-    console.log('Move item', item.id)
-    alert('Move item functionality not implemented yet')
+  const handleMoveItem = async (location: string) => {
+    try {
+      await moveItem(item.id, location)
+      router.invalidate()
+      toast.success('Item moved successfully!')
+    } catch (error) {
+      toast.error('Failed to move item')
+      console.error('Error moving item:', error)
+    }
   }
 
   const handleDeleteItem = async () => {
@@ -119,8 +125,8 @@ const Item = ({ item }: { item: IItem }) => {
                 <DropdownMenuItem
                   onClick={() =>
                     open('move', {
-                      onSubmit: async () => {
-                        await handleMoveItem()
+                      onSubmit: async (location: string) => {
+                        await handleMoveItem(location)
                       },
                       data: item,
                     })
