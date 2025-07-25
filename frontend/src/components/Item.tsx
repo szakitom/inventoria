@@ -38,10 +38,9 @@ import AmountInput from './ui/amountinput'
 import { LocationType, type IItem } from './Items'
 import { Separator } from './ui/separator'
 import SaveButton from './Savebutton'
-import MoveDialog from './MoveDialog'
-import DeleteDialog from './DeleteDialog'
 import { deleteItem, updateItem } from '@utils/api'
 import { useRouter } from '@tanstack/react-router'
+import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 
 const getLocationIcon = (type: string) => {
   if (type === LocationType.Freezer) {
@@ -70,15 +69,12 @@ const getExpirationStatus = (expiresIn: number | undefined) => {
   return { color: 'text-green-500', border: 'border-muted' }
 }
 
-// TODO: move dialogs to items context
-
 const Item = ({ item }: { item: IItem }) => {
   const [isExpanded, setExpanded] = useState(false)
   const LocationIcon = getLocationIcon(item.location.location.type)
   const [amount, setAmount] = useState(Number(item.amount) || 0)
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [isMoveDialogOpen, setMoveDialogOpen] = useState(false)
   const router = useRouter()
+  const { open } = useGlobalDialog()
 
   const status = getExpirationStatus(item.expiresIn)
 
@@ -123,16 +119,6 @@ const Item = ({ item }: { item: IItem }) => {
         dataChanged ? ' border-sky-500' : ''
       )}
     >
-      <DeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onChange={setDeleteDialogOpen}
-        onSubmit={handleDeleteItem}
-      />
-      <MoveDialog
-        isOpen={isMoveDialogOpen}
-        onChange={setMoveDialogOpen}
-        onSubmit={handleMoveItem}
-      />
       <CardHeader className="p-0 pb-0 gap-0">
         <div className="flex items-start justify-between">
           <div className="min-w-0">
@@ -161,7 +147,13 @@ const Item = ({ item }: { item: IItem }) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-28">
                 <DropdownMenuItem
-                  onClick={() => setMoveDialogOpen(true)}
+                  onClick={() =>
+                    open('move', {
+                      onSubmit: async () => {
+                        await handleMoveItem()
+                      },
+                    })
+                  }
                   className="cursor-pointer"
                 >
                   <Move />
@@ -179,7 +171,14 @@ const Item = ({ item }: { item: IItem }) => {
                 <DropdownMenuItem
                   variant="destructive"
                   className="cursor-pointer"
-                  onClick={() => setDeleteDialogOpen(true)}
+                  onClick={() =>
+                    open('delete', {
+                      data: { id: item.id, name: item.name },
+                      onSubmit: async () => {
+                        await handleDeleteItem()
+                      },
+                    })
+                  }
                 >
                   <Trash2 />
                   <span>Delete</span>

@@ -10,13 +10,15 @@ import { Button } from './ui/button'
 
 interface MoveDialogProps {
   isOpen: boolean
-  onChange: (open: boolean) => void
+  onCancel: () => void
   onSubmit: () => Promise<void>
+  data?: Record<string, unknown>
 }
 
-const MoveDialog = ({ isOpen, onChange, onSubmit }: MoveDialogProps) => {
+const MoveDialog = ({ isOpen, onCancel, onSubmit }: MoveDialogProps) => {
+  if (!isOpen) return null
   return (
-    <Dialog open={isOpen} onOpenChange={onChange}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Move Item</DialogTitle>
@@ -26,16 +28,13 @@ const MoveDialog = ({ isOpen, onChange, onSubmit }: MoveDialogProps) => {
           <Button
             variant="secondary"
             className="cursor-pointer hover:bg-gray-200"
-            onClick={() => onChange(false)}
+            onClick={onCancel}
           >
             Cancel
           </Button>
           <Button
             className="cursor-pointer bg-blue-500 hover:bg-blue-600"
-            onClick={async () => {
-              await onSubmit()
-              onChange(false)
-            }}
+            onClick={onSubmit}
           >
             Move
           </Button>

@@ -10,13 +10,15 @@ import { Button } from './ui/button'
 
 interface DeleteDialogProps {
   isOpen: boolean
-  onChange: (open: boolean) => void
+  onCancel: () => void
   onSubmit: () => Promise<void>
+  data?: Record<string, unknown>
 }
 
-const DeleteDialog = ({ isOpen, onChange, onSubmit }: DeleteDialogProps) => {
+const DeleteDialog = ({ isOpen, onCancel, onSubmit }: DeleteDialogProps) => {
+  if (!isOpen) return null
   return (
-    <Dialog open={isOpen} onOpenChange={onChange}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete Item</DialogTitle>
@@ -29,17 +31,14 @@ const DeleteDialog = ({ isOpen, onChange, onSubmit }: DeleteDialogProps) => {
           <Button
             variant="secondary"
             className="cursor-pointer hover:bg-gray-200"
-            onClick={() => onChange(false)}
+            onClick={onCancel}
           >
             Cancel
           </Button>
           <Button
             variant="destructive"
             className="cursor-pointer hover:bg-red-400"
-            onClick={async () => {
-              await onSubmit()
-              onChange(false)
-            }}
+            onClick={onSubmit}
           >
             Delete
           </Button>

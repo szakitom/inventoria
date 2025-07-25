@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
 import Item from './Item'
+import { useDialog } from '@/hooks/useDialog'
+import DeleteDialog from './DeleteDialog'
+import MoveDialog from './MoveDialog'
 
 const variants = {
   enter: (direction: 'next' | 'prev') => ({
@@ -58,6 +61,9 @@ const Items = ({ navigate }: { navigate: any }) => {
   const isDraggingRef = useRef(false)
   const swipeThreshold = 180
   const minSwipeVelocity = 300
+
+  useDialog(DeleteDialog, 'delete')
+  useDialog(MoveDialog, 'move')
 
   if (prevPageRef.current !== page) {
     setDirection(page > prevPageRef.current ? 'next' : 'prev')
