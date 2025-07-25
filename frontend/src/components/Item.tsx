@@ -213,7 +213,7 @@ const Item = ({ item }: { item: IItem }) => {
           <div
             className={cn(
               'flex items-center gap-2',
-              item.expiresIn ? 'visible' : 'invisible'
+              item.expiration ? 'visible' : 'invisible'
             )}
           >
             <span>
