@@ -59,6 +59,7 @@ export const getItems = async (req, res, next) => {
           select: 'name type',
         },
       })
+      .select('+openFoodFacts')
 
     if (limit !== 0) {
       query.limit(limit).skip((page - 1) * limit)
