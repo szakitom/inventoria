@@ -1,5 +1,5 @@
 // DialogContext.tsx
-import { createContext, type ComponentType, type FC } from 'react'
+import { createContext, type FC } from 'react'
 
 export type DialogKey = string
 
@@ -7,7 +7,7 @@ type OpenFunction = (type: DialogKey, data?: unknown) => void
 
 export type DialogContextType = {
   open: OpenFunction
-  register: (type: DialogKey, renderer: FC<any>) => void
+  register: (type: DialogKey, renderer: FC<{ data?: unknown }>) => void
   current: {
     type: DialogKey | null
     data: unknown | null
