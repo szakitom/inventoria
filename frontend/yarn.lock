@@ -3395,6 +3395,11 @@ use-callback-ref@^1.3.3:
   dependencies:
     tslib "^2.0.0"
 
+use-mask-input@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/use-mask-input/-/use-mask-input-3.5.0.tgz#aa31ecf14198ba727745f2817f0fbbf60b943594"
+  integrity sha512-4hsAv7HcgL0E0tX4pckuuYI6BbMfWlsbHR2wKoI16fueSJHvtmTUP+se1bOOjijY6pH74DD6Q9OoH+5n4dfZwA==
+
 use-sidecar@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/use-sidecar/-/use-sidecar-1.1.3.tgz#10e7fd897d130b896e2c546c63a5e8233d00efdb"

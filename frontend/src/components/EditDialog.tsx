@@ -21,11 +21,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { ScrollArea } from './ui/scroll-area'
 import AmountInput from './ui/amountinput'
+import { useHookFormMask } from 'use-mask-input'
+import type { IItem } from './Items'
+import { Spinner } from './ui/spinner'
 
 interface EditDialogProps {
   isOpen: boolean
   onCancel: () => void
-  onSubmit: (shelfId: string) => Promise<void>
+  onSubmit: (payload: Partial<IItem>) => Promise<void>
   data?: {
     location?: {
       location?: {
@@ -43,7 +46,16 @@ const formSchema = z.object({
     message: 'Name must be at least 2 characters.',
   }),
   barcode: z.string().optional(),
-  expiration: z.date().optional(),
+  expiration: z
+    .string()
+    .optional()
+    .refine(
+      (val) =>
+        !val || /^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/.test(val),
+      {
+        message: 'Expiration must be valid date (YYYY/MM/DD)',
+      }
+    ),
   amount: z.number().min(0, {
     message: 'Amount must be a positive number.',
   }),
@@ -53,7 +65,7 @@ const formSchema = z.object({
 const EditDialog = ({
   isOpen,
   onCancel,
-  // onSubmit: submitDialog,
+  onSubmit: submitDialog,
   data: item,
 }: EditDialogProps) => {
   type FormValues = z.infer<typeof formSchema>
@@ -64,21 +76,27 @@ const EditDialog = ({
       name: item?.name as string | undefined,
       barcode: item?.barcode as string | undefined,
       expiration: item?.expiration
-        ? new Date(item.expiration as string)
-        : undefined,
+        ? new Date(item.expiration as string | number | Date)
+            .toISOString()
+            .slice(0, 10)
+            .replace(/-/g, '/')
+        : '',
       amount: item?.amount ? Number(item.amount) : 0,
       quantity: item?.quantity as string | undefined,
     },
   })
 
-  function onSubmit(values: FormValues) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  const registerWithMask = useHookFormMask(form.register)
+
+  const onSubmit = async (values: FormValues) => {
     const payload = {
       ...values,
-      expiration: values.expiration?.toISOString(), // <- convert here
+      expiration: values.expiration
+        ? new Date(values.expiration).toISOString()
+        : null,
     }
-    console.log(payload)
+
+    await submitDialog(payload)
   }
 
   if (!isOpen) return null
@@ -132,27 +150,19 @@ const EditDialog = ({
                       <FormField
                         control={form.control}
                         name="expiration"
-                        render={({ field }) => (
+                        render={() => (
                           <FormItem>
                             <FormLabel>Expiration</FormLabel>
                             <FormControl>
                               <Input
-                                type="date"
-                                placeholder="Expiration"
-                                value={
-                                  field.value
-                                    ? new Date(field.value)
-                                        .toISOString()
-                                        .substring(0, 10)
-                                    : ''
-                                }
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.value
-                                      ? new Date(e.target.value)
-                                      : undefined
-                                  )
-                                }
+                                {...registerWithMask(
+                                  'expiration',
+                                  '9999/99/99',
+                                  {
+                                    tabThrough: true,
+                                  }
+                                )}
+                                placeholder="YYYY/MM/DD"
                               />
                             </FormControl>
                             <FormMessage />
@@ -198,13 +208,15 @@ const EditDialog = ({
                         Cancel
                       </Button>
                       <Button
-                        className="cursor-pointer bg-blue-500 hover:bg-blue-600"
+                        className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20"
                         type="submit"
                         disabled={
-                          !form.formState.isValid || form.formState.isSubmitting
+                          !form.formState.isValid ||
+                          form.formState.isSubmitting ||
+                          !form.formState.isDirty
                         }
                       >
-                        Save
+                        {form.formState.isSubmitting ? <Spinner /> : 'Save'}
                       </Button>
                     </DialogFooter>
                   </form>
