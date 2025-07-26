@@ -1,10 +1,9 @@
-// DialogContext.tsx
 import { useState, useCallback, useRef, type ReactNode, type FC } from 'react'
 import {
   DialogContext,
   type DialogContextType,
   type DialogKey,
-} from './Dialogcontext'
+} from './DialogContext'
 
 type DialogProps = Record<string, unknown>
 
@@ -62,9 +61,9 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
                 }
                 close()
               }}
-              onSubmit={(params: unknown) => {
+              onSubmit={async (params: unknown) => {
                 if (typeof props?.onSubmit === 'function') {
-                  props.onSubmit(params)
+                  await props.onSubmit(params)
                 }
                 close()
               }}
