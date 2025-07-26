@@ -35,3 +35,17 @@ export const getExpirationStatus = (expiresIn: number | undefined) => {
     return { color: 'text-orange-500', border: 'border-orange-300' }
   return { color: 'text-green-500', border: 'border-muted' }
 }
+
+export const getChangedValues = <T extends Record<string, unknown>>(
+  allValues: T,
+  dirtyFields: Partial<Record<keyof T, boolean>>
+): Partial<T> => {
+  return Object.keys(dirtyFields).reduce((acc, key) => {
+    const typedKey = key as keyof T
+    const value = allValues[typedKey]
+    if (value !== undefined) {
+      acc[typedKey] = value
+    }
+    return acc
+  }, {} as Partial<T>)
+}
