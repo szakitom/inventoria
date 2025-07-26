@@ -43,10 +43,7 @@ const formSchema = z.object({
     message: 'Name must be at least 2 characters.',
   }),
   barcode: z.string().optional(),
-  expiration: z
-    .date()
-    .transform((date) => date.toISOString())
-    .optional(),
+  expiration: z.date().optional(),
   amount: z.number().min(0, {
     message: 'Amount must be a positive number.',
   }),
@@ -74,10 +71,14 @@ const EditDialog = ({
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: FormValues) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+    const payload = {
+      ...values,
+      expiration: values.expiration?.toISOString(), // <- convert here
+    }
+    console.log(payload)
   }
 
   if (!isOpen) return null
@@ -86,10 +87,16 @@ const EditDialog = ({
       <DialogContent className="flex max-h-[min(600px,80vh)] md:max-h-[90vh] flex-col gap-0 p-0 sm:max-w-md">
         <ScrollArea className="flex max-h-full flex-col overflow-hidden">
           <DialogHeader className="contents space-y-0 text-left">
-            <DialogTitle className="px-6 pt-6">Edit Item</DialogTitle>
+            <DialogTitle className="px-6 pt-6">
+              <div className="text-lg font-semibold text-gray-900">
+                Edit Item
+              </div>
+              <div className="text-sm text-gray-500">
+                Editing details for {(item?.name as string) || 'this item'}.
+              </div>
+            </DialogTitle>
             <DialogDescription asChild>
               <div className="p-6">
-                Editing details for {(item?.name as string) || 'this item'}.
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -134,7 +141,9 @@ const EditDialog = ({
                                 placeholder="Expiration"
                                 value={
                                   field.value
-                                    ? field.value.toISOString().substring(0, 10)
+                                    ? new Date(field.value)
+                                        .toISOString()
+                                        .substring(0, 10)
                                     : ''
                                 }
                                 onChange={(e) =>
