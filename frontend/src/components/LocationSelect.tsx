@@ -25,16 +25,20 @@ const LocationSelect = ({
   currentShelf,
   locations,
   onSelect,
+  withDefaultShelf = false,
 }: {
   currentLocation?: Location
   currentShelf?: Shelf
   locations: Promise<Location[]>
   onSelect?: (shelfId: string) => void
+  withDefaultShelf?: boolean
 }) => {
   const [selectedLocation, setLocation] = useState<string>(
     currentLocation?.id || ''
   )
-  const [selectedShelf, setShelf] = useState<string>('')
+  const [selectedShelf, setShelf] = useState<string>(
+    withDefaultShelf ? currentShelf?.id || '' : ''
+  )
 
   const locationSelectId = useId()
   const shelfSelectId = useId()
@@ -124,9 +128,10 @@ const LocationSelect = ({
                       key: shelf.id,
                       value: shelf.id,
                       label: shelf.name,
-                      disabled: currentShelf
-                        ? shelf.id === currentShelf.id
-                        : false,
+                      disabled:
+                        !withDefaultShelf && currentShelf
+                          ? shelf.id === currentShelf.id
+                          : false,
                     }
                   }}
                 />
