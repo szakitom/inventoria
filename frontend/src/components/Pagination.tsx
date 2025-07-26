@@ -129,6 +129,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
             <div
               className="flex items-center gap-2 w-full justify-center overflow-x-auto scrollbar-hide"
               ref={scrollContainerRef}
+              // IDEA: check out scrollarea
             >
               {visiblePages.map((page, idx) =>
                 page === '...' ? (
