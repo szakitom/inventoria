@@ -38,7 +38,7 @@ export interface IItem {
   }
   barcode: string
   quantity?: string | number
-  expiration?: string
+  expiration?: string | null
   createdAt: string
   expiresIn?: number
   amount?: string | number

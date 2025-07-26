@@ -87,9 +87,9 @@ const Item = ({ item }: { item: IItem }) => {
     }
   }
 
-  const handleEditItem = async () => {
+  const handleEditItem = async (editedItem: Partial<IItem>) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await updateItem(item.id, editedItem)
       toast.success('Item edited successfully!')
       router.invalidate()
     } catch (error) {
@@ -151,8 +151,8 @@ const Item = ({ item }: { item: IItem }) => {
                   onClick={() =>
                     open('edit', {
                       data: item,
-                      onSubmit: async () => {
-                        await handleEditItem()
+                      onSubmit: async (item: Partial<IItem>) => {
+                        await handleEditItem(item)
                       },
                     })
                   }
