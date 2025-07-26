@@ -3,11 +3,15 @@ import { cn } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 
 interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
-  isPending: boolean
+  isPending?: boolean
   minDuration?: number // default to 300ms
 }
 
-const Spinner = ({ isPending, minDuration = 300, className }: SpinnerProps) => {
+const Spinner = ({
+  isPending = true,
+  minDuration = 300,
+  className,
+}: SpinnerProps) => {
   const [show, setShow] = useState(false)
   const [startTime, setStartTime] = useState<number | null>(null)
 
