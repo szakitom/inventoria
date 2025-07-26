@@ -208,7 +208,17 @@ export const updateItem = async (req, res, next) => {
     const { id } = req.params
     let { expiration } = req.body
     if (expiration) {
-      expiration = getFullDate(expiration)
+      const date = new Date(expiration)
+      if (isNaN(date.getTime())) {
+        return res.status(400).json({
+          error: 'Invalid expiration date format. Please provide a valid date.',
+        })
+      }
+      expiration = getFullDate({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate(),
+      })
     }
     const item = await Item.findByIdAndUpdate(
       id,
