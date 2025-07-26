@@ -47,6 +47,12 @@ export default function AmountInput({
     }
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      inputRef.current?.blur()
+    }
+  }
+
   return (
     <div className="w-full flex items-center rounded-md border border-input bg-background overflow-hidden shadow-sm">
       <Button
@@ -64,6 +70,7 @@ export default function AmountInput({
         inputMode="numeric"
         value={isNaN(inputValue) ? '' : inputValue}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         ref={inputRef}
         className="h-9 w-full text-center border-none focus-visible:ring-0 focus-visible:ring-offset-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-none"
       />
