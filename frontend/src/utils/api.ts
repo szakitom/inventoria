@@ -68,3 +68,15 @@ export const moveItem = async (itemId: string, location: string) => {
   if (!res.ok) throw new Error('Failed to move item')
   return res.json()
 }
+
+export const editItem = async (itemId: string, data: Partial<IItem>) => {
+  const res = await fetch(`/api/items/${itemId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Failed to edit item')
+  return res.json()
+}
