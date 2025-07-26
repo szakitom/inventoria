@@ -57,8 +57,8 @@ const Item = ({ item }: { item: IItem }) => {
   const handleSaveChanges = async () => {
     try {
       await updateItem(item.id, { amount })
-      router.invalidate()
       toast.success('Changes saved successfully!')
+      router.invalidate()
     } catch (error) {
       toast.error('Failed to save changes')
       console.error('Error saving item:', error)
@@ -68,8 +68,8 @@ const Item = ({ item }: { item: IItem }) => {
   const handleMoveItem = async (location: string) => {
     try {
       await moveItem(item.id, location)
-      router.invalidate()
       toast.success('Item moved successfully!')
+      router.invalidate()
     } catch (error) {
       toast.error('Failed to move item')
       console.error('Error moving item:', error)
@@ -79,8 +79,8 @@ const Item = ({ item }: { item: IItem }) => {
   const handleDeleteItem = async () => {
     try {
       await deleteItem(item.id)
-      router.invalidate()
       toast.success('Item deleted successfully!')
+      router.invalidate()
     } catch (error) {
       toast.error('Failed to delete item')
       console.log('Error deleting item:', error)
