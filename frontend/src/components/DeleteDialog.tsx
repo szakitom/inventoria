@@ -7,6 +7,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from './ui/button'
+import { useState } from 'react'
+import { Spinner } from './ui/spinner'
 
 interface DeleteDialogProps {
   isOpen: boolean
@@ -16,6 +18,16 @@ interface DeleteDialogProps {
 }
 
 const DeleteDialog = ({ isOpen, onCancel, onSubmit }: DeleteDialogProps) => {
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    if (onSubmit) {
+      await onSubmit()
+    }
+    setSubmitting(false)
+  }
+
   if (!isOpen) return null
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
@@ -37,10 +49,11 @@ const DeleteDialog = ({ isOpen, onCancel, onSubmit }: DeleteDialogProps) => {
           </Button>
           <Button
             variant="destructive"
-            className="cursor-pointer hover:bg-red-400"
-            onClick={onSubmit}
+            className="cursor-pointer hover:bg-red-400 min-w-20"
+            onClick={handleSubmit}
+            disabled={submitting}
           >
-            Delete
+            {submitting ? <Spinner /> : 'Delete'}
           </Button>
         </DialogFooter>
       </DialogContent>

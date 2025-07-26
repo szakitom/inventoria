@@ -12,6 +12,7 @@ import { useState } from 'react'
 import { getLocationIcon } from '@utils/index'
 import { Badge } from './ui/badge'
 import LocationSelect, { type Shelf, type Location } from './LocationSelect'
+import { Spinner } from './ui/spinner'
 
 interface MoveDialogProps {
   isOpen: boolean
@@ -46,11 +47,14 @@ const MoveDialog = ({
     | Location
     | undefined
   const currentShelf: Shelf = item?.location as Shelf
+  const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async () => {
+    setSubmitting(true)
     if (selectedShelf) {
-      onSubmit(selectedShelf)
+      await onSubmit(selectedShelf)
     }
+    setSubmitting(false)
   }
 
   const handleShelfSelect = (shelfId: string) => {
@@ -91,11 +95,11 @@ const MoveDialog = ({
             Cancel
           </Button>
           <Button
-            className="cursor-pointer bg-blue-500 hover:bg-blue-600"
+            className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20"
             onClick={handleSubmit}
-            disabled={!selectedShelf}
+            disabled={!selectedShelf || submitting}
           >
-            Move
+            {submitting ? <Spinner /> : 'Move'}
           </Button>
         </DialogFooter>
       </DialogContent>
