@@ -8,29 +8,10 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from './ui/button'
 import { getRouteApi } from '@tanstack/react-router'
-import { Suspense, use, useId, useState } from 'react'
+import { useState } from 'react'
 import { getLocationIcon } from '@utils/index'
 import { Badge } from './ui/badge'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select'
-import { Label } from './ui/label'
-
-interface Location {
-  id: string
-  name: string
-  type?: string
-  shelves: Shelf[]
-}
-
-interface Shelf {
-  id: string
-  name: string
-}
+import LocationSelect, { type Shelf, type Location } from './LocationSelect'
 
 interface MoveDialogProps {
   isOpen: boolean
@@ -59,30 +40,21 @@ const MoveDialog = ({
   const LocationIcon = getLocationIcon(
     item?.location?.location?.type || 'default'
   )
+  const [selectedShelf, setSelectedShelf] = useState<string | null>(null)
 
   const currentLocation: Location | undefined = item?.location?.location as
     | Location
     | undefined
   const currentShelf: Shelf = item?.location as Shelf
-  const [selectedLocation, setLocation] = useState<string>(
-    currentLocation?.id || ''
-  )
-  const [selectedShelf, setShelf] = useState<string>('')
-
-  const locationSelectId = useId()
-  const shelfSelectId = useId()
-
-  const handleLocationChange = (value: string) => {
-    setLocation(value)
-    setShelf('')
-  }
-
-  const handleShelfChange = (value: string) => {
-    setShelf(value)
-  }
 
   const handleSubmit = async () => {
-    onSubmit(selectedShelf)
+    if (selectedShelf) {
+      onSubmit(selectedShelf)
+    }
+  }
+
+  const handleShelfSelect = (shelfId: string) => {
+    setSelectedShelf(shelfId)
   }
 
   if (!isOpen) return null
@@ -104,91 +76,12 @@ const MoveDialog = ({
             </span>
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4">
-          <Label
-            htmlFor={locationSelectId}
-            className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
-          >
-            New Location
-          </Label>
-          <Select value={selectedLocation} onValueChange={handleLocationChange}>
-            <SelectTrigger
-              id={locationSelectId}
-              className="w-full focus:ring-2 focus:ring-blue-500 cursor-pointer"
-            >
-              <SelectValue placeholder="Location" />
-            </SelectTrigger>
-
-            <SelectContent>
-              <Suspense
-                fallback={
-                  <SelectItem disabled value="__loading__">
-                    Loading...
-                  </SelectItem>
-                }
-              >
-                <SuspendedOptions
-                  data={data.locations}
-                  filterFn={(list: Location[]) => list}
-                  mapFn={(item) => {
-                    const loc = item as Location
-                    return {
-                      key: loc.id,
-                      value: loc.id,
-                      label: loc.name,
-                    }
-                  }}
-                />
-              </Suspense>
-            </SelectContent>
-          </Select>
-          {selectedLocation && (
-            <>
-              <Label
-                htmlFor={shelfSelectId}
-                className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
-              >
-                New Shelf
-              </Label>
-              <Select value={selectedShelf} onValueChange={handleShelfChange}>
-                <SelectTrigger
-                  id={shelfSelectId}
-                  className="w-full focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                >
-                  <SelectValue placeholder="Select a Shelf" />
-                </SelectTrigger>
-                <SelectContent>
-                  <Suspense
-                    fallback={
-                      <SelectItem disabled value="__loading__">
-                        Loading...
-                      </SelectItem>
-                    }
-                  >
-                    <SuspendedOptions
-                      data={data.locations}
-                      filterFn={(list: Location[]) => {
-                        const location = list.find(
-                          (l) => l.id === selectedLocation
-                        )
-                        return location?.shelves ?? []
-                      }}
-                      mapFn={(item) => {
-                        const shelf = item as Shelf
-                        return {
-                          key: shelf.id,
-                          value: shelf.id,
-                          label: shelf.name,
-                          disabled: shelf.id === currentShelf.id,
-                        }
-                      }}
-                    />
-                  </Suspense>
-                </SelectContent>
-              </Select>
-            </>
-          )}
-        </div>
+        <LocationSelect
+          locations={data.locations}
+          currentLocation={currentLocation}
+          currentShelf={currentShelf}
+          onSelect={handleShelfSelect}
+        />
         <DialogFooter>
           <Button
             variant="secondary"
@@ -211,44 +104,3 @@ const MoveDialog = ({
 }
 
 export default MoveDialog
-
-interface SuspendedOptionsProps<T = unknown> {
-  data: Promise<T> | T
-  filterFn?: (data: T) => Array<unknown>
-  mapFn: (item: unknown) => {
-    key: string
-    value: string
-    label: string
-    disabled?: boolean
-  }
-}
-
-const SuspendedOptions = <T,>({
-  data,
-  filterFn = (d) => d as unknown[],
-  mapFn,
-}: SuspendedOptionsProps<T>) => {
-  const resolved = use(data instanceof Promise ? data : Promise.resolve(data))
-  const list = filterFn(resolved)
-
-  if (!list || list.length === 0) {
-    return (
-      <SelectItem value="" disabled>
-        No options available
-      </SelectItem>
-    )
-  }
-
-  return (
-    <>
-      {list.map((item) => {
-        const { key, value, label, disabled } = mapFn(item)
-        return (
-          <SelectItem key={key} value={value} disabled={disabled}>
-            {label}
-          </SelectItem>
-        )
-      })}
-    </>
-  )
-}
