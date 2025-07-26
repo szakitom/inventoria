@@ -87,6 +87,17 @@ const Item = ({ item }: { item: IItem }) => {
     }
   }
 
+  const handleEditItem = async () => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      toast.success('Item edited successfully!')
+      router.invalidate()
+    } catch (error) {
+      toast.error('Failed to edit item')
+      console.error('Error editing item:', error)
+    }
+  }
+
   return (
     <Card
       className={cn(
@@ -137,7 +148,14 @@ const Item = ({ item }: { item: IItem }) => {
                   <span>Move</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => alert('Not implemented yet')}
+                  onClick={() =>
+                    open('edit', {
+                      data: item,
+                      onSubmit: async () => {
+                        await handleEditItem()
+                      },
+                    })
+                  }
                   className="cursor-pointer"
                 >
                   <Pencil />

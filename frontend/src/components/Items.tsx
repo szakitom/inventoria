@@ -5,6 +5,7 @@ import Item from './Item'
 import { useDialog } from '@/hooks/useDialog'
 import DeleteDialog from './DeleteDialog'
 import MoveDialog from './MoveDialog'
+import EditDialog from './EditDialog'
 
 const variants = {
   enter: (direction: 'next' | 'prev') => ({
@@ -64,6 +65,7 @@ const Items = ({ navigate }: { navigate: any }) => {
 
   useDialog(DeleteDialog, 'delete')
   useDialog(MoveDialog, 'move')
+  useDialog(EditDialog, 'edit')
 
   if (prevPageRef.current !== page) {
     setDirection(page > prevPageRef.current ? 'next' : 'prev')
