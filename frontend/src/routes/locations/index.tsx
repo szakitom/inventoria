@@ -6,7 +6,6 @@ import { fetchLocations } from '@utils/api'
 export const Route = createFileRoute('/locations/')({
   component: LocationsPage,
   loader: async ({ abortController }) => {
-    console.log('loader called')
     return {
       locations: await fetchLocations({
         signal: abortController.signal,

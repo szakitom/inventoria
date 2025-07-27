@@ -83,7 +83,7 @@ const Item = ({ item }: { item: IItem }) => {
       router.invalidate()
     } catch (error) {
       toast.error('Failed to delete item')
-      console.log('Error deleting item:', error)
+      console.error('Error deleting item:', error)
     }
   }
 
