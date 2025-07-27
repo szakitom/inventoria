@@ -1,3 +1,4 @@
+import { DialogProvider } from '@/hooks/DialogProvider'
 import Locations from '@components/Locations'
 import { createFileRoute } from '@tanstack/react-router'
 import { fetchLocations } from '@utils/api'
@@ -17,7 +18,9 @@ export const Route = createFileRoute('/locations/')({
 function LocationsPage() {
   return (
     <main>
-      <Locations />
+      <DialogProvider>
+        <Locations />
+      </DialogProvider>
     </main>
   )
 }
