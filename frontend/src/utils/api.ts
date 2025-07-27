@@ -1,4 +1,5 @@
 import type { IItem } from '@components/Items'
+import type { Location } from '@components/LocationSelect'
 
 export const fetchItems = async ({
   sort,
@@ -78,5 +79,20 @@ export const editItem = async (itemId: string, data: Partial<IItem>) => {
     body: JSON.stringify(data),
   })
   if (!res.ok) throw new Error('Failed to edit item')
+  return res.json()
+}
+
+export const updateLocation = async (
+  locationId: string,
+  data: Partial<Location>
+) => {
+  const res = await fetch(`/api/locations/${locationId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Failed to update location')
   return res.json()
 }
