@@ -1,40 +1,23 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-
-const fetchLocations = async () => {
-  const response = await fetch('/api/locations')
-  console.log(response)
-  if (!response.ok) {
-    throw new Error('Failed to fetch locations')
-  }
-  return response.json()
-}
+import Locations from '@components/Locations'
+import { createFileRoute } from '@tanstack/react-router'
+import { fetchLocations } from '@utils/api'
 
 export const Route = createFileRoute('/locations/')({
-  component: RouteComponent,
-  loader: () => fetchLocations(),
+  component: LocationsPage,
+  loader: async ({ abortController }) => {
+    console.log('loader called')
+    return {
+      locations: await fetchLocations({
+        signal: abortController.signal,
+      }),
+    }
+  },
 })
 
-function RouteComponent() {
-  const locations = Route.useLoaderData()
-  console.log(locations)
+function LocationsPage() {
   return (
-    <div>
-      <h2>Locations</h2>
-      <ul>
-        {locations.map(
-          (location: { id: string; name: string; shelves: Array<any> }) => (
-            <Link
-              key={location.id}
-              to="$location"
-              params={{ location: location.id }}
-            >
-              <li>
-                {location.name} [{location.shelves.length}]
-              </li>
-            </Link>
-          )
-        )}
-      </ul>
-    </div>
+    <main>
+      <Locations />
+    </main>
   )
 }

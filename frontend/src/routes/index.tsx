@@ -44,6 +44,7 @@ export const Route = createFileRoute('/')({
     }
   },
 })
+
 function Index() {
   const [isPending, startTransition] = useTransition()
   const navigate = useNavigate({ from: Route.fullPath })
