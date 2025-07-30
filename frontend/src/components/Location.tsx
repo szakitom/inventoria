@@ -33,6 +33,7 @@ const Location = ({ location }: { location: LocationType }) => {
           key={location.id}
           to="/locations/$location"
           params={{ location: location.id }}
+          search={{ shelves: [] }}
           className="hover:underline w-full"
         >
           {location.name}
@@ -53,8 +54,9 @@ const Location = ({ location }: { location: LocationType }) => {
         {location.shelves.map((shelf) => (
           <Badge variant="outline" key={shelf.id} asChild>
             <Link
-              to="/locations/$location/$shelf"
-              params={{ location: location.id, shelf: shelf.id }}
+              to="/locations/$location"
+              params={{ location: location.id }}
+              search={{ shelves: [shelf.id] }}
               className="p-2 border hover:no-underline"
             >
               <span className="text-lg">

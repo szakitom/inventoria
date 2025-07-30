@@ -36,41 +36,82 @@ interface FilterbarProps {
     options: Parameters<ReturnType<typeof useNavigate>>[0]
   ) => Promise<void>
   isPending?: boolean
+  withShelves?: boolean
 }
 
-const Filterbar = ({ route, navigate, isPending }: FilterbarProps) => {
+const Filterbar = ({
+  route,
+  navigate,
+  isPending,
+  withShelves = false,
+}: FilterbarProps) => {
   const search = route.useSearch()
   const data = route.useLoaderData()
-  // const navigate = useNavigate({ from: route.fullPath })
+  const params = route.useParams()
   const {
     sort: directionSort,
     search: searchTerm,
-    locations: selectedLocations,
+    shelves: selectedShelves,
   } = search
+  const selectedLocations = !withShelves ? search.locations : params.location
   const id = useId()
   const direction = directionSort.startsWith('-') ? '-' : '+'
   const sort = directionSort.replace(/^-/, '')
   const [searchValue, setSearchValue] = useState(searchTerm || '')
   const [locations, setLocations] = useState<string[]>(selectedLocations || [])
+  const [shelves, setShelves] = useState<string[]>(selectedShelves || [])
   const debouncedSearchValue = useDebounce(searchValue, 300)
   const debouncedLocations = useDebounce(locations, 300)
+  const debouncedShelves = useDebounce(shelves, 300)
 
   useEffect(() => {
-    const shouldNavigate =
-      debouncedSearchValue !== search.search ||
-      !arraysEqual(debouncedLocations, search.locations)
+    const originalLocations = params.location ?? search.locations
+    let shouldNavigate
+    if (withShelves) {
+      shouldNavigate =
+        debouncedSearchValue !== search.search ||
+        !arraysEqual(debouncedShelves, search.shelves)
+    } else {
+      shouldNavigate =
+        debouncedSearchValue !== search.search ||
+        !arraysEqual(debouncedLocations, originalLocations)
+    }
 
     if (shouldNavigate) {
-      navigate({
-        search: {
-          ...search,
-          search: debouncedSearchValue,
-          locations: debouncedLocations,
-          page: 1,
-        },
-      })
+      let options
+      if (withShelves) {
+        options = {
+          to: '/locations/$location/' as const,
+          search: {
+            ...search,
+            shelves: debouncedShelves,
+            page: 1,
+          },
+          params: true,
+        }
+      } else {
+        options = {
+          to: '/' as const,
+          search: {
+            ...search,
+            locations: debouncedLocations,
+            page: 1,
+          },
+          params: true,
+        }
+      }
+
+      navigate(options)
     }
-  }, [debouncedSearchValue, debouncedLocations, navigate, search])
+  }, [
+    debouncedSearchValue,
+    debouncedLocations,
+    debouncedShelves,
+    navigate,
+    withShelves,
+    params.location,
+    search,
+  ])
 
   const handleSortChange = (value: string) => {
     navigate({
@@ -93,7 +134,11 @@ const Filterbar = ({ route, navigate, isPending }: FilterbarProps) => {
 
   const resetFilters = () => {
     setSearchValue('')
-    setLocations([])
+    if (withShelves) {
+      setShelves([])
+    } else {
+      setLocations([])
+    }
     navigate({ search: {} as never })
   }
 
@@ -171,17 +216,32 @@ const Filterbar = ({ route, navigate, isPending }: FilterbarProps) => {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
-
-          <Multiselect
-            options={data}
-            value={locations}
-            selectedText="location selected"
-            dataKey="locations"
-            optionLabel="name"
-            optionValue="id"
-            onSelect={setLocations}
-            className="w-full sm:w-[200px] max-w-full"
-          />
+          {withShelves ? (
+            <div>
+              asd
+              <Multiselect
+                options={data}
+                value={shelves}
+                selectedText="shelf selected"
+                dataKey="shelves"
+                optionLabel="name"
+                optionValue="id"
+                onSelect={setShelves}
+                className="w-full sm:w-[200px] max-w-full"
+              />
+            </div>
+          ) : (
+            <Multiselect
+              options={data}
+              value={locations}
+              selectedText="location selected"
+              dataKey="locations"
+              optionLabel="name"
+              optionValue="id"
+              onSelect={setLocations}
+              className="w-full sm:w-[200px] max-w-full"
+            />
+          )}
           <Spinner
             isPending={isPending || false}
             className="text-muted-foreground hidden md:flex "

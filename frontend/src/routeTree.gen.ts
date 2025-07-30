@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
 import { Route as ItemsAddRouteImport } from './routes/items/add'
 import { Route as LocationsLocationIndexRouteImport } from './routes/locations/$location/index'
-import { Route as LocationsLocationShelfRouteImport } from './routes/locations/$location/$shelf'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,24 +34,17 @@ const LocationsLocationIndexRoute = LocationsLocationIndexRouteImport.update({
   path: '/locations/$location/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LocationsLocationShelfRoute = LocationsLocationShelfRouteImport.update({
-  id: '/locations/$location/$shelf',
-  path: '/locations/$location/$shelf',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/items/add': typeof ItemsAddRoute
   '/locations': typeof LocationsIndexRoute
-  '/locations/$location/$shelf': typeof LocationsLocationShelfRoute
   '/locations/$location': typeof LocationsLocationIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/items/add': typeof ItemsAddRoute
   '/locations': typeof LocationsIndexRoute
-  '/locations/$location/$shelf': typeof LocationsLocationShelfRoute
   '/locations/$location': typeof LocationsLocationIndexRoute
 }
 export interface FileRoutesById {
@@ -60,38 +52,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/items/add': typeof ItemsAddRoute
   '/locations/': typeof LocationsIndexRoute
-  '/locations/$location/$shelf': typeof LocationsLocationShelfRoute
   '/locations/$location/': typeof LocationsLocationIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/items/add'
-    | '/locations'
-    | '/locations/$location/$shelf'
-    | '/locations/$location'
+  fullPaths: '/' | '/items/add' | '/locations' | '/locations/$location'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/items/add'
-    | '/locations'
-    | '/locations/$location/$shelf'
-    | '/locations/$location'
-  id:
-    | '__root__'
-    | '/'
-    | '/items/add'
-    | '/locations/'
-    | '/locations/$location/$shelf'
-    | '/locations/$location/'
+  to: '/' | '/items/add' | '/locations' | '/locations/$location'
+  id: '__root__' | '/' | '/items/add' | '/locations/' | '/locations/$location/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ItemsAddRoute: typeof ItemsAddRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
-  LocationsLocationShelfRoute: typeof LocationsLocationShelfRoute
   LocationsLocationIndexRoute: typeof LocationsLocationIndexRoute
 }
 
@@ -125,13 +99,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocationsLocationIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/locations/$location/$shelf': {
-      id: '/locations/$location/$shelf'
-      path: '/locations/$location/$shelf'
-      fullPath: '/locations/$location/$shelf'
-      preLoaderRoute: typeof LocationsLocationShelfRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -139,7 +106,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ItemsAddRoute: ItemsAddRoute,
   LocationsIndexRoute: LocationsIndexRoute,
-  LocationsLocationShelfRoute: LocationsLocationShelfRoute,
   LocationsLocationIndexRoute: LocationsLocationIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
+import { useLoaderData, useSearch } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
 import Item from './Item'
 import { useDialog } from '@/hooks/useDialog'
@@ -44,16 +44,18 @@ export interface IItem {
   amount?: string | number
 }
 
-const route = getRouteApi('/')
+interface ItemsProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  navigate: any
+  from: '/' | '/locations/$location/'
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Items = ({ navigate }: { navigate: any }) => {
+const Items = ({ navigate, from }: ItemsProps) => {
   const {
     items: { items: incomingItems, pages: totalPages },
-  } = route.useLoaderData()
-  const search = route.useSearch()
+  } = useLoaderData({ from })
+  const search = useSearch({ from })
   const page = search.page
-  // const navigate = useNavigate({ from: '/' })
 
   const prevPageRef = useRef<number>(page)
   const [items, setItems] = useState(incomingItems)

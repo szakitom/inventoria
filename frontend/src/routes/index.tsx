@@ -47,7 +47,7 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const [isPending, startTransition] = useTransition()
-  const navigate = useNavigate({ from: Route.fullPath })
+  const navigate = useNavigate({ from: '/' })
 
   const handleNavigate = async (options: Parameters<typeof navigate>[0]) => {
     await startTransition(() => navigate(options))
@@ -61,7 +61,7 @@ function Index() {
         isPending={isPending}
       />
       <DialogProvider>
-        <Items navigate={handleNavigate} />
+        <Items navigate={handleNavigate} from="/" />
       </DialogProvider>
       <Pagination
         route={Route}

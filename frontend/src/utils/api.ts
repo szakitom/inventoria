@@ -8,6 +8,7 @@ export const fetchItems = async ({
   search,
   locations,
   signal,
+  shelves,
 }: {
   sort: string
   page: number
@@ -15,12 +16,13 @@ export const fetchItems = async ({
   search: string
   locations?: string[]
   signal: AbortSignal
+  shelves?: string[]
 }) => {
   if (signal.aborted) {
     throw new Error('Fetch aborted')
   }
   const res = await fetch(
-    `/api/items?sort=${sort}&page=${page}&limit=${limit}&search=${search}&locations=${locations?.join(',')}`,
+    `/api/items?sort=${sort}&page=${page}&limit=${limit}&search=${search}&locations=${locations?.join(',')}&shelves=${shelves?.join(',')}`,
     { signal }
   )
   if (!res.ok) throw new Error('Failed to fetch posts')
@@ -34,6 +36,23 @@ export const fetchLocations = async ({ signal }: { signal: AbortSignal }) => {
   }
   const res = await fetch('/api/locations', { signal })
   if (!res.ok) throw new Error('Failed to fetch locations')
+  const data = await res.json()
+  return data
+}
+
+export const fetchShelves = async ({
+  locationId,
+  signal,
+}: {
+  locationId: string
+  signal: AbortSignal
+}) => {
+  if (signal.aborted) {
+    throw new Error('Fetch aborted')
+  }
+  console.log('Fetching location', locationId)
+  const res = await fetch(`/api/locations/${locationId}/shelves`, { signal })
+  if (!res.ok) throw new Error('Failed to fetch location')
   const data = await res.json()
   return data
 }

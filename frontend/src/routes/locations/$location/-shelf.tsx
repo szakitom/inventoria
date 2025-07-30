@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import Item from '@components/Item'
 
-export const Route = createFileRoute('/locations/$location/$shelf')({
+export const Route = createFileRoute('/locations_$location/shelf')({
   component: RouteComponent,
   loader: async ({ params }) => {
     // Here you would typically fetch data based on the location and shelf
