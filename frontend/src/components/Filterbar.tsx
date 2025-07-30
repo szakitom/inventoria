@@ -214,6 +214,9 @@ const Filterbar = ({
             className="w-full sm:w-[200px] md:w-[240px] focus:ring-2 focus:ring-blue-500"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+            }}
           />
           {withShelves ? (
             <Multiselect
