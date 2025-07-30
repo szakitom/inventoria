@@ -26,12 +26,16 @@ const LocationSelect = ({
   locations,
   onSelect,
   withDefaultShelf = false,
+  label,
+  shelfLabel,
 }: {
   currentLocation?: Location
   currentShelf?: Shelf
   locations: Promise<Location[]>
   onSelect?: (shelfId: string) => void
   withDefaultShelf?: boolean
+  label?: React.ReactNode
+  shelfLabel?: React.ReactNode
 }) => {
   const [selectedLocation, setLocation] = useState<string>(
     currentLocation?.id || ''
@@ -56,12 +60,14 @@ const LocationSelect = ({
 
   return (
     <div className="grid gap-4">
-      <Label
-        htmlFor={locationSelectId}
-        className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
-      >
-        New Location
-      </Label>
+      {label ?? (
+        <Label
+          htmlFor={locationSelectId}
+          className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+        >
+          New location
+        </Label>
+      )}
       <Select value={selectedLocation} onValueChange={handleLocationChange}>
         <SelectTrigger
           id={locationSelectId}
@@ -95,12 +101,14 @@ const LocationSelect = ({
       </Select>
       {selectedLocation && (
         <>
-          <Label
-            htmlFor={shelfSelectId}
-            className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
-          >
-            New Shelf
-          </Label>
+          {shelfLabel ?? (
+            <Label
+              htmlFor={shelfSelectId}
+              className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+            >
+              New shelf
+            </Label>
+          )}
           <Select value={selectedShelf} onValueChange={handleShelfChange}>
             <SelectTrigger
               id={shelfSelectId}
