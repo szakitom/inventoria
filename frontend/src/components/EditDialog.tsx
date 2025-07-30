@@ -24,6 +24,7 @@ import AmountInput from './ui/amountinput'
 import { useHookFormMask } from 'use-mask-input'
 import type { IItem } from './Items'
 import { Spinner } from './ui/spinner'
+import { Item } from '@utils/item'
 
 interface EditDialogProps {
   isOpen: boolean
@@ -41,37 +42,16 @@ interface EditDialogProps {
   }
 }
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'Name must be at least 2 characters.',
-  }),
-  barcode: z.string().optional(),
-  expiration: z
-    .string()
-    .optional()
-    .refine(
-      (val) =>
-        !val || /^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/.test(val),
-      {
-        message: 'Expiration must be valid date (YYYY/MM/DD)',
-      }
-    ),
-  amount: z.number().min(0, {
-    message: 'Amount must be a positive number.',
-  }),
-  quantity: z.string().optional(),
-})
-
 const EditDialog = ({
   isOpen,
   onCancel,
   onSubmit: submitDialog,
   data: item,
 }: EditDialogProps) => {
-  type FormValues = z.infer<typeof formSchema>
+  type FormValues = z.infer<typeof Item.itemFormSchema>
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(Item.itemFormSchema),
     defaultValues: {
       name: item?.name as string | undefined,
       barcode: item?.barcode as string | undefined,

@@ -36,4 +36,27 @@ export class Item {
     locations: z.array(z.string()).default(this.defaultValues.locations),
     shelves: z.array(z.string()).default(this.defaultValues.shelves),
   })
+
+  static itemFormSchema = z.object({
+    name: z.string().min(2, {
+      message: 'Name must be at least 2 characters.',
+    }),
+    barcode: z.string().optional(),
+    expiration: z
+      .string()
+      .optional()
+      .refine(
+        (val) =>
+          !val ||
+          /^\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/.test(val),
+        {
+          message: 'Expiration must be valid date (YYYY/MM/DD)',
+        }
+      ),
+    amount: z.number().min(1, {
+      message: 'Amount must be a positive number.',
+    }),
+    quantity: z.string().optional(),
+    shelf: z.string().optional(),
+  })
 }
