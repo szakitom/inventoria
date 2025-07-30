@@ -129,29 +129,35 @@ export const createItem = async (req, res, next) => {
   const session = await mongoose.startSession()
   session.startTransaction()
   try {
-    const { barcode, location, expiration } = req.body
-    let offData
-    let expirationDate: string | null = null
-    try {
-      offData = await getProduct(barcode)
-    } catch (error) {
-      offData = null
-    }
-    try {
-      if (expiration?.month && expiration?.day) {
-        expirationDate = getFullDate(expiration)
+    const { barcode, location } = req.body
+    let { expiration } = req.body
+    if (expiration) {
+      const date = new Date(expiration)
+      if (isNaN(date.getTime())) {
+        return res.status(400).json({
+          error: 'Invalid expiration date format. Please provide a valid date.',
+        })
       }
-    } catch (error) {
-      expirationDate = null
-      return res.status(400).json({
-        error: 'Invalid expiration date format. Please provide a valid date.',
+      expiration = getFullDate({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate(),
       })
     }
+    let offData
+    if (barcode) {
+      try {
+        offData = await getProduct(barcode)
+      } catch (error) {
+        offData = null
+      }
+    }
+
     const item = await Item.create(
       [
         {
           ...req.body,
-          expiration: expirationDate,
+          expiration,
           openFoodFacts: offData,
           name: req.body.name || offData?.product_name || barcode,
         },
@@ -169,9 +175,8 @@ export const createItem = async (req, res, next) => {
     if (session.inTransaction()) {
       await session.abortTransaction()
     }
-    const { image } = req.body
-    if (image) {
-      deleteFile(image)
+    if (req.body?.image) {
+      deleteFile(req.body.image)
     }
     next(err)
   } finally {

@@ -15,11 +15,11 @@ export interface IItem extends Document {
 }
 
 const ItemSchema = new Schema<IItem>({
-  name: { type: String, required: true, index: true },
+  name: { type: String, required: true, index: true, trim: true },
   image: { type: String },
-  barcode: { type: String, index: true },
+  barcode: { type: String, index: true, trim: true },
   amount: { type: Number, required: true, default: 1 },
-  quantity: { type: String, default: '' },
+  quantity: { type: String, default: '', trim: true },
   expiration: { type: Date },
   createdAt: { type: Date, default: Date.now },
   owner: { type: String },
