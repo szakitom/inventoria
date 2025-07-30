@@ -15,8 +15,8 @@ export const fetchItems = async ({
   limit: number
   search: string
   locations?: string[]
-  signal: AbortSignal
   shelves?: string[]
+  signal: AbortSignal
 }) => {
   if (signal.aborted) {
     throw new Error('Fetch aborted')

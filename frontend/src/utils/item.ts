@@ -34,6 +34,6 @@ export class Item {
     limit: z.number().int().min(0).default(this.defaultValues.limit),
     search: z.string().default(this.defaultValues.search),
     locations: z.array(z.string()).default(this.defaultValues.locations),
-    shelves: z.array(z.string()).catch(this.defaultValues.shelves),
+    shelves: z.array(z.string()).default(this.defaultValues.shelves),
   })
 }

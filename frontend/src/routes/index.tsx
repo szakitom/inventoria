@@ -20,16 +20,19 @@ export const Route = createFileRoute('/')({
   search: {
     middlewares: [stripSearchParams(Item.defaultValues)],
   },
-  loaderDeps: ({ search: { sort, limit, page, search, locations } }) => ({
+  loaderDeps: ({
+    search: { sort, limit, page, search, locations, shelves },
+  }) => ({
     sort,
     limit,
     page,
     search,
     locations,
+    shelves,
   }),
   loader: async ({
     abortController,
-    deps: { sort, limit, page, search, locations },
+    deps: { sort, limit, page, search, locations, shelves },
   }) => {
     return {
       items: await fetchItems({
@@ -38,6 +41,7 @@ export const Route = createFileRoute('/')({
         page,
         search,
         locations,
+        shelves,
         signal: abortController.signal,
       }),
       locations: defer(fetchLocations({ signal: abortController.signal })),
