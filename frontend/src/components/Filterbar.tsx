@@ -84,6 +84,7 @@ const Filterbar = ({
           to: '/locations/$location/' as const,
           search: {
             ...search,
+            search: debouncedSearchValue,
             shelves: debouncedShelves,
             page: 1,
           },
@@ -94,6 +95,7 @@ const Filterbar = ({
           to: '/' as const,
           search: {
             ...search,
+            search: debouncedSearchValue,
             locations: debouncedLocations,
             page: 1,
           },
