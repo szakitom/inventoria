@@ -27,6 +27,7 @@ interface MultiselectProps {
   optionValue: string
   onSelect: (selected: string[]) => void
   className?: string
+  optionLabelFn?: (label: string) => string
 }
 
 interface OptionsProps {
@@ -36,6 +37,7 @@ interface OptionsProps {
   dataKey: string
   optionLabel: string
   optionValue: string
+  optionLabelFn?: (label: string) => string
 }
 
 const Multiselect = ({
@@ -47,6 +49,7 @@ const Multiselect = ({
   optionValue,
   onSelect,
   className,
+  optionLabelFn,
 }: MultiselectProps) => {
   const [open, setOpen] = useState(false)
   const memoizedData = useDeferredValue(options)
@@ -114,6 +117,7 @@ const Multiselect = ({
                 dataKey={dataKey}
                 optionLabel={optionLabel}
                 optionValue={optionValue}
+                optionLabelFn={optionLabelFn}
               />
             </Suspense>
           </CommandList>
@@ -132,6 +136,7 @@ const Options = ({
   dataKey,
   optionLabel,
   optionValue,
+  optionLabelFn,
 }: OptionsProps) => {
   const options = use(data[dataKey]) as OptionType[]
   if (!options || options.length === 0) {
@@ -145,7 +150,11 @@ const Options = ({
       onSelect={() => onSelect(option[optionValue])}
       className="cursor-pointer"
     >
-      <span className="truncate">{option[optionLabel]}</span>
+      <span className="truncate">
+        {optionLabelFn
+          ? optionLabelFn(option[optionLabel])
+          : option[optionLabel]}
+      </span>
       {selected.includes(option[optionValue]) && (
         <CheckIcon size={16} className="ml-auto" />
       )}
