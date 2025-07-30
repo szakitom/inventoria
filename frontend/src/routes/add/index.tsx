@@ -49,7 +49,7 @@ function Add() {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const currentShelf = form.getValues('shelf')
+      const currentShelf = form.getValues('shelf')!
       const payload = {
         ...values,
         expiration: values.expiration
@@ -58,7 +58,6 @@ function Add() {
         location: currentShelf,
       }
 
-      console.log('Submitting item:', payload)
       await createItem(payload)
       toast.success('Item created successfully!')
 

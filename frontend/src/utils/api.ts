@@ -117,7 +117,16 @@ export const updateLocation = async (
 
 // TODO: create location
 
-export const createItem = async (data: Partial<IItem>) => {
+interface CreateItemPayload {
+  name: string
+  barcode?: string
+  expiration?: string | null
+  amount: number
+  quantity?: string
+  location: string
+}
+
+export const createItem = async (data: CreateItemPayload) => {
   const res = await fetch('/api/items', {
     method: 'POST',
     headers: {
