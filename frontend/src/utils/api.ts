@@ -50,7 +50,6 @@ export const fetchShelves = async ({
   if (signal.aborted) {
     throw new Error('Fetch aborted')
   }
-  console.log('Fetching location', locationId)
   const res = await fetch(`/api/locations/${locationId}/shelves`, { signal })
   if (!res.ok) throw new Error('Failed to fetch location')
   const data = await res.json()

@@ -73,7 +73,6 @@ function Location() {
         withShelves
       />
       <DialogProvider>
-        asd
         <Items navigate={handleNavigate} from="/locations/$location/" />
       </DialogProvider>
       <Pagination
