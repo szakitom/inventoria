@@ -19,6 +19,7 @@ import { Button } from '@components/ui/button'
 import { Spinner } from '@components/ui/spinner'
 import { Item } from '@utils/item'
 import { toast } from 'sonner'
+import { DownloadIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/add/')({
   component: Add,
@@ -111,6 +112,62 @@ function Add() {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="barcode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Barcode</FormLabel>
+                  <FormControl>
+                    <div className="flex rounded-md shadow-xs">
+                      <Input
+                        className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
+                        placeholder="Email"
+                        type="email"
+                      />
+                      <button
+                        className="border-input bg-background text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-ring/50 inline-flex w-9 items-center justify-center rounded-e-md border text-sm transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Subscribe"
+                      >
+                        <DownloadIcon size={16} aria-hidden="true" />
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="barcode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Barcode</FormLabel>
+                  <FormControl>
+                    <div className="w-full max-w-xs space-y-2">
+                      <div className="flex rounded-md shadow-xs">
+                        <Input
+                          type="email"
+                          placeholder="Email address"
+                          className="-me-px rounded-e-none shadow-none focus-visible:z-1"
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="rounded-s-none"
+                        >
+                          <DownloadIcon />
+                          <span className="sr-only">Download</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="expiration"
