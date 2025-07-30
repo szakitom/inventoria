@@ -75,6 +75,19 @@ export const getLocations = async (req, res, next) => {
   }
 }
 
+export const getShelves = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const location = await Location.findById(id).populate('shelves', 'name')
+    if (!location) {
+      return res.status(404).json({ error: 'Location not found' })
+    }
+    res.json(location.shelves)
+  } catch (err) {
+    next(err)
+  }
+}
+
 export const getLocation = async (req, res, next) => {
   try {
     const { id } = req.params
