@@ -31,20 +31,28 @@ export const getItems = async (req, res, next) => {
       ],
     }
     if (req.query.locations) {
-      const locationIds = req.query.locations.split(',')
+      if (req.query.shelves) {
+        // If shelves are provided, filter by shelves in the selected locations
+        const shelfIds = req.query.shelves.split(',')
+        baseQuery = {
+          ...baseQuery,
+          location: { $in: shelfIds },
+        }
+      } else {
+        // Get shelves from the selected locations
+        const locationIds = req.query.locations.split(',')
+        const locations = await Location.find(
+          { _id: { $in: locationIds } },
+          'shelves'
+        )
+        const shelfIds = locations.flatMap((loc) =>
+          loc.shelves.map((s) => s.toString())
+        )
 
-      // Get shelves from the selected locations
-      const locations = await Location.find(
-        { _id: { $in: locationIds } },
-        'shelves'
-      )
-      const shelfIds = locations.flatMap((loc) =>
-        loc.shelves.map((s) => s.toString())
-      )
-
-      baseQuery = {
-        ...baseQuery,
-        location: { $in: shelfIds },
+        baseQuery = {
+          ...baseQuery,
+          location: { $in: shelfIds },
+        }
       }
     }
 
