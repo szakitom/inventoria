@@ -87,8 +87,8 @@ const Filterbar = ({
             shelves: debouncedShelves,
             page: 1,
           },
-          params: true,
         }
+        navigate(options)
       } else {
         options = {
           to: '/' as const,
@@ -97,11 +97,9 @@ const Filterbar = ({
             locations: debouncedLocations,
             page: 1,
           },
-          params: true,
         }
+        navigate(options)
       }
-
-      navigate(options)
     }
   }, [
     debouncedSearchValue,
@@ -143,8 +141,7 @@ const Filterbar = ({
   }
 
   return (
-    // TODO: measure height of header and use it here
-    <header className="sticky top-[60px] z-10 bg-white shadow-sm">
+    <header className="shadow-sm">
       <nav className="bg-white w-full flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 shadow-sm">
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:items-center">
           <div className="flex items-center justify-between gap-2">
@@ -217,19 +214,17 @@ const Filterbar = ({
             onChange={(e) => setSearchValue(e.target.value)}
           />
           {withShelves ? (
-            <div>
-              asd
-              <Multiselect
-                options={data}
-                value={shelves}
-                selectedText="shelf selected"
-                dataKey="shelves"
-                optionLabel="name"
-                optionValue="id"
-                onSelect={setShelves}
-                className="w-full sm:w-[200px] max-w-full"
-              />
-            </div>
+            <Multiselect
+              options={data}
+              value={shelves}
+              selectedText="shelf selected"
+              dataKey="shelves"
+              optionLabel="name"
+              optionLabelFn={(name) => name.replace('Shelf', 'Polc')}
+              optionValue="id"
+              onSelect={setShelves}
+              className="w-full sm:w-[200px] max-w-full"
+            />
           ) : (
             <Multiselect
               options={data}
