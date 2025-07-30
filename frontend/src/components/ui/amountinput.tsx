@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MinusIcon, PlusIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,10 @@ export default function AmountInput({
 }) {
   const [inputValue, setValue] = useState<number>(value)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setValue(value)
+  }, [value])
 
   const applyValue = (val: string) => {
     if (val === '') {
@@ -49,6 +53,7 @@ export default function AmountInput({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      e.preventDefault()
       inputRef.current?.blur()
     }
   }
@@ -59,6 +64,7 @@ export default function AmountInput({
         variant="ghost"
         size="icon"
         onClick={decrement}
+        type="button"
         className="h-9 w-9 rounded-none border-r cursor-pointer"
       >
         <MinusIcon className="w-4 h-4" />
@@ -78,6 +84,7 @@ export default function AmountInput({
         variant="ghost"
         size="icon"
         onClick={increment}
+        type="button"
         className="h-9 w-9 rounded-none border-l cursor-pointer"
       >
         <PlusIcon className="w-4 h-4" />

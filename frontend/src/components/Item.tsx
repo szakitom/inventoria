@@ -26,7 +26,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Label } from '@components/ui/label'
 import { motion, AnimatePresence } from 'motion/react'
@@ -45,6 +45,10 @@ const Item = ({ item }: { item: IItem }) => {
   const [amount, setAmount] = useState(Number(item.amount) || 0)
   const router = useRouter()
   const { open } = useGlobalDialog()
+
+  useEffect(() => {
+    setAmount(Number(item.amount) || 0)
+  }, [item.amount])
 
   const status = getExpirationStatus(item.expiresIn)
 
