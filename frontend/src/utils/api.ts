@@ -114,3 +114,17 @@ export const updateLocation = async (
   if (!res.ok) throw new Error('Failed to update location')
   return res.json()
 }
+
+// TODO: create location
+
+export const createItem = async (data: Partial<IItem>) => {
+  const res = await fetch('/api/items', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Failed to create item')
+  return res.json()
+}
