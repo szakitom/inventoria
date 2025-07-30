@@ -34,11 +34,12 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
   const search = route.useSearch()
   const data = route.useLoaderData()
   // const navigate = useNavigate({ from: route.fullPath })
-  const { pages: pageCount } = data.items
+  const { pages: pageCount, total, items: currentItems } = data.items
   const { page: currentPage, limit } = search
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const activePageRef = useRef<HTMLDivElement | null>(null)
 
+  console.log(data)
   useEffect(() => {
     if (activePageRef.current) {
       activePageRef.current.scrollIntoView({
@@ -94,6 +95,13 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div>
+        <Label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+          Showing items {limit * (currentPage - 1) + 1} -{' '}
+          {limit * (currentPage - 1) + currentItems.length} of {total}
+        </Label>
       </div>
 
       {pageCount > 1 ? (
