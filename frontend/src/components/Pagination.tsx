@@ -33,13 +33,11 @@ interface PaginationProps {
 const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
   const search = route.useSearch()
   const data = route.useLoaderData()
-  // const navigate = useNavigate({ from: route.fullPath })
   const { pages: pageCount, total, items: currentItems } = data.items
   const { page: currentPage, limit } = search
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const activePageRef = useRef<HTMLDivElement | null>(null)
 
-  console.log(data)
   useEffect(() => {
     if (activePageRef.current) {
       activePageRef.current.scrollIntoView({
