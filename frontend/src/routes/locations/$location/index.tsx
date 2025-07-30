@@ -56,10 +56,8 @@ export const Route = createFileRoute('/locations/$location/')({
 
 function Location() {
   const [isPending, startTransition] = useTransition()
-  const data = Route.useLoaderData()
   const navigate = useNavigate({ from: '/locations/$location' })
 
-  console.log(data)
   const handleNavigate = async (options: Parameters<typeof navigate>[0]) => {
     await startTransition(() => navigate(options))
   }
