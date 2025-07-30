@@ -40,7 +40,7 @@ const Header = () => {
               Locations
             </Link>
             <Button asChild>
-              <Link to="/items/add">+ Add Item</Link>
+              <Link to="/add">+ Add Item</Link>
             </Button>
           </nav>
 
