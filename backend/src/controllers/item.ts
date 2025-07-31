@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { Query } from 'mongoose'
 import { Temporal } from '@js-temporal/polyfill'
 import { Item, Location, Shelf } from '../models'
 import { getProduct } from './OpenFoodFacts'
@@ -12,6 +12,7 @@ export const getItems = async (req, res, next) => {
     let limit = 10
     let page = 1
     let regex: RegExp | null = null
+
     if (req.query.page) {
       page = parseInt(req.query.page as string, 10)
     }
@@ -28,6 +29,31 @@ export const getItems = async (req, res, next) => {
         { 'openFoodFacts.product_name': regex },
       ],
     }
+
+    if (req.query.locations) {
+      let shelfIds: mongoose.Types.ObjectId[]
+      if (req.query.shelves) {
+        // If shelves are provided, filter by shelves in the selected locations
+        shelfIds = (req.query.shelves as string)
+          .split(',')
+          .map((id) => new mongoose.Types.ObjectId(id))
+      } else {
+        // Get shelves from the selected locations
+        const locationIds = (req.query.locations as string)
+          .split(',')
+          .map((id) => new mongoose.Types.ObjectId(id))
+        const locations = await Location.find(
+          { _id: { $in: locationIds } },
+          'shelves'
+        )
+        shelfIds = locations.flatMap((loc) =>
+          loc.shelves.map((s) => new mongoose.Types.ObjectId(s))
+        )
+      }
+
+      baseQuery.location = { $in: shelfIds }
+    }
+
     if (req.query.sort) {
       sortOptions = getSortOptions(req.query.sort)
       const rawSort = req.query.sort as string | undefined
@@ -66,17 +92,10 @@ export const getItems = async (req, res, next) => {
 
         const ids = partialItems.map((doc) => doc._id)
 
-        const items: IItem[] = await Item.find({ _id: { $in: ids } })
-          .populate({
-            path: 'location',
-            select: 'name',
-            populate: {
-              path: 'location',
-              select: 'name type',
-            },
-          })
-          .select('+openFoodFacts')
-          .collation({ locale: 'hu', strength: 2 })
+        const items: IItem[] = await prepareItemQuery(
+          { _id: { $in: ids } },
+          sortOptions
+        )
 
         // Ensure the order matches the aggregation order
         const itemMap = new Map(
@@ -94,41 +113,8 @@ export const getItems = async (req, res, next) => {
         })
       }
     }
-    if (req.query.locations) {
-      let shelfIds
-      if (req.query.shelves) {
-        // If shelves are provided, filter by shelves in the selected locations
-        shelfIds = req.query.shelves.split(',')
-      } else {
-        // Get shelves from the selected locations
-        const locationIds = req.query.locations.split(',')
-        const locations = await Location.find(
-          { _id: { $in: locationIds } },
-          'shelves'
-        )
-        shelfIds = locations.flatMap((loc) =>
-          loc.shelves.map((s) => s.toString())
-        )
-      }
 
-      baseQuery = {
-        ...baseQuery,
-        location: { $in: shelfIds },
-      }
-    }
-
-    const query = Item.find(baseQuery)
-      .collation({ locale: 'hu', strength: 2 })
-      .sort(sortOptions)
-      .populate({
-        path: 'location',
-        select: 'name',
-        populate: {
-          path: 'location',
-          select: 'name type',
-        },
-      })
-      .select('+openFoodFacts')
+    const query = prepareItemQuery(baseQuery, sortOptions)
 
     if (limit !== 0) {
       query.limit(limit).skip((page - 1) * limit)
@@ -376,3 +362,21 @@ const getSortOptions = (sort: string): { [key: string]: 1 | -1 } =>
     acc[key] = order
     return acc
   }, {} as { [key: string]: 1 | -1 })
+
+const prepareItemQuery = (
+  filter: object,
+  sortOptions: { [key: string]: 1 | -1 }
+): Query<IItem[], IItem> => {
+  return Item.find(filter)
+    .collation({ locale: 'hu', strength: 2 })
+    .sort(sortOptions)
+    .populate({
+      path: 'location',
+      select: 'name',
+      populate: {
+        path: 'location',
+        select: 'name type',
+      },
+    })
+    .select('+openFoodFacts')
+}
