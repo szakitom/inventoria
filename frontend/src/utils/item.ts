@@ -1,3 +1,4 @@
+import { ArrowDown01, ArrowDownAZ, CalendarArrowDown } from 'lucide-react'
 import { z } from 'zod'
 
 export class Item {
@@ -11,9 +12,9 @@ export class Item {
   }
 
   static baseSortOptions = [
-    { name: 'Name', value: 'name' },
-    { name: 'Amount', value: 'amount' },
-    { name: 'Expiration', value: 'expiration' },
+    { name: 'Name', value: 'name', icon: ArrowDownAZ },
+    { name: 'Expiration', value: 'expiration', icon: CalendarArrowDown },
+    { name: 'Amount', value: 'amount', icon: ArrowDown01 },
   ] as const
 
   static pageLimitOptions = [

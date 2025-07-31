@@ -164,6 +164,7 @@ const Filterbar = ({
                 <SelectContent>
                   {Item.baseSortOptions.map((field) => (
                     <SelectItem key={field.value} value={field.value}>
+                      {field.icon && <field.icon className="mr-1" />}
                       {field.name}
                     </SelectItem>
                   ))}
