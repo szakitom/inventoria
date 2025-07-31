@@ -3,6 +3,7 @@ import { Temporal } from '@js-temporal/polyfill'
 import { Item, Location, Shelf } from '../models'
 import { getProduct } from './OpenFoodFacts'
 import { deleteFile } from './minio'
+import { IItem } from '../models/Item'
 
 export const getItems = async (req, res, next) => {
   // IDEA: cursor based pagination
@@ -65,7 +66,7 @@ export const getItems = async (req, res, next) => {
 
         const ids = partialItems.map((doc) => doc._id)
 
-        const items = await Item.find({ _id: { $in: ids } })
+        const items: IItem[] = await Item.find({ _id: { $in: ids } })
           .populate({
             path: 'location',
             select: 'name',
@@ -79,7 +80,10 @@ export const getItems = async (req, res, next) => {
 
         // Ensure the order matches the aggregation order
         const itemMap = new Map(
-          items.map((item) => [item._id.toString(), item])
+          items.map((item) => [
+            (item._id as mongoose.Types.ObjectId).toString(),
+            item,
+          ])
         )
         const sortedItems = ids.map((id) => itemMap.get(id.toString()))
 
