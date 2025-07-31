@@ -42,6 +42,25 @@ export interface IItem {
   createdAt: string
   expiresIn?: number
   amount?: string | number
+  openFoodFacts?: {
+    code: string
+    nutriments: object
+    product_name: string
+    selected_images: {
+      front: {
+        display: {
+          en: string
+        }
+        small: {
+          en: string
+        }
+        thumb: {
+          en: string
+        }
+      }
+    }
+  }
+  imageUrl?: string
 }
 
 interface ItemsProps {

@@ -14,7 +14,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
-import Barcode from 'react-barcode'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -38,6 +37,7 @@ import { deleteItem, moveItem, updateItem } from '@utils/api'
 import { useRouter } from '@tanstack/react-router'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { getExpirationStatus, getLocationIcon } from '@utils/index'
+import ImageBarcodeTab from './ImageBarcodeTab'
 
 const Item = ({ item, from }: { item: IItem; from?: string }) => {
   const [isExpanded, setExpanded] = useState(false)
@@ -229,8 +229,6 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
           </div>
         </div>
       </CardContent>
-
-      {/* TODO: if we have an image display it in a separated tab next to barcode: HINT: cherry */}
       <CardFooter className="bg-muted -mx-3 -mb-3 p-0">
         <Collapsible
           className="w-full"
@@ -253,7 +251,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
               <motion.div
                 key="content"
                 initial={{ maxHeight: 0, opacity: 0 }}
-                animate={{ maxHeight: 300, opacity: 1 }}
+                animate={{ maxHeight: 400, opacity: 1 }}
                 exit={{ maxHeight: 0, opacity: 0 }}
                 transition={{ duration: 0.25, ease: 'easeInOut' }}
                 className="overflow-hidden px-3 py-2 text-foreground"
@@ -275,19 +273,11 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
                       </span>
                     </div>
                   )}
-                  {item.barcode && (
-                    <div className="flex w-full flex-col">
-                      <div className="w-full flex items-center justify-between mb-2">
-                        <Label>Barcode:</Label>
-                        <span className="text-sm font-mono">
-                          {item.barcode}
-                        </span>
-                      </div>
-                      <div className="w-full rounded-sm bg-white text-white font-mono flex items-center justify-center p-0">
-                        <Barcode value={item.barcode} background="white" />
-                      </div>
-                    </div>
-                  )}
+                  <ImageBarcodeTab
+                    off={item.openFoodFacts}
+                    image={item.imageUrl}
+                    barcode={item.barcode}
+                  />
                 </div>
               </motion.div>
             )}
