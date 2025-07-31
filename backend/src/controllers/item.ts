@@ -75,7 +75,7 @@ export const getItems = async (req, res, next) => {
               },
             },
           },
-          { $sort: { expirationSort: sortOrder } },
+          { $sort: { expirationSort: sortOrder, _id: 1 } },
         ]
 
         if (limit !== 0) {
