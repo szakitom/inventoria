@@ -6,6 +6,7 @@ import { deleteFile } from './minio'
 
 export const getItems = async (req, res, next) => {
   // IDEA: cursor based pagination
+  // TODO: put null expiration at end when sorting by expiration
   try {
     let sortOptions: { [key: string]: 1 | -1 } = { name: 1 }
     let limit = 10

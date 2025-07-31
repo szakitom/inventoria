@@ -147,6 +147,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
                     key={page}
                     ref={page === currentPage ? activePageRef : null}
                   >
+                    {/* TODO: onclick should display a popup to go to given page */}
                     {isPending && page === currentPage ? (
                       <PaginationItem key={page}>
                         <PaginationLink isActive className="cursor-default">
