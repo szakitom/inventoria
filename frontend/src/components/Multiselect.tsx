@@ -3,6 +3,7 @@ import { Command, CommandItem, CommandList } from '@components/ui/command'
 import { Button } from '@components/ui/button'
 import { Badge } from '@components/ui/badge'
 import {
+  createElement,
   Suspense,
   use,
   useDeferredValue,
@@ -12,7 +13,7 @@ import {
   useState,
 } from 'react'
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
-import { arraysEqual } from '@utils/index'
+import { arraysEqual, getLocationIcon } from '@utils/index'
 
 interface OptionType {
   [key: string]: string
@@ -150,6 +151,10 @@ const Options = ({
       onSelect={() => onSelect(option[optionValue])}
       className="cursor-pointer"
     >
+      {option.type &&
+        createElement(getLocationIcon(option.type), {
+          className: 'h-4 w-4 text-blue-500',
+        })}
       <span className="truncate">
         {optionLabelFn
           ? optionLabelFn(option[optionLabel])

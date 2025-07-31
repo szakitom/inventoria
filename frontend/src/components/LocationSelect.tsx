@@ -1,4 +1,4 @@
-import { Suspense, use, useId, useState } from 'react'
+import { createElement, Suspense, use, useId, useState } from 'react'
 import { Label } from './ui/label'
 import {
   Select,
@@ -7,12 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select'
+import { getLocationIcon } from '@utils/index'
 
 export interface Location {
   id: string
   name: string
   type?: string
   shelves: Shelf[]
+  count?: number
 }
 
 export interface Shelf {
@@ -93,6 +95,7 @@ const LocationSelect = ({
                   key: loc.id,
                   value: loc.id,
                   label: loc.name,
+                  type: loc.type,
                 }
               }}
             />
@@ -162,6 +165,7 @@ interface SuspendedOptionsProps<T = unknown> {
     value: string
     label: string
     disabled?: boolean
+    type?: string
   }
 }
 
@@ -184,9 +188,13 @@ const SuspendedOptions = <T,>({
   return (
     <>
       {list.map((item) => {
-        const { key, value, label, disabled } = mapFn(item)
+        const { key, value, label, disabled, type } = mapFn(item)
         return (
           <SelectItem key={key} value={value} disabled={disabled}>
+            {type &&
+              createElement(getLocationIcon(type), {
+                className: 'h-4 w-4 text-blue-500',
+              })}
             {label}
           </SelectItem>
         )
