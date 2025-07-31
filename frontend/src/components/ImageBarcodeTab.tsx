@@ -132,21 +132,27 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
 export default ImageBarcodeTab
 
 const ImageDisplay = ({ src }: { src: string }) => (
-  <div className="w-full rounded-sm bg-white text-white font-mono flex items-center justify-center p-0">
-    <img src={src} alt="Item" className="h-auto w-full rounded-md bg-red-400" />
-  </div>
+  <Card className="w-full bg-white text-black py-0 aspect-[1/1]rounded-sm flex items-center justify-center">
+    <img
+      src={src}
+      alt="Item"
+      className="w-full h-full object-contain rounded-md bg-red-400"
+    />
+  </Card>
 )
 
 const BarcodeDisplay = ({ barcode }: { barcode: string }) => (
-  <div className="flex w-full flex-col">
-    <div className="w-full flex items-center justify-between mb-2">
-      <Label>Barcode:</Label>
-      <span className="text-sm font-mono">{barcode}</span>
-    </div>
-    <div className="w-full rounded-sm bg-white text-white font-mono flex items-center justify-center p-0">
-      <Barcode value={barcode} background="white" />
-    </div>
-  </div>
+  <Card className="w-full bg-white text-black py-0">
+    <CardContent className="p-4 space-y-2 text-sm">
+      <div className="w-full flex items-center justify-between mb-2">
+        <Label>Barcode:</Label>
+        <span className="text-sm font-mono">{barcode}</span>
+      </div>
+      <div className="w-full rounded-sm bg-white text-white font-mono flex items-center justify-center p-0">
+        <Barcode value={barcode} background="white" />
+      </div>
+    </CardContent>
+  </Card>
 )
 
 const OffDisplay = ({ off }: { off: Partial<IItem['openFoodFacts']> }) => {
