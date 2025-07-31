@@ -2,6 +2,11 @@ import Barcode from 'react-barcode'
 import { Label } from './ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import type { IItem } from './Items'
+import { useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { cn } from '@/lib/utils'
+import { Barcode as BarcodeIcon, Image, Utensils } from 'lucide-react'
+import { Card, CardContent } from './ui/card'
 
 interface ImageBarcodeTabProps {
   off?: Partial<IItem['openFoodFacts']>
@@ -14,24 +19,34 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
   const hasBarcode = !!barcode
   const hasImage = !!image
 
-  const tabs: { id: string; label: string; value?: string }[] = []
+  const tabs: {
+    id: string
+    label: string
+    value?: string
+    icon: React.ElementType
+  }[] = []
 
   if (hasFacts) {
-    tabs.push({ id: 'barcode', label: 'Barcode' })
-    tabs.push({ id: 'facts', label: 'Facts' })
+    tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
+    tabs.push({ id: 'facts', label: 'Facts', icon: Utensils })
     if (hasImage) {
-      tabs.push({ id: 'image', label: 'Image', value: image })
+      tabs.push({ id: 'image', label: 'Image', value: image, icon: Image })
     } else {
       tabs.push({
         id: 'image',
         label: 'Image',
         value: off!.selected_images!.front.display.en,
+        icon: Image,
       })
     }
   } else {
-    if (hasBarcode) tabs.push({ id: 'barcode', label: 'Barcode' })
-    if (hasImage) tabs.push({ id: 'image', label: 'Image', value: image })
+    if (hasBarcode)
+      tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
+    if (hasImage)
+      tabs.push({ id: 'image', label: 'Image', value: image, icon: Image })
   }
+
+  const [activeTab, setActiveTab] = useState(tabs[0].id || 'barcode')
 
   if (tabs.length === 0) return null
 
@@ -45,13 +60,60 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
   }
 
   return (
-    <Tabs defaultValue={tabs[0].id} className="w-full">
-      <TabsList>
-        {tabs.map((tab) => (
-          <TabsTrigger key={tab.id} value={tab.id}>
-            {tab.label}
-          </TabsTrigger>
-        ))}
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="w-full gap-2 p-1">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id
+
+          return (
+            <motion.div
+              key={tab.id}
+              layout
+              className={cn(
+                'flex h-8 items-center justify-center overflow-hidden rounded-md',
+                isActive ? 'flex-1' : 'flex-none'
+              )}
+              style={{ background: 'transparent' }}
+              onClick={() => setActiveTab(tab.id)}
+              initial={false}
+              animate={{
+                width: isActive ? 120 : 32,
+              }}
+              transition={{
+                type: 'tween',
+                stiffness: 400,
+                damping: 25,
+              }}
+            >
+              <TabsTrigger
+                value={tab.id}
+                asChild
+                className="flex w-full items-center"
+              >
+                <motion.div
+                  className="flex w-full items-center justify-center"
+                  animate={{ filter: 'blur(0px)' }}
+                  exit={{ filter: 'blur(2px)' }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                >
+                  <tab.icon className="aspect-square flex-shrink-0" />
+                  <AnimatePresence initial={false}>
+                    {isActive && (
+                      <motion.span
+                        initial={{ opacity: 0, scaleX: 0.8 }}
+                        animate={{ opacity: 1, scaleX: 1 }}
+                        transition={{ duration: 0.25, ease: 'easeOut' }}
+                        style={{ originX: 0 }}
+                      >
+                        {tab.label}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              </TabsTrigger>
+            </motion.div>
+          )
+        })}
       </TabsList>
 
       {tabs.map((tab) => (
