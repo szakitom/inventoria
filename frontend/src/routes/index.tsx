@@ -1,4 +1,5 @@
 import { DialogProvider } from '@/hooks/DialogProvider'
+import FeatureBar from '@components/FeatureBar'
 import Filterbar from '@components/Filterbar'
 import Items from '@components/Items'
 import Pagination from '@components/Pagination'
@@ -64,6 +65,7 @@ function Index() {
         navigate={handleNavigate}
         isPending={isPending}
       />
+      <FeatureBar from="/" />
       <DialogProvider>
         <Items navigate={handleNavigate} from="/" />
       </DialogProvider>
