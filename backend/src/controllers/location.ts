@@ -4,7 +4,7 @@ import { Location, Shelf } from '../models'
 export const createLocation = async (req, res, next) => {
   const session = await mongoose.startSession()
   try {
-    const { name, count } = req.body
+    const { name, count, type } = req.body
 
     if (!name || typeof count !== 'number' || count <= 0) {
       return res
@@ -13,7 +13,7 @@ export const createLocation = async (req, res, next) => {
     }
     session.startTransaction()
 
-    const location = await Location.create([{ name }], { session })
+    const location = await Location.create([{ name, type }], { session })
     const locationDoc = location[0]
 
     const shelves = await Promise.all(

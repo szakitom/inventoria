@@ -21,26 +21,27 @@ import {
 } from './ui/select'
 import { LocationType } from './Items'
 import { Input } from './ui/input'
+import AmountInput from './ui/amountinput'
 
-interface EditLocationDialogProps {
+interface CreateLocationDialogProps {
   isOpen: boolean
   onCancel: () => void
   onSubmit: (payload: Partial<Location>) => Promise<void>
   data?: Location
 }
 
-const EditLocationDialog = ({
+const CreateLocationDialog = ({
   isOpen,
   onCancel,
   onSubmit,
-  data: location,
-}: EditLocationDialogProps) => {
+}: CreateLocationDialogProps) => {
   const [submitting, setSubmitting] = useState(false)
-  const [name, setName] = useState(location?.name || '')
-  const [type, setType] = useState(location?.type || '')
+  const [name, setName] = useState('')
+  const [type, setType] = useState('')
+  const [shelfCount, setShelfCount] = useState(1)
   const typeSelectId = useId()
   const nameId = useId()
-  const LocationIcon = getLocationIcon(location?.type || '')
+  const shelfId = useId()
 
   const handleTypeChange = (value: string) => {
     setType(value)
@@ -52,8 +53,8 @@ const EditLocationDialog = ({
 
   const handleSubmit = async () => {
     setSubmitting(true)
-    if (name && type) {
-      await onSubmit({ name, type })
+    if (name && type && shelfCount >= 1) {
+      await onSubmit({ name, type, count: shelfCount })
     }
     setSubmitting(false)
   }
@@ -64,14 +65,8 @@ const EditLocationDialog = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Location</DialogTitle>
-          <DialogDescription>
-            <span className="flex items-center space-x-1 text-sm text-muted-foreground mt-1 truncate">
-              <LocationIcon className="h-4 w-4 text-blue-500" />
-              <span>Editing </span>
-              <span className="truncate">{location?.name}</span>
-            </span>
-          </DialogDescription>
+          <DialogTitle>Create Location</DialogTitle>
+          <DialogDescription>Create a new location.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-2">
           <Label
@@ -106,6 +101,16 @@ const EditLocationDialog = ({
               ))}
             </SelectContent>
           </Select>
+          <Label
+            htmlFor={shelfId}
+            className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+          >
+            Shelf count
+          </Label>
+          <AmountInput
+            value={shelfCount}
+            onChange={(value) => setShelfCount(value)}
+          />
         </div>
         <DialogFooter>
           <Button
@@ -118,7 +123,9 @@ const EditLocationDialog = ({
           <Button
             className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20"
             onClick={handleSubmit}
-            disabled={!name || !type || submitting}
+            disabled={
+              !name || !type || submitting || !shelfCount || shelfCount < 1
+            }
           >
             {submitting ? <Spinner /> : 'Save'}
           </Button>
@@ -128,4 +135,4 @@ const EditLocationDialog = ({
   )
 }
 
-export default EditLocationDialog
+export default CreateLocationDialog

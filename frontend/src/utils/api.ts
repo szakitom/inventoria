@@ -115,7 +115,17 @@ export const updateLocation = async (
   return res.json()
 }
 
-// TODO: create location
+export const createLocation = async (data: Partial<Location>) => {
+  const res = await fetch('/api/locations', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Failed to create location')
+  return res.json()
+}
 
 interface CreateItemPayload {
   name: string
