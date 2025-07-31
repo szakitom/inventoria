@@ -9,12 +9,12 @@ import EditDialog from './EditDialog'
 
 const variants = {
   enter: (direction: 'next' | 'prev') => ({
-    x: direction === 'next' ? 150 : -150,
+    x: direction === 'next' ? 50 : -50,
     opacity: 0,
   }),
   center: { x: 0, opacity: 1 },
   exit: (direction: 'next' | 'prev') => ({
-    x: direction === 'next' ? -150 : 150,
+    x: direction === 'next' ? -50 : 50,
     opacity: 0,
   }),
 }
@@ -56,6 +56,14 @@ const Items = ({ navigate, from }: ItemsProps) => {
   } = useLoaderData({ from })
   const search = useSearch({ from })
   const page = search.page
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, 100)
+
+    return () => clearTimeout(timeout)
+  }, [page])
 
   const prevPageRef = useRef<number>(page)
   const [items, setItems] = useState(incomingItems)
