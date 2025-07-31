@@ -6,15 +6,11 @@ import { deleteFile } from './minio'
 
 export const getItems = async (req, res, next) => {
   // IDEA: cursor based pagination
-  // TODO: put null expiration at end when sorting by expiration
   try {
     let sortOptions: { [key: string]: 1 | -1 } = { name: 1 }
     let limit = 10
     let page = 1
     let regex: RegExp | null = null
-    if (req.query.sort) {
-      sortOptions = getSortOptions(req.query.sort)
-    }
     if (req.query.page) {
       page = parseInt(req.query.page as string, 10)
     }
@@ -30,6 +26,69 @@ export const getItems = async (req, res, next) => {
         { barcode: regex },
         { 'openFoodFacts.product_name': regex },
       ],
+    }
+    if (req.query.sort) {
+      sortOptions = getSortOptions(req.query.sort)
+      const rawSort = req.query.sort as string | undefined
+      if (rawSort === 'expiration' || rawSort === '-expiration') {
+        const sortOrder = rawSort.startsWith('-') ? -1 : 1
+
+        const pipeline: any[] = [
+          { $match: baseQuery },
+          {
+            $addFields: {
+              expirationSort: {
+                $cond: [
+                  { $eq: ['$expiration', null] },
+                  sortOrder === 1
+                    ? new Date('9999-12-31')
+                    : new Date('0000-01-01'),
+                  '$expiration',
+                ],
+              },
+            },
+          },
+          { $sort: { expirationSort: sortOrder } },
+        ]
+
+        if (limit !== 0) {
+          pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit })
+        }
+
+        // Only fetch _ids to re-fetch via .find() later
+        pipeline.push({ $project: { _id: 1 } })
+
+        const [partialItems, total] = await Promise.all([
+          Item.aggregate(pipeline),
+          Item.countDocuments(baseQuery),
+        ])
+
+        const ids = partialItems.map((doc) => doc._id)
+
+        const items = await Item.find({ _id: { $in: ids } })
+          .populate({
+            path: 'location',
+            select: 'name',
+            populate: {
+              path: 'location',
+              select: 'name type',
+            },
+          })
+          .select('+openFoodFacts')
+          .collation({ locale: 'hu', strength: 2 })
+
+        // Ensure the order matches the aggregation order
+        const itemMap = new Map(
+          items.map((item) => [item._id.toString(), item])
+        )
+        const sortedItems = ids.map((id) => itemMap.get(id.toString()))
+
+        return res.json({
+          items: sortedItems,
+          total,
+          pages: limit === 0 ? 1 : Math.ceil(total / limit),
+        })
+      }
     }
     if (req.query.locations) {
       let shelfIds
