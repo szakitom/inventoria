@@ -88,7 +88,7 @@ function Add() {
   }
 
   const handleBarcodeSubmit = (barcode: string) => {
-    console.log('Barcode submitted:', barcode)
+    console.info('Barcode submitted:', barcode)
     // form.setValue('barcode', '1234567890')
     setBarcodeScanOpen(false)
   }
