@@ -9,7 +9,7 @@ import {
   useNavigate,
 } from '@tanstack/react-router'
 import { zodValidator } from '@tanstack/zod-adapter'
-import { fetchItems, fetchShelves } from '@utils/api'
+import { fetchItems, fetchLocations, fetchShelves } from '@utils/api'
 import { Item } from '@utils/item'
 import { useTransition } from 'react'
 
@@ -41,6 +41,7 @@ export const Route = createFileRoute('/locations/$location/')({
           signal: abortController.signal,
         })
       ),
+      locations: defer(fetchLocations({ signal: abortController.signal })),
       items: await fetchItems({
         sort,
         limit,

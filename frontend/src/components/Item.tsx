@@ -39,7 +39,7 @@ import { useRouter } from '@tanstack/react-router'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { getExpirationStatus, getLocationIcon } from '@utils/index'
 
-const Item = ({ item }: { item: IItem }) => {
+const Item = ({ item, from }: { item: IItem; from?: string }) => {
   const [isExpanded, setExpanded] = useState(false)
   const LocationIcon = getLocationIcon(item.location.location.type)
   const [amount, setAmount] = useState(Number(item.amount) || 0)
@@ -143,7 +143,7 @@ const Item = ({ item }: { item: IItem }) => {
                       onSubmit: async (location: string) => {
                         await handleMoveItem(location)
                       },
-                      data: item,
+                      data: { ...item, from },
                     })
                   }
                   className="cursor-pointer"

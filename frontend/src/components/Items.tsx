@@ -131,7 +131,7 @@ const Items = ({ navigate, from }: ItemsProps) => {
                 }
               }}
             >
-              <Item item={item} />
+              <Item item={item} from={from} />
             </div>
           ))}
         </motion.div>

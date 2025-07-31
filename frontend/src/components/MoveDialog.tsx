@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from './ui/button'
-import { getRouteApi } from '@tanstack/react-router'
+import { useLoaderData } from '@tanstack/react-router'
 import { useState } from 'react'
 import { getLocationIcon } from '@utils/index'
 import { Badge } from './ui/badge'
@@ -19,6 +19,7 @@ interface MoveDialogProps {
   onCancel: () => void
   onSubmit: (shelfId: string) => Promise<void>
   data?: {
+    from: '/' | '/locations/$location/'
     location?: {
       location?: {
         id: string
@@ -36,8 +37,8 @@ const MoveDialog = ({
   onSubmit,
   data: item,
 }: MoveDialogProps) => {
-  const route = getRouteApi('/')
-  const data = route.useLoaderData()
+  const data = useLoaderData({ from: item?.from ?? '/' })
+
   const LocationIcon = getLocationIcon(
     item?.location?.location?.type || 'default'
   )
@@ -81,7 +82,7 @@ const MoveDialog = ({
           </DialogDescription>
         </DialogHeader>
         <LocationSelect
-          locations={data.locations}
+          locations={data?.locations}
           currentLocation={currentLocation}
           currentShelf={currentShelf}
           onSelect={handleShelfSelect}
