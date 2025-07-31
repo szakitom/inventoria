@@ -229,7 +229,12 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="bg-muted -mx-3 -mb-3 p-0">
+      <CardFooter
+        className={cn(
+          '-mx-3 -mb-3 p-0',
+          (item.openFoodFacts || item.imageUrl || item.barcode) && 'bg-muted'
+        )}
+      >
         <Collapsible
           className="w-full"
           open={isExpanded}
@@ -237,7 +242,16 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
         >
           <CollapsibleTrigger className="w-full px-3 py-2 flex justify-between items-center cursor-pointer">
             <span className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Details</span>
+              <div
+                className={cn(
+                  'text-sm text-gray-600',
+                  item.openFoodFacts || item.imageUrl
+                    ? 'font-bold text-foreground'
+                    : 'font-normal'
+                )}
+              >
+                Details
+              </div>
             </span>
             <ChevronDownIcon
               className={cn(
