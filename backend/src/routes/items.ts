@@ -12,6 +12,7 @@ const productReadLimiter = rateLimit({
 
 router.get('/', itemsController.getItems)
 router.post('/', productReadLimiter, itemsController.createItem)
+router.get('/featured', itemsController.getFeaturedItems)
 router.get('/:id', itemsController.getItem)
 router.delete('/:id', itemsController.deleteItem)
 router.put('/:id', productReadLimiter, itemsController.updateItem)

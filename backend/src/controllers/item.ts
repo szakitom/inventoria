@@ -349,6 +349,122 @@ export const moveItem = async (req, res, next) => {
   }
 }
 
+export const getFeaturedItems = async (req, res, next) => {
+  try {
+    const now = Temporal.Now.plainDateISO()
+    const sevenDaysFromNow = now.add({ days: 7 })
+    const nowDate = new Date(now.toString())
+    const sevenDaysFromNowDate = new Date(sevenDaysFromNow.toString())
+
+    const [result] = await Item.aggregate([
+      {
+        $facet: {
+          expiredItems: [
+            {
+              $match: {
+                expiration: { $ne: null, $lt: nowDate },
+              },
+            },
+            { $sort: { expiration: 1 } },
+            { $limit: 10 },
+            {
+              $lookup: {
+                from: 'shelves',
+                localField: 'location',
+                foreignField: '_id',
+                as: 'shelf',
+              },
+            },
+            { $unwind: '$shelf' },
+            {
+              $lookup: {
+                from: 'locations',
+                localField: 'shelf.location',
+                foreignField: '_id',
+                as: 'location',
+              },
+            },
+            { $unwind: '$location' },
+            {
+              $project: {
+                name: 1,
+                amount: 1,
+                expiration: 1,
+                quantity: 1,
+                shelfName: '$shelf.name',
+                locationName: '$location.name',
+                expiresIn: {
+                  $dateDiff: {
+                    startDate: '$$NOW',
+                    endDate: '$expiration',
+                    unit: 'day',
+                  },
+                },
+              },
+            },
+          ],
+          soonExpiringItems: [
+            {
+              $match: {
+                expiration: {
+                  $ne: null,
+                  $gte: nowDate,
+                  $lt: sevenDaysFromNowDate,
+                },
+              },
+            },
+            { $sort: { expiration: 1 } },
+            { $limit: 5 },
+            {
+              $lookup: {
+                from: 'shelves',
+                localField: 'location',
+                foreignField: '_id',
+                as: 'shelf',
+              },
+            },
+            { $unwind: '$shelf' },
+            {
+              $lookup: {
+                from: 'locations',
+                localField: 'shelf.location',
+                foreignField: '_id',
+                as: 'location',
+              },
+            },
+            { $unwind: '$location' },
+            {
+              $project: {
+                name: 1,
+                amount: 1,
+                expiration: 1,
+                quantity: 1,
+                shelfName: '$shelf.name',
+                locationName: '$location.name',
+                expiresIn: {
+                  $dateDiff: {
+                    startDate: '$$NOW',
+                    endDate: '$expiration',
+                    unit: 'day',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    ])
+
+    res.json(
+      [...result.soonExpiringItems, ...result.expiredItems].sort(
+        () => Math.random() - 0.5
+      )
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
 const getFullDate = ({
   year = Temporal.Now.plainDateISO().year,
   month,

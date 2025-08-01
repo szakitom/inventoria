@@ -20,7 +20,7 @@ const ItemSchema = new Schema<IItem>({
   barcode: { type: String, index: true, trim: true },
   amount: { type: Number, required: true, default: 1 },
   quantity: { type: String, default: '', trim: true },
-  expiration: { type: Date },
+  expiration: { type: Date, index: true },
   createdAt: { type: Date, default: Date.now },
   owner: { type: String },
   location: {
