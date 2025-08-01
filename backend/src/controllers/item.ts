@@ -265,7 +265,7 @@ export const deleteItem = async (req, res, next) => {
 export const updateItem = async (req, res, next) => {
   try {
     const { id } = req.params
-    let { expiration } = req.body
+    let { expiration, barcode } = req.body
     if (expiration) {
       const date = new Date(expiration)
       if (isNaN(date.getTime())) {
@@ -279,9 +279,17 @@ export const updateItem = async (req, res, next) => {
         day: date.getDate(),
       })
     }
+    let offData
+    if (barcode) {
+      try {
+        offData = await getProduct(barcode)
+      } catch (error) {
+        offData = null
+      }
+    }
     const item = await Item.findByIdAndUpdate(
       id,
-      { ...req.body, expiration },
+      { ...req.body, expiration, openFoodFacts: offData },
       { new: true }
     )
     if (!item) {
