@@ -147,3 +147,16 @@ export const createItem = async (data: CreateItemPayload) => {
   if (!res.ok) throw new Error('Failed to create item')
   return res.json()
 }
+
+export const fetchFeaturedItems = async ({
+  signal,
+}: {
+  signal: AbortSignal
+}) => {
+  if (signal.aborted) {
+    throw new Error('Fetch aborted')
+  }
+  const res = await fetch('/api/items/featured', { signal })
+  if (!res.ok) throw new Error('Failed to fetch featured items')
+  return res.json()
+}

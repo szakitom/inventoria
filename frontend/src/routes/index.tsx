@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-router'
 
 import { zodValidator } from '@tanstack/zod-adapter'
-import { fetchItems, fetchLocations } from '@utils/api'
+import { fetchFeaturedItems, fetchItems, fetchLocations } from '@utils/api'
 import { Item } from '@utils/item'
 import { useTransition } from 'react'
 
@@ -45,6 +45,7 @@ export const Route = createFileRoute('/')({
         shelves,
         signal: abortController.signal,
       }),
+      featured: defer(fetchFeaturedItems({ signal: abortController.signal })),
       locations: defer(fetchLocations({ signal: abortController.signal })),
     }
   },
