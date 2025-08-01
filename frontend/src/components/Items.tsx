@@ -36,6 +36,8 @@ export interface IItem {
     }
     name: string
   }
+  locationName?: string
+  shelfName?: string
   barcode: string
   quantity?: string | number
   expiration?: string | null
