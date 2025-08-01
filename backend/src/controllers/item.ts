@@ -11,7 +11,7 @@ export const getItems = async (req, res, next) => {
     let sortOptions: { [key: string]: 1 | -1 } = { name: 1 }
     let limit = 10
     let page = 1
-    let regex: RegExp | null = null
+    let baseQuery: any = {}
 
     if (req.query.page) {
       page = parseInt(req.query.page as string, 10)
@@ -20,14 +20,12 @@ export const getItems = async (req, res, next) => {
       limit = parseInt(req.query.limit as string, 10)
     }
     if (req.query.search) {
-      regex = new RegExp(req.query.search, 'i')
-    }
-    let baseQuery: any = {
-      $or: [
+      const regex = new RegExp(req.query.search, 'i')
+      baseQuery.$or = [
         { name: regex },
         { barcode: regex },
         { 'openFoodFacts.product_name': regex },
-      ],
+      ]
     }
 
     if (req.query.locations) {
@@ -124,6 +122,7 @@ export const getItems = async (req, res, next) => {
       query,
       Item.countDocuments(baseQuery),
     ])
+
     res.json({
       items,
       total,
