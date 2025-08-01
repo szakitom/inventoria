@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react'
+import { useId, useRef } from 'react'
 import { useNavigate, type AnyRoute } from '@tanstack/react-router'
 import {
   Pagination as PaginationShad,
@@ -35,18 +35,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
   const data = route.useLoaderData()
   const { pages: pageCount, total, items: currentItems } = data.items
   const { page: currentPage, limit } = search
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const activePageRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (activePageRef.current) {
-      activePageRef.current.scrollIntoView({
-        behavior: 'smooth',
-        inline: 'center',
-        block: 'nearest',
-      })
-    }
-  }, [currentPage])
 
   const id = useId()
 
@@ -134,7 +123,6 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
 
             <div
               className="flex items-center gap-2 w-full justify-center overflow-x-auto scrollbar-hide"
-              ref={scrollContainerRef}
               // IDEA: check out scrollarea
             >
               {visiblePages.map((page, idx) =>
@@ -147,7 +135,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
                     key={page}
                     ref={page === currentPage ? activePageRef : null}
                   >
-                    {/* TODO: onclick should display a popup to go to given page */}
+                    {/* IDEA: onclick should display a popup to go to given page */}
                     {isPending && page === currentPage ? (
                       <PaginationItem key={page}>
                         <PaginationLink isActive className="cursor-default">
