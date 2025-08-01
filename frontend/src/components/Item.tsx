@@ -264,9 +264,21 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
             {isExpanded && (
               <motion.div
                 key="content"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
+                initial={
+                  !item.openFoodFacts
+                    ? { maxHeight: 0, opacity: 0 }
+                    : { height: 0, opacity: 0 }
+                }
+                animate={
+                  !item.openFoodFacts
+                    ? { maxHeight: 400, opacity: 1 }
+                    : { height: 'auto', opacity: 1 }
+                }
+                exit={
+                  !item.openFoodFacts
+                    ? { maxHeight: 0, opacity: 0 }
+                    : { height: 0, opacity: 0 }
+                }
                 transition={{ duration: 0.25, ease: 'easeInOut' }}
                 className="overflow-hidden px-3 py-2 text-foreground"
               >
