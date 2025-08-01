@@ -1,16 +1,13 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { createRootRoute, Outlet } from '@tanstack/react-router'
+import Header from '@components/Header'
+
+// TODO: add error boundary with the ability to toast
 
 export const Route = createRootRoute({
   component: () => (
     <>
-      <div className="p-2 flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>
-      </div>
+      <Header />
       <Outlet />
-      <TanStackRouterDevtools />
     </>
   ),
 })

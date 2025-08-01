@@ -1,39 +1,84 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-
-const fetchLocation = async (locationId: string) => {
-  const response = await fetch(`/api/locations/${locationId}`)
-  if (!response.ok) {
-    throw new Error('Failed to fetch location')
-  }
-  return response.json()
-}
+import { DialogProvider } from '@/hooks/DialogProvider'
+import Filterbar from '@components/Filterbar'
+import Items from '@components/Items'
+import Pagination from '@components/Pagination'
+import {
+  createFileRoute,
+  defer,
+  stripSearchParams,
+  useNavigate,
+} from '@tanstack/react-router'
+import { zodValidator } from '@tanstack/zod-adapter'
+import { fetchItems, fetchLocations, fetchShelves } from '@utils/api'
+import { Item } from '@utils/item'
+import { useTransition } from 'react'
 
 export const Route = createFileRoute('/locations/$location/')({
-  component: RouteComponent,
-  loader: async ({ params }) => {
-    const location = await fetchLocation(params.location)
-    return location
+  component: Location,
+  validateSearch: zodValidator(Item.itemSearchSchema),
+  search: {
+    middlewares: [stripSearchParams(Item.defaultValues)],
+  },
+  loaderDeps: ({
+    search: { sort, limit, page, search, locations, shelves },
+  }) => ({
+    sort,
+    limit,
+    page,
+    search,
+    locations,
+    shelves,
+  }),
+  loader: async ({
+    params: { location },
+    abortController,
+    deps: { sort, limit, page, search, shelves },
+  }) => {
+    return {
+      shelves: defer(
+        fetchShelves({
+          locationId: location,
+          signal: abortController.signal,
+        })
+      ),
+      locations: defer(fetchLocations({ signal: abortController.signal })),
+      items: await fetchItems({
+        sort,
+        limit,
+        page,
+        search,
+        shelves,
+        locations: [location],
+        signal: abortController.signal,
+      }),
+    }
   },
 })
 
-function RouteComponent() {
-  const location = Route.useLoaderData()
+function Location() {
+  const [isPending, startTransition] = useTransition()
+  const navigate = useNavigate({ from: '/locations/$location' })
+
+  const handleNavigate = async (options: Parameters<typeof navigate>[0]) => {
+    await startTransition(() => navigate(options))
+  }
+
   return (
-    <div>
-      <h2>{location.name}</h2>
-      {location.shelves && location.shelves.length > 0 ? (
-        <ul>
-          {location.shelves.map((shelf: { id: string; name: string }) => (
-            <Link key={shelf.id} to="$shelf" params={{ shelf: shelf.id }}>
-              <li>
-                {shelf.name} [{shelf.items ? shelf.items.length : 0}]
-              </li>
-            </Link>
-          ))}
-        </ul>
-      ) : (
-        <p>No shelves found for this location.</p>
-      )}
-    </div>
+    <main>
+      <Filterbar
+        route={Route}
+        navigate={handleNavigate}
+        isPending={isPending}
+        withShelves
+      />
+      <DialogProvider>
+        <Items navigate={handleNavigate} from="/locations/$location/" />
+      </DialogProvider>
+      <Pagination
+        route={Route}
+        navigate={handleNavigate}
+        isPending={isPending}
+      />
+    </main>
   )
 }

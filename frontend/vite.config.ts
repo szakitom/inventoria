@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import reactPlugin from '@vitejs/plugin-react-swc'
 import mkcert from 'vite-plugin-mkcert'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 // Removed the import for ignoreTsErrors
 
 import { config } from 'dotenv'
@@ -18,6 +20,7 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     reactPlugin(),
+    tailwindcss(),
     mkcert(),
     // Temporarily removed the custom plugin
     // ignoreTsErrors(),
@@ -28,6 +31,7 @@ export default defineConfig({
       '@routes': '/src/routes',
       '@utils': '/src/utils',
       '@assets': '/src/assets',
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {
