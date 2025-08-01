@@ -25,6 +25,7 @@ import { useHookFormMask } from 'use-mask-input'
 import type { IItem } from './Items'
 import { Spinner } from './ui/spinner'
 import { Item } from '@utils/item'
+import { ScanBarcode } from 'lucide-react'
 
 interface EditDialogProps {
   isOpen: boolean
@@ -121,7 +122,28 @@ const EditDialog = ({
                           <FormItem>
                             <FormLabel>Barcode</FormLabel>
                             <FormControl>
-                              <Input placeholder="Barcode" {...field} />
+                              <div className="w-full space-y-2">
+                                <div className="flex rounded-md shadow-xs">
+                                  <Input
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="Barcode"
+                                    className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
+                                    {...field}
+                                  />
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    type="button"
+                                    className="rounded-s-none rounded-e-md text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground transition-[color]"
+                                    aria-label="Scan Barcode"
+                                    // TODO: Implement barcode scanning
+                                    onClick={() => alert('not implemented yet')}
+                                  >
+                                    <ScanBarcode size={16} aria-hidden="true" />
+                                  </Button>
+                                </div>
+                              </div>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
