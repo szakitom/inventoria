@@ -36,20 +36,25 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
     icon: React.ElementType
   }[] = []
 
-  if (hasFacts && off) {
-    const nutriments = off.nutriments
-    tabs.push({
-      id: 'facts',
-      label: 'Facts',
-      icon: Utensils,
-      nutrition: nutriments,
-    })
+  if (hasFacts) {
+    if (off.nutriments) {
+      const nutriments = off.nutriments
+      tabs.push({
+        id: 'facts',
+        label: 'Facts',
+        icon: Utensils,
+        nutrition: nutriments,
+      })
+    }
 
-    tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
-
+    if (hasBarcode) {
+      tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
+    }
     const imageToUse = hasImage
       ? image
-      : off.selected_images?.front?.display?.en
+      : off.selected_images?.front?.display[
+          Object.keys(off.selected_images?.front?.display)[0]
+        ]
     if (imageToUse) {
       tabs.push({
         id: 'image',
@@ -151,11 +156,11 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
 export default ImageBarcodeTab
 
 const ImageDisplay = ({ src }: { src: string }) => (
-  <Card className="w-full bg-white text-black py-0 aspect-[1/1]rounded-sm flex items-center justify-center">
+  <Card className="w-full bg-white text-black py-0 aspect-[1/1] rounded-sm flex items-center justify-center">
     <img
       src={src}
       alt="Item"
-      className="w-full h-full object-contain rounded-md bg-red-400"
+      className="w-full h-full  object-contain rounded-md"
     />
   </Card>
 )

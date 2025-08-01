@@ -57,15 +57,9 @@ export interface IItem {
     product_name: string
     selected_images: {
       front: {
-        display: {
-          en: string
-        }
-        small: {
-          en: string
-        }
-        thumb: {
-          en: string
-        }
+        display: { [lang: string]: string }
+        small: { [lang: string]: string }
+        thumb: { [lang: string]: string }
       }
     }
   }
