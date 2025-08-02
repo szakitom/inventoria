@@ -69,7 +69,7 @@ const MoveDialog = ({
         <DialogHeader>
           <DialogTitle>Move Item</DialogTitle>
           <DialogDescription>
-            <span className="flex items-center space-x-1 text-sm text-muted-foreground mt-1 truncate">
+            <span className="flex items-center space-x-1 text-sm mt-1 truncate">
               <LocationIcon className="h-4 w-4 text-blue-500" />
               <span>Moving from</span>
               <span className="truncate">
@@ -90,7 +90,7 @@ const MoveDialog = ({
         <DialogFooter>
           <Button
             variant="secondary"
-            className="cursor-pointer hover:bg-gray-200"
+            className="cursor-pointer "
             onClick={onCancel}
           >
             Cancel

@@ -20,14 +20,14 @@ const FeatureBar = ({ from }: FeatureBarProps) => {
   return (
     <motion.div
       layout
-      className="bg-muted-foreground/50 text-muted w-full shadow-sm"
+      className="bg-muted-foreground text-muted w-full shadow-sm"
     >
       <AnimatePresence initial={false} mode="wait">
         {!open ? (
           <Button
             onClick={() => setOpen(true)}
             variant="ghost"
-            className="w-full rounded-none cursor-pointer text-white hover:bg-transparent px-4 py-3"
+            className="w-full rounded-none cursor-pointer  px-4 py-3"
           >
             <motion.div
               key="collapsed"
@@ -48,14 +48,14 @@ const FeatureBar = ({ from }: FeatureBarProps) => {
           <motion.div
             key="expanded"
             initial={{ opacity: 0, height: 50 }}
-            animate={{ opacity: 1, height: 160 }}
+            animate={{ opacity: 1, height: 170 }}
             exit={{ opacity: 0, height: 50 }}
             transition={{ duration: 0.3 }}
-            className="w-full origin-top pt-4 flex flex-col justify-between items-center"
+            className="w-full origin-top pt-4 flex flex-col justify-between items-center bg-card"
           >
             <Suspense
               fallback={
-                <div className="flex gap-2 h-full w-full items-center justify-center">
+                <div className="flex gap-2 text-accent-foreground h-full w-full items-center justify-center">
                   <Spinner className="h-6 w-6" />
                   Loading...
                 </div>
@@ -66,10 +66,10 @@ const FeatureBar = ({ from }: FeatureBarProps) => {
             <Button
               size="icon"
               variant="ghost"
-              className="w-full rounded-none cursor-pointer text-white hover:bg-transparent"
+              className="w-full rounded-none cursor-pointer mt-2"
               onClick={() => setOpen(false)}
             >
-              <ArrowUp className=" cursor-pointer" />
+              <ArrowUp className=" cursor-pointer text-primary" />
             </Button>
           </motion.div>
         )}
@@ -92,17 +92,28 @@ const SuspendedMarquee = ({ data }: SuspendedMarqueeProps) => {
         <div
           key={i}
           className={cn(
-            'mx-2 min-w-[160px] bg-white text-gray-800 py-2 px-4 rounded-xl shadow-md border border-gray-200 flex flex-col justify-center',
-            getExpirationStatus(item.expiresIn).color
+            'mx-2 min-w-[160px] bg-card text-accent-foreground py-2 px-4 rounded-xl shadow-sm border flex flex-col justify-center'
           )}
         >
-          <h3 className="text-sm font-semibold mb-1">{item.name}</h3>
-          <p className="text-sm text-gray-500">Amount: {item.amount}</p>
-          <p className="text-sm text-gray-500">
+          <h3
+            className={cn(
+              'text-sm font-semibold mb-1',
+              getExpirationStatus(item.expiresIn).color
+            )}
+          >
+            {item.name}
+          </h3>
+          <p className="text-sm ">Amount: {item.amount}</p>
+          <p className="text-sm ">
             Location: {item.locationName} -{' '}
             {item.shelfName?.replace('Shelf ', '')}
           </p>
-          <p className="text-sm text-gray-500">Expires in: {item.expiresIn}</p>
+          <p className="text-sm ">
+            Expires in:{' '}
+            <span className={getExpirationStatus(item.expiresIn).color}>
+              {item.expiresIn}
+            </span>
+          </p>
         </div>
       ))}
     </Marquee>

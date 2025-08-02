@@ -42,14 +42,14 @@ const DeleteDialog = ({ isOpen, onCancel, onSubmit }: DeleteDialogProps) => {
         <DialogFooter>
           <Button
             variant="secondary"
-            className="cursor-pointer hover:bg-gray-200"
+            className="cursor-pointer"
             onClick={onCancel}
           >
             Cancel
           </Button>
           <Button
             variant="destructive"
-            className="cursor-pointer hover:bg-red-400 min-w-20"
+            className="cursor-pointer min-w-20"
             onClick={handleSubmit}
             disabled={submitting}
           >

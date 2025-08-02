@@ -9,6 +9,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { useState } from 'react'
+import { ModeToggle } from './ui/mode-toggle'
 
 // TODO: fix
 
@@ -17,28 +18,27 @@ const Header = () => {
 
   return (
     <>
-      <div
-        className="sticky top-0 z-40 bg-white"
-        style={{ '--header-height': '60px' } as React.CSSProperties}
-      >
+      <div className="sticky top-0 z-40">
         <header className="px-4 py-3 flex items-center justify-between border-b shadow-sm">
           <Link
             to="/"
-            className="flex items-center gap-2 text-foreground hover:opacity-80 transition"
+            className="flex items-center gap-2 hover:opacity-80 transition "
           >
-            <img src="/logo.svg" alt="Logo" className="w-6 h-6" />
-            <span className="font-semibold text-lg tracking-tight">
+            <img
+              src="/logo.svg"
+              alt="Logo"
+              className="w-6 h-6 dark:bg-foreground rounded-full"
+            />
+            <span className="font-semibold text-lg tracking-tight ">
               {import.meta.env.VITE_APP_TITLE}
             </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-4">
-            <Link
-              to="/locations"
-              className="text-sm text-muted-foreground hover:text-foreground transition"
-            >
+            <Link to="/locations" className="text-sm transition">
               Locations
             </Link>
+            <ModeToggle />
             <Button asChild>
               <Link to="/add">+ Add Item</Link>
             </Button>
@@ -62,7 +62,7 @@ const Header = () => {
 
         {/* Mobile Menu Dropdown */}
         <Collapsible open={open} onOpenChange={setOpen}>
-          <CollapsibleContent className="absolute top-full left-0 w-full z-50 bg-white shadow-md border-b px-4 pb-4 pt-2 animate-slide-down md:hidden">
+          <CollapsibleContent className="absolute top-full left-0 w-full z-50 shadow-md border-b px-4 pb-4 pt-2 animate-slide-down md:hidden">
             <nav className="flex flex-col gap-3">
               <Link
                 to="/locations"
@@ -71,9 +71,16 @@ const Header = () => {
               >
                 Locations
               </Link>
-              <Button asChild className="w-full" onClick={() => setOpen(false)}>
-                <Link to="/items/add">+ Add Item</Link>
-              </Button>
+              <div className="flex items-center justify-between gap-2">
+                <Button
+                  asChild
+                  className="flex-1"
+                  onClick={() => setOpen(false)}
+                >
+                  <Link to="/add">+ Add Item</Link>
+                </Button>
+                <ModeToggle />
+              </div>
             </nav>
           </CollapsibleContent>
         </Collapsible>
@@ -82,7 +89,7 @@ const Header = () => {
       {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm transition-opacity duration-200 md:hidden"
+          className="fixed inset-0 z-30 bg-white/30 dark:bg-black/30 backdrop-blur-sm transition-opacity duration-200 md:hidden"
           onClick={() => setOpen(false)}
         />
       )}

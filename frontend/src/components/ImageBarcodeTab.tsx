@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from './ui/card'
 import { Separator } from './ui/separator'
+import { useTheme } from './ui/theme-provider'
 
 type Nutriments = NonNullable<IItem['openFoodFacts']>['nutriments']
 
@@ -24,7 +25,7 @@ interface ImageBarcodeTabProps {
 }
 
 const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
-  const hasFacts = !!off
+  const hasNutrition = !!off
   const hasBarcode = !!barcode
   const hasImage = !!image
 
@@ -36,12 +37,12 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
     icon: React.ElementType
   }[] = []
 
-  if (hasFacts) {
+  if (hasNutrition) {
     if (off.nutriments) {
       const nutriments = off.nutriments
       tabs.push({
-        id: 'facts',
-        label: 'Facts',
+        id: 'nutrition',
+        label: 'Nutrition',
         icon: Utensils,
         nutrition: nutriments,
       })
@@ -145,7 +146,9 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
           <div className="flex w-full flex-col">
             {tab.id === 'barcode' && <BarcodeDisplay barcode={barcode} />}
             {tab.id === 'image' && <ImageDisplay src={tab.image!} />}
-            {tab.id === 'facts' && <OffDisplay nutriments={tab.nutrition!} />}
+            {tab.id === 'nutrition' && (
+              <OffDisplay nutriments={tab.nutrition!} />
+            )}
           </div>
         </TabsContent>
       ))}
@@ -156,7 +159,7 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
 export default ImageBarcodeTab
 
 const ImageDisplay = ({ src }: { src: string }) => (
-  <Card className="w-full bg-white text-black py-0 aspect-[1/1] rounded-sm flex items-center justify-center">
+  <Card className="w-full text-black py-0 aspect-[1/1] rounded-sm flex items-center justify-center">
     <img
       src={src}
       alt="Item"
@@ -165,19 +168,27 @@ const ImageDisplay = ({ src }: { src: string }) => (
   </Card>
 )
 
-const BarcodeDisplay = ({ barcode }: { barcode: string }) => (
-  <Card className="w-full bg-white text-black py-0">
-    <CardContent className="p-4 space-y-2 text-sm">
-      <div className="w-full flex items-center justify-between mb-2">
-        <Label>Barcode:</Label>
-        <span className="text-sm font-mono">{barcode}</span>
-      </div>
-      <div className="w-full rounded-sm bg-white text-white font-mono flex items-center justify-center p-0">
-        <Barcode value={barcode} background="white" />
-      </div>
-    </CardContent>
-  </Card>
-)
+const BarcodeDisplay = ({ barcode }: { barcode: string }) => {
+  const { theme } = useTheme()
+  console.log(theme)
+  return (
+    <Card className="w-full py-0">
+      <CardContent className="p-4 space-y-2 text-sm">
+        <div className="w-full flex items-center justify-between mb-2">
+          <Label>Barcode:</Label>
+          <span className="text-sm font-mono">{barcode}</span>
+        </div>
+        <div className="w-full rounded-sm font-mono flex items-center justify-center p-0">
+          <Barcode
+            value={barcode}
+            background="transparent"
+            lineColor={theme === 'dark' ? 'white' : 'black'}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
   const {
@@ -191,7 +202,7 @@ const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
     salt_100g: salt,
   } = nutriments
   return (
-    <Card className="gap-0 w-full bg-white text-black p-4">
+    <Card className="gap-0 w-full p-4">
       <CardHeader className="p-0 pb-2 gap-0">
         <CardTitle className="text-base font-semibold leading-tight truncate">
           Átlagos tápérték

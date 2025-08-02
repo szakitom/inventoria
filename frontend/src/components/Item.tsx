@@ -116,7 +116,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
             <CardTitle className="text-base font-semibold leading-tight truncate">
               {item.name}
             </CardTitle>
-            <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1 truncate">
+            <div className="flex items-center space-x-1 text-sm mt-1 truncate">
               <LocationIcon className="h-4 w-4 text-blue-500" />
               <span className="truncate">
                 {item.location.location.name}
@@ -196,9 +196,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
             <span>
               <Label className="">Amount:</Label>
             </span>
-            <Badge className="bg-muted-foreground text-white font-bold text-sm font-mono">
-              {item.amount}
-            </Badge>
+            <Badge className="font-bold text-sm font-mono">{item.amount}</Badge>
             {item.quantity && (
               <>
                 <X className="text-foreground w-4 h-4" />
@@ -244,7 +242,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
             <span className="flex items-center gap-2">
               <div
                 className={cn(
-                  'text-sm text-gray-600',
+                  'text-sm',
                   item.openFoodFacts || item.imageUrl
                     ? 'font-bold text-foreground'
                     : 'font-normal'
