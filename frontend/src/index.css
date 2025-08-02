@@ -128,3 +128,29 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+::view-transition-new(root) {
+  color: black;
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='40' cy='0' r='20' fill='currentColor'/></svg>");
+  mask-repeat: no-repeat;
+  mask-position: top right;
+  mask-size: 0;
+  animation: scale 1s;
+  transform-origin: top right;
+}
+
+.dark::view-transition-new(root) {
+  color: white;
+}
+
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+  animation: none;
+  z-index: -1;
+}
+
+@keyframes scale {
+  to {
+    mask-size: 350vmax;
+  }
+}
