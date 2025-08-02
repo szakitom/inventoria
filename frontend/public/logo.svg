@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+  <!-- Pantry frame -->
+  <rect x="12" y="8" width="40" height="48" rx="2" />
+
+  <!-- Shelves -->
+  <line x1="12" y1="24" x2="52" y2="24" />
+  <line x1="12" y1="40" x2="52" y2="40" />
+
+  <!-- Items on top shelf -->
+  <rect x="16" y="12" width="6" height="8" rx="1" />
+  <rect x="24" y="10" width="5" height="10" rx="1" />
+  <rect x="32" y="12" width="8" height="8" rx="1" />
+
+  <!-- Items on middle shelf -->
+  <rect x="16" y="28" width="8" height="8" rx="1" />
+  <rect x="26" y="28" width="10" height="8" rx="1" />
+
+  <!-- Items on bottom shelf -->
+  <rect x="18" y="44" width="6" height="8" rx="1" />
+  <rect x="26" y="44" width="12" height="8" rx="1" />
+</svg>

@@ -1,3 +1,4 @@
+name: 'inventoria-prod'
 services:
   minio:
     image: quay.io/minio/minio
@@ -53,3 +54,26 @@ services:
           })
         ' || echo '✅ Replica set may already be initialized.'
       "
+
+  backend:
+    build: ./backend
+    container_name: inventoria-backend
+    ports:
+      - '3001:3000' # exposed as 3001 externally
+    depends_on:
+      - mongo
+      - minio
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: inventoria-frontend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    env_file:
+      - ./frontend/.env
+    restart: unless-stopped

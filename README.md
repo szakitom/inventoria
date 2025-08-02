@@ -2,6 +2,9 @@
 
 ## TODO
 
+<https://originui.com/>
+<https://shadcnstudio.com/components>
+
 ```bash
 podman run -d -p 9000:9000 -p 9001:9001 -v /data:/data quay.io/rustfs/rustfs
 ```
