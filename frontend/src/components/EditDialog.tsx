@@ -107,7 +107,11 @@ const EditDialog = ({
                       <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Name" {...field} />
+                          <Input
+                            placeholder="Name"
+                            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -126,7 +130,7 @@ const EditDialog = ({
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="Barcode"
-                                className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
+                                className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10 focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
                                 {...field}
                               />
                               <Button
@@ -159,6 +163,7 @@ const EditDialog = ({
                               tabThrough: true,
                             })}
                             placeholder="YYYY/MM/DD"
+                            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
                           />
                         </FormControl>
                         <FormMessage />
@@ -188,7 +193,11 @@ const EditDialog = ({
                       <FormItem>
                         <FormLabel>Quantity</FormLabel>
                         <FormControl>
-                          <Input placeholder="Quantity" {...field} />
+                          <Input
+                            placeholder="Quantity"
+                            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -204,7 +213,7 @@ const EditDialog = ({
                     Cancel
                   </Button>
                   <Button
-                    className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20"
+                    className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20 text-white"
                     type="submit"
                     disabled={
                       !form.formState.isValid ||

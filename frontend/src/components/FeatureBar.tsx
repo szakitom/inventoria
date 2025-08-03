@@ -18,16 +18,13 @@ const FeatureBar = ({ from }: FeatureBarProps) => {
   const [open, setOpen] = useState(false)
 
   return (
-    <motion.div
-      layout
-      className="bg-muted-foreground text-muted w-full shadow-sm"
-    >
+    <motion.div layout className="bg-blue-500 w-full shadow-sm">
       <AnimatePresence initial={false} mode="wait">
         {!open ? (
           <Button
             onClick={() => setOpen(true)}
             variant="ghost"
-            className="w-full rounded-none cursor-pointer  px-4 py-3"
+            className="w-full rounded-none cursor-pointer px-4 py-3 hover:bg-blue-600 text-white hover:text-white"
           >
             <motion.div
               key="collapsed"

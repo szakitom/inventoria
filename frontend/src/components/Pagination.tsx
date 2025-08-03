@@ -68,7 +68,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
         <Select value={limit.toString()} onValueChange={changeLimit}>
           <SelectTrigger
             id={id}
-            className="cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
             aria-labelledby={id}
           >
             <SelectValue placeholder="Items per page" />
@@ -247,7 +247,7 @@ const PaginationNumber = ({
       <PaginationLink
         onClick={handleClick}
         isActive={page === currentPage}
-        className="cursor-pointer select-none focus:outline-none data-[active=true]:bg-blue-500 data-[active=true]:text-white"
+        className="cursor-pointer select-none focus:outline-none data-[active=true]:bg-blue-500 data-[active=true]:text-white dark:data-[active=true]:bg-blue-500"
         aria-current={page === currentPage ? 'page' : undefined}
       >
         {page}
