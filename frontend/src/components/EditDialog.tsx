@@ -87,145 +87,137 @@ const EditDialog = ({
         <ScrollArea className="flex max-h-full flex-col overflow-hidden">
           <DialogHeader className="contents space-y-0 text-left">
             <DialogTitle className="px-6 pt-6">
-              <div className="text-lg font-semibold text-gray-900">
-                Edit Item
-              </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-lg font-semibold ">Edit Item</div>
+              <DialogDescription className="text-sm text-muted-foreground">
                 Editing details for {(item?.name as string) || 'this item'}.
-              </div>
+              </DialogDescription>
             </DialogTitle>
-            <DialogDescription asChild>
-              <div className="p-6">
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-8"
-                  >
-                    <div className="grid gap-4">
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="barcode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Barcode</FormLabel>
-                            <FormControl>
-                              <div className="w-full space-y-2">
-                                <div className="flex rounded-md shadow-xs">
-                                  <Input
-                                    type="text"
-                                    inputMode="numeric"
-                                    placeholder="Barcode"
-                                    className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
-                                    {...field}
-                                  />
-                                  <Button
-                                    variant="outline"
-                                    size="icon"
-                                    type="button"
-                                    className="rounded-s-none rounded-e-md text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground transition-[color]"
-                                    aria-label="Scan Barcode"
-                                    // TODO: Implement barcode scanning
-                                    onClick={() => alert('not implemented yet')}
-                                  >
-                                    <ScanBarcode size={16} aria-hidden="true" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="expiration"
-                        render={() => (
-                          <FormItem>
-                            <FormLabel>Expiration</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...registerWithMask(
-                                  'expiration',
-                                  '9999/99/99',
-                                  {
-                                    tabThrough: true,
-                                  }
-                                )}
-                                placeholder="YYYY/MM/DD"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="amount"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Amount</FormLabel>
-                            <FormControl>
-                              <AmountInput
-                                value={Number(field.value) || 0}
-                                onChange={(value) => field.onChange(value)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="quantity"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Quantity</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Quantity" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <DialogFooter>
-                      <Button
-                        variant="secondary"
-                        className="cursor-pointer hover:bg-gray-200"
-                        onClick={onCancel}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20"
-                        type="submit"
-                        disabled={
-                          !form.formState.isValid ||
-                          form.formState.isSubmitting ||
-                          !form.formState.isDirty
-                        }
-                      >
-                        {form.formState.isSubmitting ? <Spinner /> : 'Save'}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </div>
-            </DialogDescription>
           </DialogHeader>
+          <div className="p-6">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-8"
+              >
+                <div className="grid gap-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="barcode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Barcode</FormLabel>
+                        <FormControl>
+                          <div className="w-full space-y-2">
+                            <div className="flex rounded-md shadow-xs">
+                              <Input
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="Barcode"
+                                className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
+                                {...field}
+                              />
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                type="button"
+                                className="rounded-s-none rounded-e-md text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground transition-[color]"
+                                aria-label="Scan Barcode"
+                                // TODO: Implement barcode scanning
+                                onClick={() => alert('not implemented yet')}
+                              >
+                                <ScanBarcode size={16} aria-hidden="true" />
+                              </Button>
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="expiration"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>Expiration</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...registerWithMask('expiration', '9999/99/99', {
+                              tabThrough: true,
+                            })}
+                            placeholder="YYYY/MM/DD"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Amount</FormLabel>
+                        <FormControl>
+                          <AmountInput
+                            value={Number(field.value) || 0}
+                            onChange={(value) => field.onChange(value)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="quantity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Quantity</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Quantity" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <DialogFooter>
+                  <Button
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={onCancel}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20"
+                    type="submit"
+                    disabled={
+                      !form.formState.isValid ||
+                      form.formState.isSubmitting ||
+                      !form.formState.isDirty
+                    }
+                  >
+                    {form.formState.isSubmitting ? <Spinner /> : 'Save'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>

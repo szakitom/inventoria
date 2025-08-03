@@ -144,13 +144,13 @@ const Filterbar = ({
 
   return (
     <header className="shadow-sm">
-      <nav className="bg-white w-full flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 shadow-sm">
+      <nav className="w-full flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 shadow-sm">
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:items-center">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 w-full">
               <Label
                 htmlFor={id}
-                className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+                className="text-sm font-medium whitespace-nowrap cursor-pointer"
               >
                 Sort by
               </Label>
@@ -180,7 +180,7 @@ const Filterbar = ({
                 <ToggleGroupItem
                   value="+"
                   aria-label="Ascending"
-                  className="cursor-pointer px-2 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 data-[state=on]:text-white"
                 >
                   {sort.includes('name') ? (
                     <ArrowDownAZ size={16} />
@@ -191,7 +191,7 @@ const Filterbar = ({
                 <ToggleGroupItem
                   value="-"
                   aria-label="Descending"
-                  className="cursor-pointer px-2 py-1 hover:bg-gray-100 data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 data-[state=on]:text-white"
                 >
                   {sort.includes('name') ? (
                     <ArrowUpAZ size={16} />
@@ -270,10 +270,7 @@ const ResetButton = ({
         variant="outline"
         size="icon"
         aria-label="Reset filters"
-        className={cn(
-          'self-end md:self-center cursor-pointer hover:bg-gray-100',
-          className
-        )}
+        className={cn('self-end md:self-center cursor-pointer', className)}
         onClick={onClick}
       >
         <RotateCcw size={20} />

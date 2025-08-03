@@ -65,7 +65,7 @@ const LocationSelect = ({
       {label ?? (
         <Label
           htmlFor={locationSelectId}
-          className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+          className="text-sm font-medium whitespace-nowrap cursor-pointer"
         >
           New location
         </Label>
@@ -107,7 +107,7 @@ const LocationSelect = ({
           {shelfLabel ?? (
             <Label
               htmlFor={shelfSelectId}
-              className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+              className="text-sm font-medium whitespace-nowrap cursor-pointer"
             >
               New shelf
             </Label>

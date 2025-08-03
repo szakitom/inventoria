@@ -66,7 +66,7 @@ const EditLocationDialog = ({
         <DialogHeader>
           <DialogTitle>Edit Location</DialogTitle>
           <DialogDescription>
-            <span className="flex items-center space-x-1 text-sm text-muted-foreground mt-1 truncate">
+            <span className="flex items-center space-x-1 text-sm mt-1 truncate">
               <LocationIcon className="h-4 w-4 text-blue-500" />
               <span>Editing </span>
               <span className="truncate">{location?.name}</span>
@@ -76,14 +76,14 @@ const EditLocationDialog = ({
         <div className="grid gap-2">
           <Label
             htmlFor={nameId}
-            className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+            className="text-sm font-medium  whitespace-nowrap cursor-pointer"
           >
             Name
           </Label>
           <Input id={nameId} value={name} onChange={handleNameChange} />
           <Label
             htmlFor={typeSelectId}
-            className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+            className="text-sm font-medium  whitespace-nowrap cursor-pointer"
           >
             Type
           </Label>
@@ -110,7 +110,7 @@ const EditLocationDialog = ({
         <DialogFooter>
           <Button
             variant="secondary"
-            className="cursor-pointer hover:bg-gray-200"
+            className="cursor-pointer"
             onClick={onCancel}
           >
             Cancel

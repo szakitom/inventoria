@@ -71,14 +71,14 @@ const CreateLocationDialog = ({
         <div className="grid gap-2">
           <Label
             htmlFor={nameId}
-            className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+            className="text-sm font-medium whitespace-nowrap cursor-pointer"
           >
             Name
           </Label>
           <Input id={nameId} value={name} onChange={handleNameChange} />
           <Label
             htmlFor={typeSelectId}
-            className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+            className="text-sm font-medium whitespace-nowrap cursor-pointer"
           >
             Type
           </Label>
@@ -103,7 +103,7 @@ const CreateLocationDialog = ({
           </Select>
           <Label
             htmlFor={shelfId}
-            className="text-sm font-medium text-gray-700 whitespace-nowrap cursor-pointer"
+            className="text-sm font-medium whitespace-nowrap cursor-pointer"
           >
             Shelf count
           </Label>
@@ -115,7 +115,7 @@ const CreateLocationDialog = ({
         <DialogFooter>
           <Button
             variant="secondary"
-            className="cursor-pointer hover:bg-gray-200"
+            className="cursor-pointer"
             onClick={onCancel}
           >
             Cancel
