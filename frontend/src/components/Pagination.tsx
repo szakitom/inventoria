@@ -58,7 +58,10 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
   return (
     <footer className="flex flex-col md:flex-row items-center md:space-x-4 p-4 gap-4 w-full">
       <div className="flex items-center gap-2 w-full md:w-[250px] mr-0 justify-between md:justify-evenly">
-        <Label htmlFor={id} className="cursor-pointer h-full w-full">
+        <Label
+          htmlFor={id}
+          className="cursor-pointer h-full w-full whitespace-nowrap"
+        >
           Rows per page
         </Label>
 
@@ -85,7 +88,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
       </div>
 
       <div>
-        <Label className="text-sm font-medium  whitespace-nowrap">
+        <Label className="text-sm font-medium whitespace-nowrap">
           Showing items {limit * (currentPage - 1) + 1} -{' '}
           {limit * (currentPage - 1) + currentItems.length} of {total}
         </Label>
