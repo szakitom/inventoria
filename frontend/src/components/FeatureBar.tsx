@@ -1,6 +1,6 @@
 import { useLoaderData } from '@tanstack/react-router'
 import { Suspense, use, useState } from 'react'
-import { ArrowDown, ArrowUp } from 'lucide-react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import Marquee from 'react-fast-marquee'
 import { Button } from './ui/button'
@@ -41,7 +41,7 @@ const FeatureBar = ({ from }: FeatureBarProps) => {
                 <span className="me-1 text-base leading-none">✨</span>
                 Featured items
               </p>
-              <ArrowDown className="ms-2 h-5 w-5 cursor-pointer" />
+              <ChevronDown className="ms-2 h-5 w-5 cursor-pointer" />
             </motion.div>
           </Button>
         ) : (
@@ -69,7 +69,7 @@ const FeatureBar = ({ from }: FeatureBarProps) => {
               className="w-full rounded-none cursor-pointer mt-2"
               onClick={() => setOpen(false)}
             >
-              <ArrowUp className=" cursor-pointer text-primary" />
+              <ChevronUp className=" cursor-pointer text-primary" />
             </Button>
           </motion.div>
         )}
