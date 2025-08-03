@@ -48,9 +48,6 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
       })
     }
 
-    if (hasBarcode) {
-      tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
-    }
     const imageToUse = hasImage
       ? image
       : off.selected_images?.front?.display[
@@ -64,11 +61,15 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
         icon: Image,
       })
     }
-  } else {
-    if (hasBarcode)
+
+    if (hasBarcode) {
       tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
+    }
+  } else {
     if (hasImage)
       tabs.push({ id: 'image', label: 'Image', image: image, icon: Image })
+    if (hasBarcode)
+      tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
   }
 
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || '')
