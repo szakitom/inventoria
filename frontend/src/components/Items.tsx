@@ -151,7 +151,8 @@ const Items = ({ navigate, from }: ItemsProps) => {
           animate="center"
           exit="exit"
           transition={{ duration: 0.25, ease: 'easeInOut' }}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 touch-pan-y select-none  active:cursor-grabbing"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
+           xl:grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-4 touch-pan-y select-none  active:cursor-grabbing"
         >
           {items.map((item: IItem) => (
             <div
