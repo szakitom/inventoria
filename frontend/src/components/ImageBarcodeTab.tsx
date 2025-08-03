@@ -178,12 +178,8 @@ const BarcodeDisplay = ({ barcode }: { barcode: string }) => {
           <Label>Barcode:</Label>
           <span className="text-sm font-mono">{barcode}</span>
         </div>
-        <div className="w-full rounded-sm font-mono flex items-center justify-center p-0">
-          <Barcode
-            value={barcode}
-            background="transparent"
-            lineColor={theme === 'dark' ? 'white' : 'black'}
-          />
+        <div className="w-full rounded-md font-mono flex items-center justify-center p-0 overflow-hidden">
+          <Barcode value={barcode} className="w-full h-full" />
         </div>
       </CardContent>
     </Card>
