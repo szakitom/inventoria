@@ -1,6 +1,5 @@
 import { useCallback, useRef } from 'react'
 import useCameras from '@/hooks/useCameras'
-import QuaggaScanner from '@components/QuaggaScanner'
 import {
   Select,
   SelectContent,
@@ -11,11 +10,14 @@ import {
 import { Toggle } from '@components/ui/toggle'
 import { Flashlight, FlashlightOff } from 'lucide-react'
 import { Spinner } from '@components/ui/spinner'
+import { useBarcodeScanner } from '@/hooks/useBarcodeScanner'
 
 const BarcodeScanner = ({
+  open = true,
   onBarcode,
 }: {
   onBarcode: (code: string) => void
+  open?: boolean
 }) => {
   const {
     devices,
@@ -26,6 +28,7 @@ const BarcodeScanner = ({
     setTorch,
     // constraints,
   } = useCameras()
+
   const scannerRef = useRef<HTMLDivElement>(null)
 
   const onDetected = (result: string) => {
@@ -34,6 +37,13 @@ const BarcodeScanner = ({
       setTorch(false)
     }
   }
+
+  useBarcodeScanner({
+    open,
+    container: scannerRef.current,
+    onDetected: onDetected,
+    cameraId: selected ?? undefined,
+  })
 
   const toggleTorch = useCallback(() => {
     if (!hasTorch) return
@@ -82,13 +92,6 @@ const BarcodeScanner = ({
       <div ref={scannerRef} className="absolute inset-0 w-full h-full">
         <video className="w-full h-full object-cover" />
         <canvas className="drawingBuffer absolute top-0 left-0 w-full h-full" />
-        {selected ? (
-          <QuaggaScanner
-            scannerRef={scannerRef}
-            cameraId={selected}
-            onDetected={onDetected}
-          />
-        ) : null}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, type RefObject } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import Quagga from '@ericblade/quagga2'
 import { getMedianOfCodeErrors } from '@utils/index'
 
@@ -19,21 +19,27 @@ interface QuaggaResult {
   codeResult?: CodeResult
 }
 
-const QuaggaScanner = ({
+interface UseBarcodeScannerProps {
+  onDetected?: (code: string) => void
+  container: HTMLElement | null
+  open: boolean
+  cameraId?: string
+  constraints?: MediaTrackConstraints
+}
+
+export function useBarcodeScanner({
   onDetected,
-  scannerRef,
+  container,
+  open,
   cameraId,
   constraints = {
     width: { ideal: 1280 },
     height: { ideal: 720 },
     frameRate: { ideal: 30 },
   },
-}: {
-  onDetected?: (result: string) => void
-  scannerRef: RefObject<HTMLDivElement | null>
-  cameraId?: string
-  constraints?: MediaTrackConstraints
-}) => {
+}: UseBarcodeScannerProps) {
+  const runningRef = useRef(false)
+
   const errorCheck = useCallback(
     (result: {
       codeResult: {
@@ -41,7 +47,7 @@ const QuaggaScanner = ({
         decodedCodes: { error?: number }[]
       }
     }) => {
-      if (!onDetected || result.codeResult.code == null) return
+      if (!onDetected || !result?.codeResult?.code) return
 
       const err = getMedianOfCodeErrors(result.codeResult.decodedCodes)
       if (err < 0.1) {
@@ -51,13 +57,14 @@ const QuaggaScanner = ({
     [onDetected]
   )
 
-  const handleProcessed = (result: QuaggaResult) => {
+  const handleProcessed = useCallback((result: QuaggaResult) => {
     const drawingCtx = Quagga.canvas.ctx.overlay
     const drawingCanvas = Quagga.canvas.dom.overlay
+    if (!drawingCtx || !drawingCanvas) return
+
     drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height)
 
     if (!result?.boxes?.length) return
-
     drawingCtx.lineWidth = 3
     drawingCtx.font = '36px Arial'
 
@@ -78,17 +85,14 @@ const QuaggaScanner = ({
         drawingCtx.fillText(code, topLeft[0] + 10, topLeft[1] - 10)
       }
     })
-  }
+  }, [])
 
-  useLayoutEffect(() => {
-    let initialized = false
+  useEffect(() => {
+    if (!container || !open) return
 
     const init = async () => {
       try {
-        if (!scannerRef || !scannerRef.current) return
         await new Promise((resolve) => setTimeout(resolve, 1))
-        if (initialized) return
-
         await Quagga.init(
           {
             inputStream: {
@@ -98,7 +102,7 @@ const QuaggaScanner = ({
                 ...(cameraId && { deviceId: cameraId }),
                 ...(!cameraId && { facingMode: 'environment' }),
               },
-              target: scannerRef.current,
+              target: container,
               willReadFrequently: true,
             },
             numOfWorkers: navigator.hardwareConcurrency || 4,
@@ -116,32 +120,34 @@ const QuaggaScanner = ({
           },
           async (err) => {
             if (err) {
-              return console.error('Error starting Quagga:', err)
+              console.error('Quagga init error:', err)
+              return
             }
             await Quagga.start()
-            initialized = true
+            runningRef.current = true
           }
         )
-        await Quagga.onProcessed(handleProcessed)
-        await Quagga.onDetected(errorCheck)
-      } catch (error) {
-        console.error('Error initializing Quagga:', error)
+
+        Quagga.onProcessed(handleProcessed)
+        Quagga.onDetected(errorCheck)
+      } catch (err) {
+        console.error('Quagga error:', err)
       }
     }
+
+    const cleanup = async () => {
+      if (!runningRef.current) return
+      await Quagga.stop()
+      await Quagga.CameraAccess.release()
+      Quagga.offProcessed(handleProcessed)
+      Quagga.offDetected(errorCheck)
+      runningRef.current = false
+    }
+
     init()
 
     return () => {
-      initialized = false
-      const cleanup = async () => {
-        await Quagga.stop()
-        await Quagga.CameraAccess.release()
-        await Quagga.offProcessed(handleProcessed)
-        await Quagga.offDetected(errorCheck)
-      }
       cleanup()
     }
-  }, [cameraId, constraints, errorCheck, scannerRef])
-  return null
+  }, [container, open, cameraId, constraints, errorCheck, handleProcessed])
 }
-
-export default QuaggaScanner

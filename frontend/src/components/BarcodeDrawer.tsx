@@ -23,7 +23,7 @@ const BarcodeDrawer = ({
         </DrawerClose>
 
         <div className="flex-grow flex flex-col items-center justify-center overflow-hidden pt-4">
-          <BarcodeScanner onBarcode={onBarcode} />
+          <BarcodeScanner onBarcode={onBarcode} open={open} />
         </div>
       </DrawerContent>
     </Drawer>
