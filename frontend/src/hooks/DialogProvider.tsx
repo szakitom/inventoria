@@ -61,9 +61,9 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
                 }
                 close()
               }}
-              onSubmit={async (params: unknown) => {
+              onSubmit={async (...params) => {
                 if (typeof props?.onSubmit === 'function') {
-                  await props.onSubmit(params)
+                  await props.onSubmit(...params)
                 }
                 close()
               }}

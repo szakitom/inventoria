@@ -75,7 +75,12 @@ const CreateLocationDialog = ({
           >
             Name
           </Label>
-          <Input id={nameId} value={name} onChange={handleNameChange} />
+          <Input
+            id={nameId}
+            value={name}
+            onChange={handleNameChange}
+            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+          />
           <Label
             htmlFor={typeSelectId}
             className="text-sm font-medium whitespace-nowrap cursor-pointer"
@@ -121,7 +126,7 @@ const CreateLocationDialog = ({
             Cancel
           </Button>
           <Button
-            className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20"
+            className="cursor-pointer bg-blue-500 dark:bg-blue-800 dark:hover:bg-blue-900 hover:bg-blue-600 min-w-20 text-white"
             onClick={handleSubmit}
             disabled={
               !name || !type || submitting || !shelfCount || shelfCount < 1

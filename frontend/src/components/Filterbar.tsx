@@ -180,7 +180,7 @@ const Filterbar = ({
                 <ToggleGroupItem
                   value="+"
                   aria-label="Ascending"
-                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 dark:data-[state=on]:bg-blue-800  data-[state=on]:text-white"
                 >
                   {sort.includes('name') ? (
                     <ArrowDownAZ size={16} />
@@ -191,7 +191,7 @@ const Filterbar = ({
                 <ToggleGroupItem
                   value="-"
                   aria-label="Descending"
-                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 dark:data-[state=on]:bg-blue-800 data-[state=on]:text-white"
                 >
                   {sort.includes('name') ? (
                     <ArrowUpAZ size={16} />
@@ -212,7 +212,7 @@ const Filterbar = ({
 
           <Input
             placeholder="Search"
-            className="w-full sm:w-[200px] md:w-[240px] focus:ring-2 focus:ring-blue-500"
+            className="w-full sm:w-[200px] md:w-[240px] focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500 "
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             onKeyDown={(e) => {

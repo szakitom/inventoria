@@ -91,9 +91,9 @@ const Multiselect = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="flex items-center justify-between cursor-pointer"
+          className="flex items-center justify-between cursor-pointer focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
         >
-          <span className="flex items-center">
+          <span className="flex items-center ">
             <Badge variant="outline">
               {selected.length === 0 ? 'All' : selected.length}
             </Badge>

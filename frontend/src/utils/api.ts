@@ -88,6 +88,22 @@ export const moveItem = async (itemId: string, location: string) => {
   return res.json()
 }
 
+export const movePartialItem = async (
+  itemId: string,
+  location: string,
+  amount: number
+) => {
+  const res = await fetch(`/api/items/${itemId}/partial`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ location, amount }),
+  })
+  if (!res.ok) throw new Error('Failed to move partial item')
+  return res.json()
+}
+
 export const editItem = async (itemId: string, data: Partial<IItem>) => {
   const res = await fetch(`/api/items/${itemId}`, {
     method: 'PUT',

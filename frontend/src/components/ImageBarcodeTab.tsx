@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from './ui/card'
 import { Separator } from './ui/separator'
-import { useTheme } from './ui/theme-provider'
 
 type Nutriments = NonNullable<IItem['openFoodFacts']>['nutriments']
 
@@ -48,9 +47,6 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
       })
     }
 
-    if (hasBarcode) {
-      tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
-    }
     const imageToUse = hasImage
       ? image
       : off.selected_images?.front?.display[
@@ -64,11 +60,15 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
         icon: Image,
       })
     }
-  } else {
-    if (hasBarcode)
+
+    if (hasBarcode) {
       tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
+    }
+  } else {
     if (hasImage)
       tabs.push({ id: 'image', label: 'Image', image: image, icon: Image })
+    if (hasBarcode)
+      tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
   }
 
   const [activeTab, setActiveTab] = useState(tabs[0]?.id || '')
@@ -168,27 +168,19 @@ const ImageDisplay = ({ src }: { src: string }) => (
   </Card>
 )
 
-const BarcodeDisplay = ({ barcode }: { barcode: string }) => {
-  const { theme } = useTheme()
-  console.log(theme)
-  return (
-    <Card className="w-full py-0">
-      <CardContent className="p-4 space-y-2 text-sm">
-        <div className="w-full flex items-center justify-between mb-2">
-          <Label>Barcode:</Label>
-          <span className="text-sm font-mono">{barcode}</span>
-        </div>
-        <div className="w-full rounded-sm font-mono flex items-center justify-center p-0">
-          <Barcode
-            value={barcode}
-            background="transparent"
-            lineColor={theme === 'dark' ? 'white' : 'black'}
-          />
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+const BarcodeDisplay = ({ barcode }: { barcode: string }) => (
+  <Card className="w-full py-0">
+    <CardContent className="p-4 space-y-2 text-sm">
+      <div className="w-full flex items-center justify-between mb-2">
+        <Label>Barcode:</Label>
+        <span className="text-sm font-mono">{barcode}</span>
+      </div>
+      <div className="w-full rounded-md font-mono flex items-center justify-center p-0 overflow-hidden">
+        <Barcode value={barcode} className="w-full h-full" />
+      </div>
+    </CardContent>
+  </Card>
+)
 
 const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
   const {
@@ -217,37 +209,39 @@ const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
           <div className="flex justify-between">
             <dt className="font-semibold">Energia</dt>
             <dd>
-              {energyKj ?? '-'} kJ /{' '}
-              <span className="font-semibold">{energyKcal ?? '-'} kcal</span>
+              {Math.round(energyKj) ?? '-'} kJ /{' '}
+              <span className="font-semibold">
+                {Math.round(energyKcal) ?? '-'} kcal
+              </span>
             </dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Zsír</dt>
-            <dd>{fat ?? '-'} g</dd>
+            <dd>{Number(fat).toFixed(2) ?? '-'} g</dd>
           </div>
           <div className="flex justify-between pl-4 text-muted-foreground text-xs">
             <dt>ebből telített zsírsavak</dt>
-            <dd>{saturatedFat ?? '-'} g</dd>
+            <dd>{Number(saturatedFat).toFixed(2) ?? '-'} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Szénhidrát</dt>
-            <dd>{carbohydrates ?? '-'} g</dd>
+            <dd>{Number(carbohydrates).toFixed(2) ?? '-'} g</dd>
           </div>
           <div className="flex justify-between pl-4 text-muted-foreground text-xs">
             <dt>ebből cukrok</dt>
-            <dd>{sugars ?? '-'} g</dd>
+            <dd>{Number(sugars).toFixed(2) ?? '-'} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Fehérje</dt>
-            <dd>{proteins ?? '-'} g</dd>
+            <dd>{Number(proteins).toFixed(2) ?? '-'} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Só</dt>
-            <dd>{salt ?? '-'} g</dd>
+            <dd>{Number(salt).toFixed(2) ?? '-'} g</dd>
           </div>
         </dl>
       </CardContent>

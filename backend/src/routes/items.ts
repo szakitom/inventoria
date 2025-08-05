@@ -16,6 +16,7 @@ router.get('/featured', itemsController.getFeaturedItems)
 router.get('/:id', itemsController.getItem)
 router.delete('/:id', itemsController.deleteItem)
 router.put('/:id', productReadLimiter, itemsController.updateItem)
+router.patch('/:id/partial', itemsController.movePartialItem)
 router.patch('/:id', itemsController.moveItem)
 router.get('/search/:term', itemsController.searchItems)
 

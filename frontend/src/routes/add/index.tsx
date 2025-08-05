@@ -105,7 +105,11 @@ function Add() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Product Name" {...field} />
+                    <Input
+                      placeholder="Product Name"
+                      {...field}
+                      className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -125,7 +129,7 @@ function Add() {
                           type="text"
                           inputMode="numeric"
                           placeholder="Barcode"
-                          className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
+                          className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10 focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
                           {...field}
                         />
                         <Button
@@ -158,6 +162,7 @@ function Add() {
                         tabThrough: true,
                       })}
                       placeholder="YYYY/MM/DD"
+                      className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
                     />
                   </FormControl>
                   <FormMessage />
@@ -187,7 +192,11 @@ function Add() {
                 <FormItem>
                   <FormLabel>Quantity</FormLabel>
                   <FormControl>
-                    <Input placeholder="kg" {...field} />
+                    <Input
+                      placeholder="kg"
+                      {...field}
+                      className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -211,7 +220,7 @@ function Add() {
           </div>
 
           <Button
-            className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20 w-full"
+            className="cursor-pointer bg-blue-500 dark:bg-blue-800 dark:hover:bg-blue-900 hover:bg-blue-600 min-w-20 w-full text-white"
             type="submit"
             disabled={
               !form.formState.isValid ||

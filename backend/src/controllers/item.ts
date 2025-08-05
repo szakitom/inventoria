@@ -349,6 +349,59 @@ export const moveItem = async (req, res, next) => {
   }
 }
 
+export const movePartialItem = async (req, res, next) => {
+  const session = await mongoose.startSession()
+  session.startTransaction()
+  try {
+    const { id } = req.params
+    const { location, amount } = req.body
+    const oldItem = await Item.findById(id)
+    if (!oldItem) {
+      return res.status(404).json({ error: 'Item not found' })
+    }
+    if (oldItem.location.toString() === location) {
+      return res.status(400).json({ error: 'Item is already in this location' })
+    }
+    if (amount <= 0 || amount >= oldItem.amount) {
+      return res.status(400).json({ error: 'Invalid amount to move' })
+    }
+    const newItem = await Item.create(
+      [
+        {
+          ...oldItem.toObject(),
+          amount,
+          location,
+          _id: new mongoose.Types.ObjectId(),
+        },
+      ],
+      { session }
+    )
+    if (!newItem || newItem.length === 0) {
+      return res.status(500).json({ error: 'Failed to create new item' })
+    }
+    // Decrease the amount of the old item
+    await Item.findByIdAndUpdate(
+      id,
+      { $inc: { amount: -amount } },
+      { new: true, session }
+    )
+    await Shelf.findByIdAndUpdate(
+      location,
+      { $push: { items: newItem[0]._id } },
+      { session }
+    )
+    await session.commitTransaction()
+    res.json(newItem[0])
+  } catch (err) {
+    if (session.inTransaction()) {
+      await session.abortTransaction()
+    }
+    next(err)
+  } finally {
+    session.endSession()
+  }
+}
+
 export const getFeaturedItems = async (req, res, next) => {
   try {
     const now = Temporal.Now.plainDateISO()
