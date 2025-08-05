@@ -135,7 +135,7 @@
   mask-repeat: no-repeat;
   mask-position: top right;
   mask-size: 0;
-  animation: scale 1s;
+  animation: scale 0.75s ease-in-out;
   transform-origin: top right;
 }
 
