@@ -33,7 +33,7 @@ import AmountInput from './ui/amountinput'
 import { type IItem } from './Items'
 import { Separator } from './ui/separator'
 import SaveButton from './Savebutton'
-import { deleteItem, moveItem, updateItem } from '@utils/api'
+import { deleteItem, moveItem, movePartialItem, updateItem } from '@utils/api'
 import { useRouter } from '@tanstack/react-router'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { getExpirationStatus, getLocationIcon } from '@utils/index'
@@ -69,9 +69,13 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
     }
   }
 
-  const handleMoveItem = async (location: string) => {
+  const handleMoveItem = async (location: string, amount?: number) => {
     try {
-      await moveItem(item.id, location)
+      if (amount) {
+        await movePartialItem(item.id, location, amount)
+      } else {
+        await moveItem(item.id, location)
+      }
       toast.success('Item moved successfully!')
       router.invalidate()
     } catch (error) {
@@ -140,8 +144,8 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
                 <DropdownMenuItem
                   onClick={() =>
                     open('move', {
-                      onSubmit: async (location: string) => {
-                        await handleMoveItem(location)
+                      onSubmit: async (location: string, amount: number) => {
+                        await handleMoveItem(location, amount)
                       },
                       data: { ...item, from },
                     })

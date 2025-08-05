@@ -70,7 +70,7 @@ const MoveDialog = ({
     setSubmitting(true)
     if (selectedShelf) {
       if (isPartial) {
-        await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate async operation
+        await onSubmit(selectedShelf, partialAmount)
       } else {
         await onSubmit(selectedShelf)
       }
@@ -108,25 +108,27 @@ const MoveDialog = ({
           onSelect={handleShelfSelect}
         />
 
-        <CheckboxCard
-          title="Move partial amount"
-          description="If checked, you can specify the amount to move."
-          expandable
-          defaultChecked={false}
-          onCheckedChange={setIsPartial}
-          renderExpanded={() => (
-            <div>
-              <AmountInput
-                value={partialAmount}
-                onChange={setPartialAmount}
-                max={totalAmount}
-              />
-              <div className="text-xs text-muted-foreground mt-1 ml-1">
-                Max available: <strong>{totalAmount}</strong>
+        {totalAmount > 1 && (
+          <CheckboxCard
+            title="Move partial amount"
+            description="If checked, you can specify the amount to move."
+            expandable
+            defaultChecked={false}
+            onCheckedChange={setIsPartial}
+            renderExpanded={() => (
+              <div>
+                <AmountInput
+                  value={partialAmount}
+                  onChange={setPartialAmount}
+                  max={totalAmount - 1}
+                />
+                <div className="text-xs text-muted-foreground mt-1 ml-1">
+                  Max amount to move: {totalAmount - 1}
+                </div>
               </div>
-            </div>
-          )}
-        />
+            )}
+          />
+        )}
 
         <DialogFooter>
           <Button variant="secondary" onClick={onCancel}>
