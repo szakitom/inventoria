@@ -208,6 +208,7 @@ const EditDialog = ({
                   <Button
                     variant="secondary"
                     className="cursor-pointer"
+                    type="reset"
                     onClick={onCancel}
                   >
                     Cancel
