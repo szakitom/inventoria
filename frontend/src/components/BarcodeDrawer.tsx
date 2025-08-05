@@ -1,6 +1,7 @@
 import { Drawer, DrawerClose, DrawerContent } from './ui/drawer'
 import { X } from 'lucide-react'
 import BarcodeScanner from './BarcodeScanner'
+import { DialogTitle } from './ui/dialog'
 
 type BarcodeDrawerProps = {
   open: boolean
@@ -15,7 +16,8 @@ const BarcodeDrawer = ({
 }: BarcodeDrawerProps) => {
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
-      <DrawerContent className="max-h-[90vh]! h-full md:h-4/5 w-full md:w-1/2 flex flex-col mx-auto overflow-auto">
+      <DialogTitle className="sr-only">Scan Barcode</DialogTitle>
+      <DrawerContent className="h-full md:h-4/5 w-full md:w-1/2 flex flex-col mx-auto overflow-auto">
         <DrawerClose className="absolute top-0 right-0 p-2 z-10">
           <X />
         </DrawerClose>
