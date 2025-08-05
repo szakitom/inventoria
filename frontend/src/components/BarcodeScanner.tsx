@@ -137,7 +137,7 @@ const BarcodeScanner = ({
       }
       cleanup()
     }
-  }, [cameraId, onDetected, scannerRef, errorCheck, constraints])
+  }, [cameraId, constraints, errorCheck, scannerRef])
   return null
 }
 

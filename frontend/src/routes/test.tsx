@@ -3,6 +3,16 @@ import { useCallback, useRef, useState } from 'react'
 import useCameras from '@/hooks/useCameras'
 import BarcodeScanner from '@components/BarcodeScanner'
 import useTorch from '@/hooks/useTorch'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@components/ui/select'
+import { Toggle } from '@components/ui/toggle'
+import { Flashlight, FlashlightOff } from 'lucide-react'
+import { Spinner } from '@components/ui/spinner'
 
 export const Route = createFileRoute('/test')({
   component: RouteComponent,
@@ -29,41 +39,54 @@ const Scanner = () => {
   }, [hasTorch, isTorchOn, setTorch])
 
   if (devices.length === 0) {
-    return <div>Loading...</div>
+    return (
+      <div className="flex-grow flex flex-col items-center justify-center gap-4 w-full">
+        <Spinner className="h-8 w-8" />
+      </div>
+    )
   }
 
   return (
-    <div>
-      {hasTorch && (
-        <button onClick={toggleTorch}>
-          {isTorchOn ? 'Disable Torch' : 'Enable Torch'}
-        </button>
-      )}
-
-      <div>
-        {results.map((result, index) => (
-          <div key={index} className="text-green-500">
-            {JSON.stringify(result)}
-          </div>
-        ))}
+    <div className="flex flex-col items-center gap-4 w-full">
+      <div className="flex w-full items-center justify-center space-x-2">
+        <Select
+          value={selected || ''}
+          onValueChange={(value) => setSelected(value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Camera" />
+          </SelectTrigger>
+          <SelectContent>
+            {devices.map((device) => (
+              <SelectItem key={device.deviceId} value={device.deviceId}>
+                {device.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {hasTorch && (
+          <Toggle
+            variant="outline"
+            aria-label="Toggle flashlight"
+            pressed={isTorchOn}
+            onPressedChange={toggleTorch}
+          >
+            {!isTorchOn ? <Flashlight /> : <FlashlightOff />}
+          </Toggle>
+        )}
       </div>
+
       <div
         ref={scannerRef}
-        className="h-[400px] aspect-square relative border-4 border-red-500"
+        className="w-full flex justify-center items-center overflow-hidden h-[70vh]"
       >
         <video
-          style={{ backgroundColor: 'green', width: '100%', height: '100%' }}
+          autoPlay
+          playsInline
+          muted
+          className="w-full h-full object-cover"
         />
-        <canvas
-          className="drawingBuffer"
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-          }}
-        />
+        <canvas className="drawingBuffer absolute top-0 left-0 w-full h-full" />
         {selected ? (
           <BarcodeScanner
             scannerRef={scannerRef}
@@ -77,7 +100,7 @@ const Scanner = () => {
 }
 
 function RouteComponent() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
 
   return (
     <div>
