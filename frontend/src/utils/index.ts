@@ -49,3 +49,20 @@ export const getChangedValues = <T extends Record<string, unknown>>(
     return acc
   }, {} as Partial<T>)
 }
+
+export const getMedianOfCodeErrors = (
+  decodedCodes: Array<{ error?: number }>
+) => {
+  const errors = decodedCodes
+    .map((x) => x.error)
+    .filter((e) => typeof e === 'number') // filter out undefined/null
+
+  if (errors.length === 0) return 1 // fallback: assume worst case
+
+  errors.sort((a, b) => a - b)
+  const mid = Math.floor(errors.length / 2)
+
+  return errors.length % 2 === 0
+    ? (errors[mid - 1] + errors[mid]) / 2
+    : errors[mid]
+}
