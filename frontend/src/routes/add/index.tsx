@@ -19,18 +19,8 @@ import { Button } from '@components/ui/button'
 import { Spinner } from '@components/ui/spinner'
 import { Item } from '@utils/item'
 import { toast } from 'sonner'
-import { Construction, ScanBarcode, X } from 'lucide-react'
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from '@components/ui/drawer'
+import { ScanBarcode } from 'lucide-react'
 import { useState } from 'react'
-import BarcodeScanner from '@components/BarcodeScanner'
 import BarcodeDrawer from '@components/BarcodeDrawer'
 
 export const Route = createFileRoute('/add/')({
@@ -90,8 +80,7 @@ function Add() {
   }
 
   const handleBarcodeSubmit = (barcode: string) => {
-    console.info('Barcode submitted:', barcode)
-    // form.setValue('barcode', '1234567890')
+    form.setValue('barcode', barcode)
     setBarcodeScanOpen(false)
   }
 
