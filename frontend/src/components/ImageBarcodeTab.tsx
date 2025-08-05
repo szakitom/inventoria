@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from './ui/card'
 import { Separator } from './ui/separator'
-import { useTheme } from './ui/theme-provider'
 
 type Nutriments = NonNullable<IItem['openFoodFacts']>['nutriments']
 
@@ -169,23 +168,19 @@ const ImageDisplay = ({ src }: { src: string }) => (
   </Card>
 )
 
-const BarcodeDisplay = ({ barcode }: { barcode: string }) => {
-  const { theme } = useTheme()
-  console.log(theme)
-  return (
-    <Card className="w-full py-0">
-      <CardContent className="p-4 space-y-2 text-sm">
-        <div className="w-full flex items-center justify-between mb-2">
-          <Label>Barcode:</Label>
-          <span className="text-sm font-mono">{barcode}</span>
-        </div>
-        <div className="w-full rounded-md font-mono flex items-center justify-center p-0 overflow-hidden">
-          <Barcode value={barcode} className="w-full h-full" />
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+const BarcodeDisplay = ({ barcode }: { barcode: string }) => (
+  <Card className="w-full py-0">
+    <CardContent className="p-4 space-y-2 text-sm">
+      <div className="w-full flex items-center justify-between mb-2">
+        <Label>Barcode:</Label>
+        <span className="text-sm font-mono">{barcode}</span>
+      </div>
+      <div className="w-full rounded-md font-mono flex items-center justify-center p-0 overflow-hidden">
+        <Barcode value={barcode} className="w-full h-full" />
+      </div>
+    </CardContent>
+  </Card>
+)
 
 const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
   const {
