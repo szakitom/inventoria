@@ -213,7 +213,7 @@ const EditDialog = ({
                     Cancel
                   </Button>
                   <Button
-                    className="cursor-pointer bg-blue-500 hover:bg-blue-600 min-w-20 text-white"
+                    className="cursor-pointer bg-blue-500 dark:bg-blue-800 dark:hover:bg-blue-900 hover:bg-blue-600 min-w-20 text-white"
                     type="submit"
                     disabled={
                       !form.formState.isValid ||

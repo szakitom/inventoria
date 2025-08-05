@@ -180,7 +180,7 @@ const Filterbar = ({
                 <ToggleGroupItem
                   value="+"
                   aria-label="Ascending"
-                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 dark:data-[state=on]:bg-blue-800  data-[state=on]:text-white"
                 >
                   {sort.includes('name') ? (
                     <ArrowDownAZ size={16} />
@@ -191,7 +191,7 @@ const Filterbar = ({
                 <ToggleGroupItem
                   value="-"
                   aria-label="Descending"
-                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 data-[state=on]:text-white"
+                  className="cursor-pointer px-2 py-1  data-[state=on]:bg-blue-500 dark:data-[state=on]:bg-blue-800 data-[state=on]:text-white"
                 >
                   {sort.includes('name') ? (
                     <ArrowUpAZ size={16} />

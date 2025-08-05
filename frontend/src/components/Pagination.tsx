@@ -247,7 +247,7 @@ const PaginationNumber = ({
       <PaginationLink
         onClick={handleClick}
         isActive={page === currentPage}
-        className="cursor-pointer select-none focus:outline-none data-[active=true]:bg-blue-500 data-[active=true]:text-white dark:data-[active=true]:bg-blue-500"
+        className="cursor-pointer select-none focus:outline-none data-[active=true]:bg-blue-500 data-[active=true]:text-white dark:data-[active=true]:bg-blue-800"
         aria-current={page === currentPage ? 'page' : undefined}
       >
         {page}
