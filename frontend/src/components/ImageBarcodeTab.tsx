@@ -214,37 +214,39 @@ const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
           <div className="flex justify-between">
             <dt className="font-semibold">Energia</dt>
             <dd>
-              {energyKj ?? '-'} kJ /{' '}
-              <span className="font-semibold">{energyKcal ?? '-'} kcal</span>
+              {Math.round(energyKj) ?? '-'} kJ /{' '}
+              <span className="font-semibold">
+                {Math.round(energyKcal) ?? '-'} kcal
+              </span>
             </dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Zsír</dt>
-            <dd>{fat ?? '-'} g</dd>
+            <dd>{Number(fat).toFixed(2) ?? '-'} g</dd>
           </div>
           <div className="flex justify-between pl-4 text-muted-foreground text-xs">
             <dt>ebből telített zsírsavak</dt>
-            <dd>{saturatedFat ?? '-'} g</dd>
+            <dd>{Number(saturatedFat).toFixed(2) ?? '-'} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Szénhidrát</dt>
-            <dd>{carbohydrates ?? '-'} g</dd>
+            <dd>{Number(carbohydrates).toFixed(2) ?? '-'} g</dd>
           </div>
           <div className="flex justify-between pl-4 text-muted-foreground text-xs">
             <dt>ebből cukrok</dt>
-            <dd>{sugars ?? '-'} g</dd>
+            <dd>{Number(sugars).toFixed(2) ?? '-'} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Fehérje</dt>
-            <dd>{proteins ?? '-'} g</dd>
+            <dd>{Number(proteins).toFixed(2) ?? '-'} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Só</dt>
-            <dd>{salt ?? '-'} g</dd>
+            <dd>{Number(salt).toFixed(2) ?? '-'} g</dd>
           </div>
         </dl>
       </CardContent>
