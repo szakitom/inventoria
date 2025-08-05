@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button'
 export default function AmountInput({
   value,
   onChange,
+  max,
 }: {
   value: number
+  max?: number
   onChange: (newValue: number) => void
 }) {
   const [inputValue, setValue] = useState<number>(value)
@@ -25,8 +27,13 @@ export default function AmountInput({
 
     const parsed = parseInt(val)
     if (!isNaN(parsed)) {
-      setValue(parsed)
-      onChange(parsed)
+      if (max === undefined) {
+        setValue(parsed)
+        onChange(parsed)
+      } else if (parsed <= max && parsed >= 1) {
+        setValue(parsed)
+        onChange(parsed)
+      }
     }
   }
 
@@ -72,6 +79,7 @@ export default function AmountInput({
       <Input
         type="text"
         min={1}
+        max={max}
         pattern="[0-9]+"
         inputMode="numeric"
         value={isNaN(inputValue) ? '' : inputValue}
