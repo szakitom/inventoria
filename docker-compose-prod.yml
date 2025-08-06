@@ -1,4 +1,4 @@
-name: 'inventoria'
+name: 'inventoria-prod'
 services:
   minio:
     image: quay.io/minio/minio
@@ -56,7 +56,7 @@ services:
       "
 
   backend:
-    build: ./backend
+    image: szaki/inventoria-backend
     container_name: inventoria-backend-prod
     ports:
       - '3001:3000' # exposed as 3001 externally
@@ -68,12 +68,10 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    image: szaki/inventoria-frontend
     container_name: inventoria-frontend-prod
     ports:
       - '3000:80'
     depends_on:
       - backend
-    env_file:
-      - ./frontend/.env
     restart: unless-stopped
