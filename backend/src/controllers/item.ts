@@ -2,7 +2,7 @@ import mongoose, { Query } from 'mongoose'
 import { Temporal } from '@js-temporal/polyfill'
 import { Item, Location, Shelf } from '../models'
 import { getProduct } from './OpenFoodFacts'
-import { deleteFile } from './minio'
+import { deleteFile } from './s3'
 import { IItem } from '../models/Item'
 
 export const getItems = async (req, res, next) => {
