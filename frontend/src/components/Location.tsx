@@ -26,22 +26,23 @@ const Location = ({ location }: { location: LocationType }) => {
   }
 
   return (
-    <div className="p-4 rounded-lg shadow-md w-full">
-      <div className="text-2xl font-semibold flex items-center">
+    <div className="p-5 rounded-lg border border-transparent hover:border-blue-300 shadow-sm hover:shadow-md transition-shadow duration-200 w-full bg-background">
+      <div className="text-2xl font-semibold flex items-center gap-3">
         <LocationIcon className="w-6 h-6 mr-2 text-blue-500" />
         <Link
           key={location.id}
           to="/locations/$location"
           params={{ location: location.id }}
           search={{ shelves: [] }}
-          className="hover:underline w-full"
+          className="hover:underline flex-grow"
         >
           {location.name}
         </Link>
         <Button
           variant="ghost"
           size="icon"
-          className="cursor-pointer ml-auto hover:bg-gray-200"
+          className="cursor-pointer ml-4 hover:bg-gray-200"
+          aria-label={`Edit ${location.name}`}
           onClick={() =>
             open('edit', { onSubmit: handleEditLocation, data: location })
           }
@@ -57,11 +58,11 @@ const Location = ({ location }: { location: LocationType }) => {
               to="/locations/$location"
               params={{ location: location.id }}
               search={{ shelves: [shelf.id] }}
-              className="p-2 border hover:no-underline"
+              className="p-2 border rounded hover:bg-muted hover:no-underline transition"
             >
-              <span className="text-lg">
+              <div className="text-base flex flex-wrap w-full gap-2">
                 {shelf.name.replace('Shelf ', 'Polc ')}
-              </span>
+              </div>
             </Link>
           </Badge>
         ))}

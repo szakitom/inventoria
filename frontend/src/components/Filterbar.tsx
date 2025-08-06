@@ -223,9 +223,9 @@ const Filterbar = ({
             <ResetButton onClick={resetFilters} className="flex md:hidden" />
           </div>
 
-          <div className="relative w-full sm:w-[200px] md:w-[240px] ">
+          <div className="relative w-full sm:w-[200px] md:w-[240px]">
             <Input
-              className="ps-8 pe-10 focus:ring-2! focus:ring-blue-500! dark:focus:ring-2! dark:focus:ring-blue-500!"
+              className="ps-8 pe-10 focus:ring-2 focus:!ring-blue-500 dark:focus:!ring-blue-500"
               placeholder="Search..."
               type="search"
               ref={searchRef}

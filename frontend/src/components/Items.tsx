@@ -154,19 +154,25 @@ const Items = ({ navigate, from }: ItemsProps) => {
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
            xl:grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-4 touch-pan-y select-none  active:cursor-grabbing"
         >
-          {items.map((item: IItem) => (
-            <div
-              key={item.id}
-              onClick={(e) => {
-                if (isDraggingRef.current) {
-                  e.preventDefault()
-                  e.stopPropagation()
-                }
-              }}
-            >
-              <Item item={item} from={from} />
+          {items.length === 0 ? (
+            <div className="text-center col-span-full text-muted-foreground">
+              No items found.
             </div>
-          ))}
+          ) : (
+            items.map((item: IItem) => (
+              <div
+                key={item.id}
+                onClick={(e) => {
+                  if (isDraggingRef.current) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }
+                }}
+              >
+                <Item item={item} from={from} />
+              </div>
+            ))
+          )}
         </motion.div>
       </div>
     </AnimatePresence>

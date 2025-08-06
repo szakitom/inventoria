@@ -25,7 +25,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Label } from '@components/ui/label'
 import { motion, AnimatePresence } from 'motion/react'
@@ -315,4 +315,4 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
     </Card>
   )
 }
-export default Item
+export default memo(Item)
