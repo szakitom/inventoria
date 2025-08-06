@@ -3,7 +3,7 @@ import {
   DialogContext,
   type DialogContextType,
   type DialogKey,
-} from './DialogContext'
+} from '@/hooks/DialogContext'
 
 type DialogProps = Record<string, unknown>
 

@@ -1,14 +1,5 @@
-import { useNavigate, type AnyRoute } from '@tanstack/react-router'
 import { useEffect, useId, useRef, useState } from 'react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Input } from '@components/ui/input'
+import { useNavigate, type AnyRoute } from '@tanstack/react-router'
 import {
   ArrowDown01,
   ArrowDownAZ,
@@ -17,19 +8,28 @@ import {
   RotateCcw,
   Search,
 } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Input } from '@/components/ui/input'
 import { Button } from '@components/ui/button'
-import useDebounce from '@/hooks/useDebounce'
-import { Item } from '@utils/item'
-import Multiselect from '@/components/Multiselect'
-import { arraysEqual } from '@utils/index'
 import { Label } from '@components/ui/label'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
-import { Spinner } from './ui/spinner'
+import { Item } from '@/utils/item'
+import { arraysEqual } from '@/utils/index'
+import useDebounce from '@/hooks/useDebounce'
+import Multiselect from '@/components/Multiselect'
 
 interface FilterbarProps {
   route: AnyRoute

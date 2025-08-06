@@ -1,12 +1,12 @@
 import { getRouteApi, useRouter } from '@tanstack/react-router'
-import Location from './Location'
-import type { Location as LocationType } from './LocationSelect'
-import { useDialog } from '@/hooks/useDialog'
-import EditLocationDialog from './EditLocationDialog'
-import Fab from './Fab'
-import CrateLocationDialog from './CreateLocationDialog'
+import { createLocation } from '@/utils/api'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
-import { createLocation } from '@utils/api'
+import { useDialog } from '@/hooks/useDialog'
+import Location from '@/components/Location'
+import type { Location as LocationType } from '@/components/LocationSelect'
+import EditLocationDialog from '@/components/EditLocationDialog'
+import Fab from '@/components/Fab'
+import CrateLocationDialog from '@/components/CreateLocationDialog'
 
 const route = getRouteApi('/locations/')
 

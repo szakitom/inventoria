@@ -1,7 +1,3 @@
-import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
-import { Command, CommandItem, CommandList } from '@components/ui/command'
-import { Button } from '@components/ui/button'
-import { Badge } from '@components/ui/badge'
 import {
   createElement,
   Suspense,
@@ -13,7 +9,11 @@ import {
   useState,
 } from 'react'
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
-import { arraysEqual, getLocationIcon } from '@utils/index'
+import { arraysEqual, getLocationIcon } from '@/utils/index'
+import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
+import { Command, CommandItem, CommandList } from '@components/ui/command'
+import { Button } from '@components/ui/button'
+import { Badge } from '@components/ui/badge'
 
 interface OptionType {
   [key: string]: string

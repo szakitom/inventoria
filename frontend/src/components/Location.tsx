@@ -1,13 +1,13 @@
-import { Link, useRouter } from '@tanstack/react-router'
-import type { Location as LocationType } from './LocationSelect'
-import { Separator } from './ui/separator'
-import { getLocationIcon } from '@utils/index'
-import { Button } from './ui/button'
-import { PencilIcon } from 'lucide-react'
-import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { toast } from 'sonner'
-import { Badge } from './ui/badge'
-import { updateLocation } from '@utils/api'
+import { Link, useRouter } from '@tanstack/react-router'
+import { PencilIcon } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { getLocationIcon } from '@/utils/index'
+import { updateLocation } from '@/utils/api'
+import { useGlobalDialog } from '@/hooks/useGlobalDialog'
+import type { Location as LocationType } from '@/components/LocationSelect'
 
 const Location = ({ location }: { location: LocationType }) => {
   const router = useRouter()

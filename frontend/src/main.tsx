@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/sonner'
 import './index.css'
 
 // Import the generated route tree
-import { routeTree } from './routeTree.gen'
-import { ThemeProvider } from '@components/ui/theme-provider'
+import { routeTree } from '@/routeTree.gen'
+import { ThemeProvider } from '@/components/ui/theme-provider'
 
 // Create a new router instance
 const router = createRouter({ routeTree })

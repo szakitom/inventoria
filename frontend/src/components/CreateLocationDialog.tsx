@@ -1,6 +1,5 @@
-import { getLocationIcon } from '@utils/index'
-import type { Location } from './LocationSelect'
-import { Button } from './ui/button'
+import React, { useId, useState } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -8,20 +7,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog'
-import { Spinner } from './ui/spinner'
-import React, { useId, useState } from 'react'
-import { Label } from './ui/label'
+} from '@/components/ui/dialog'
+import AmountInput from '@/components/ui/amountinput'
+import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select'
-import { LocationType } from './Items'
-import { Input } from './ui/input'
-import AmountInput from './ui/amountinput'
+} from '@/components/ui/select'
+import type { Location } from '@/components/LocationSelect'
+import { getLocationIcon } from '@utils/index'
+import { LocationType } from '@/components/Items'
 
 interface CreateLocationDialogProps {
   isOpen: boolean

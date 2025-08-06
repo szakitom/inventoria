@@ -1,3 +1,5 @@
+import { useState, useRef, useEffect } from 'react'
+import { useLoaderData } from '@tanstack/react-router'
 import {
   Dialog,
   DialogContent,
@@ -6,15 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from './ui/button'
-import { useLoaderData } from '@tanstack/react-router'
-import { useState, useRef, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Spinner } from '@/components/ui/spinner'
+import { CheckboxCard } from '@/components/ui/checkboxcard'
+import AmountInput from '@/components/ui/amountinput'
 import { getLocationIcon } from '@utils/index'
-import { Badge } from './ui/badge'
-import LocationSelect, { type Shelf, type Location } from './LocationSelect'
-import { Spinner } from './ui/spinner'
-import { CheckboxCard } from './ui/checkboxcard'
-import AmountInput from './ui/amountinput'
+import LocationSelect, {
+  type Shelf,
+  type Location,
+} from '@/components/LocationSelect'
 
 interface MoveDialogProps {
   isOpen: boolean

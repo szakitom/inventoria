@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLoaderData, useSearch } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
-import Item from './Item'
 import { useDialog } from '@/hooks/useDialog'
-import DeleteDialog from './DeleteDialog'
-import MoveDialog from './MoveDialog'
-import EditDialog from './EditDialog'
+import Item from '@/components/Item'
+import DeleteDialog from '@/components/DeleteDialog'
+import MoveDialog from '@/components/MoveDialog'
+import EditDialog from '@/components/EditDialog'
 
 const variants = {
   enter: (direction: 'next' | 'prev') => ({

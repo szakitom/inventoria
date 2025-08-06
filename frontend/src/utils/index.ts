@@ -1,5 +1,5 @@
-import { LocationType } from '@components/Items'
 import { MapPin, Refrigerator, Rows3, Snowflake } from 'lucide-react'
+import { LocationType } from '@/components/Items'
 
 export const arraysEqual = (a: string[], b: string[]) => {
   if (a === b) return true

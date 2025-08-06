@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import Quagga from '@ericblade/quagga2'
-import { getMedianOfCodeErrors } from '@utils/index'
+import { getMedianOfCodeErrors } from '@/utils/index'
 
 const decoders = ['code_128_reader', 'ean_reader', 'ean_8_reader']
 

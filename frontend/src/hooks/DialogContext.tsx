@@ -1,4 +1,3 @@
-// DialogContext.tsx
 import { createContext, type FC } from 'react'
 
 export type DialogKey = string

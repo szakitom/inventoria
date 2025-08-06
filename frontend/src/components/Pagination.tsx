@@ -1,5 +1,6 @@
 import { useId, useRef } from 'react'
 import { useNavigate, type AnyRoute } from '@tanstack/react-router'
+import { ChevronFirstIcon, ChevronLastIcon } from 'lucide-react'
 import {
   Pagination as PaginationShad,
   PaginationContent,
@@ -9,7 +10,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -18,9 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Item } from '@utils/item'
-import { ChevronFirstIcon, ChevronLastIcon } from 'lucide-react'
-import { Spinner } from './ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
+import { cn } from '@/lib/utils'
+import { Item } from '@/utils/item'
 
 interface PaginationProps {
   route: AnyRoute

@@ -1,7 +1,7 @@
-import { DialogProvider } from '@/hooks/DialogProvider'
-import Locations from '@components/Locations'
 import { createFileRoute } from '@tanstack/react-router'
-import { fetchLocations } from '@utils/api'
+import { DialogProvider } from '@/hooks/DialogProvider'
+import { fetchLocations } from '@/utils/api'
+import Locations from '@/components/Locations'
 
 export const Route = createFileRoute('/locations/')({
   component: LocationsPage,

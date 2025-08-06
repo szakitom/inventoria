@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -6,9 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from './ui/button'
-import { useState } from 'react'
-import { Spinner } from './ui/spinner'
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 
 interface DeleteDialogProps {
   isOpen: boolean
