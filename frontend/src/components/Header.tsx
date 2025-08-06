@@ -2,16 +2,15 @@
 
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Menu, X } from 'lucide-react'
-
-import { Button } from '@/components/ui/button'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-import { ModeToggle } from './ui/mode-toggle'
 import { AnimatePresence, motion } from 'motion/react'
+import { Button } from '@/components/ui/button'
+import { ModeToggle } from '@/components/ui/mode-toggle'
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from '@/components/ui/navigation-menu'
 
 const Header = () => {
   const [open, setOpen] = useState(false)
@@ -24,6 +23,7 @@ const Header = () => {
           <Link
             to="/"
             className="flex items-center gap-2 hover:opacity-80 transition"
+            onClick={() => setOpen(false)}
           >
             <img
               src="/logo.svg"
@@ -36,14 +36,33 @@ const Header = () => {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-4">
-            <Link to="/locations" className="text-sm transition">
-              Locations
-            </Link>
-            <ModeToggle />
-            <Button asChild>
-              <Link to="/add">+ Add Item</Link>
-            </Button>
+          <nav className="hidden md:flex items-center gap-2">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      to="/locations"
+                      activeProps={{
+                        className:
+                          'font-semibold text-primary ring-1 ring-muted-foreground/20 underline underline-offset-4',
+                      }}
+                      className="transition-colors px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-primary hover:bg-muted min-w-24 text-center"
+                    >
+                      Locations
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            <div className="ml-auto flex items-center gap-2">
+              <ModeToggle />
+
+              <Button asChild variant="default">
+                <Link to="/add">+ Add Item</Link>
+              </Button>
+            </div>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -92,16 +111,21 @@ const Header = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full left-0 w-full z-50 shadow-md border-b bg-background px-4 pb-4 pt-2 md:hidden"
+              className="absolute top-full left-0 w-full z-50 shadow-md border-b bg-background px-4 pb-4 pt-3 md:hidden"
             >
               <nav className="flex flex-col gap-3">
                 <Link
                   to="/locations"
-                  className="text-sm text-muted-foreground hover:text-foreground transition"
+                  activeProps={{
+                    className:
+                      'font-semibold text-primary ring-1 ring-muted-foreground/20 underline underline-offset-4',
+                  }}
+                  className="transition-colors px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-primary hover:bg-muted min-w-24"
                   onClick={() => setOpen(false)}
                 >
                   Locations
                 </Link>
+
                 <div className="flex items-center justify-between gap-2">
                   <Button
                     asChild
@@ -119,12 +143,19 @@ const Header = () => {
       </div>
 
       {/* Backdrop */}
-      {open && (
-        <div
-          className="fixed inset-0 z-30 bg-white/40 dark:bg-black/40 backdrop-blur-sm md:hidden"
-          onClick={() => setOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="mobile-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-30 bg-white/40 dark:bg-black/40 backdrop-blur-sm md:hidden"
+            onClick={() => setOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   )
 }
