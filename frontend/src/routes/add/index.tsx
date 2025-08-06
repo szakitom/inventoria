@@ -19,17 +19,9 @@ import { Button } from '@components/ui/button'
 import { Spinner } from '@components/ui/spinner'
 import { Item } from '@utils/item'
 import { toast } from 'sonner'
-import { Construction, ScanBarcode, X } from 'lucide-react'
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from '@components/ui/drawer'
+import { ScanBarcode } from 'lucide-react'
 import { useState } from 'react'
+import BarcodeDrawer from '@components/BarcodeDrawer'
 
 export const Route = createFileRoute('/add/')({
   component: Add,
@@ -88,8 +80,7 @@ function Add() {
   }
 
   const handleBarcodeSubmit = (barcode: string) => {
-    console.info('Barcode submitted:', barcode)
-    // form.setValue('barcode', '1234567890')
+    form.setValue('barcode', barcode)
     setBarcodeScanOpen(false)
   }
 
@@ -233,29 +224,11 @@ function Add() {
           </Button>
         </form>
       </Form>
-      <Drawer open={bardcodeScanOpen} onOpenChange={setBarcodeScanOpen}>
-        <DrawerContent className="h-5/6 md:h-4/5 flex items-center w-full">
-          <DrawerHeader>
-            <DrawerTitle>Barcode</DrawerTitle>
-            <DrawerDescription>Scan product barcode</DrawerDescription>
-          </DrawerHeader>
-          <DrawerClose className="absolute top-0 right-0 p-4">
-            <X />
-          </DrawerClose>
-          <div className="flex flex-col items-center justify-center h-full">
-            Under construction.
-            <Construction className="mx-auto my-4 text-amber-300" size={100} />
-          </div>
-          <DrawerFooter className="w-full flex justify-center items-center">
-            <Button
-              className="w-full max-w-xl"
-              onClick={() => handleBarcodeSubmit('1234567890')}
-            >
-              Submit
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <BarcodeDrawer
+        open={bardcodeScanOpen}
+        onBarcode={handleBarcodeSubmit}
+        handleOpenChange={setBarcodeScanOpen}
+      />
     </main>
   )
 }

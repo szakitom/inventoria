@@ -15,7 +15,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.4",
+    "@ericblade/quagga2": "^1.8.4",
     "@hookform/resolvers": "^5.2.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-checkbox": "^1.3.2",
@@ -37,8 +37,6 @@
     "@tanstack/react-router-devtools": "^1.125.6",
     "@tanstack/zod-adapter": "^1.128.4",
     "@techstark/opencv-js": "^4.11.0-release.1",
-    "@zxing/browser": "^0.1.5",
-    "@zxing/library": "^0.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -51,7 +49,6 @@
     "react-dom": "^19.1.0",
     "react-fast-marquee": "^1.6.5",
     "react-hook-form": "^7.61.1",
-    "react-spinners": "^0.17.0",
     "react-webcam": "^7.2.0",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
