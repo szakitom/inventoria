@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { DialogContext } from './DialogContext'
+import { DialogContext } from '@/hooks/DialogContext'
 
 export const useGlobalDialog = () => {
   const ctx = useContext(DialogContext)

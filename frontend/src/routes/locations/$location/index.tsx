@@ -1,7 +1,4 @@
-import { DialogProvider } from '@/hooks/DialogProvider'
-import Filterbar from '@components/Filterbar'
-import Items from '@components/Items'
-import Pagination from '@components/Pagination'
+import { useTransition } from 'react'
 import {
   createFileRoute,
   defer,
@@ -9,9 +6,12 @@ import {
   useNavigate,
 } from '@tanstack/react-router'
 import { zodValidator } from '@tanstack/zod-adapter'
-import { fetchItems, fetchLocations, fetchShelves } from '@utils/api'
-import { Item } from '@utils/item'
-import { useTransition } from 'react'
+import { DialogProvider } from '@/hooks/DialogProvider'
+import { fetchItems, fetchLocations, fetchShelves } from '@/utils/api'
+import { Item } from '@/utils/item'
+import Filterbar from '@/components/Filterbar'
+import Items from '@/components/Items'
+import Pagination from '@/components/Pagination'
 
 export const Route = createFileRoute('/locations/$location/')({
   component: Location,

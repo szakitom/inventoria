@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLoaderData, useSearch } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
-import Item from './Item'
 import { useDialog } from '@/hooks/useDialog'
-import DeleteDialog from './DeleteDialog'
-import MoveDialog from './MoveDialog'
-import EditDialog from './EditDialog'
+import Item from '@/components/Item'
+import DeleteDialog from '@/components/DeleteDialog'
+import MoveDialog from '@/components/MoveDialog'
+import EditDialog from '@/components/EditDialog'
 
 const variants = {
   enter: (direction: 'next' | 'prev') => ({
@@ -154,19 +154,25 @@ const Items = ({ navigate, from }: ItemsProps) => {
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
            xl:grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-4 touch-pan-y select-none  active:cursor-grabbing"
         >
-          {items.map((item: IItem) => (
-            <div
-              key={item.id}
-              onClick={(e) => {
-                if (isDraggingRef.current) {
-                  e.preventDefault()
-                  e.stopPropagation()
-                }
-              }}
-            >
-              <Item item={item} from={from} />
+          {items.length === 0 ? (
+            <div className="text-center col-span-full text-muted-foreground">
+              No items found.
             </div>
-          ))}
+          ) : (
+            items.map((item: IItem) => (
+              <div
+                key={item.id}
+                onClick={(e) => {
+                  if (isDraggingRef.current) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }
+                }}
+              >
+                <Item item={item} from={from} />
+              </div>
+            ))
+          )}
         </motion.div>
       </div>
     </AnimatePresence>

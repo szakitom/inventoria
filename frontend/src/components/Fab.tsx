@@ -1,5 +1,5 @@
-import { Button } from './ui/button'
 import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const Fab = ({ onClick }: { onClick: () => void }) => {
   return (

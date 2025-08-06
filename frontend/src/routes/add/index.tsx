@@ -1,10 +1,11 @@
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { ScanBarcode } from 'lucide-react'
 import { createFileRoute, defer } from '@tanstack/react-router'
-import { createItem, fetchLocations } from '@utils/api'
-import LocationSelect from '@components/LocationSelect'
 import { useHookFormMask } from 'use-mask-input'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Form,
   FormControl,
@@ -17,10 +18,9 @@ import { Input } from '@components/ui/input'
 import AmountInput from '@components/ui/amountinput'
 import { Button } from '@components/ui/button'
 import { Spinner } from '@components/ui/spinner'
-import { Item } from '@utils/item'
-import { toast } from 'sonner'
-import { ScanBarcode } from 'lucide-react'
-import { useState } from 'react'
+import { createItem, fetchLocations } from '@/utils/api'
+import { Item } from '@/utils/item'
+import LocationSelect from '@components/LocationSelect'
 import BarcodeDrawer from '@components/BarcodeDrawer'
 
 export const Route = createFileRoute('/add/')({
@@ -211,7 +211,7 @@ function Add() {
           </div>
 
           <Button
-            className="cursor-pointer bg-blue-500 dark:bg-blue-800 dark:hover:bg-blue-900 hover:bg-blue-600 min-w-20 w-full text-white"
+            className="cursor-pointer bg-blue-500 dark:bg-blue-800 dark:hover:bg-blue-900 hover:bg-blue-600 min-w-20 w-full text-white rounded-md"
             type="submit"
             disabled={
               !form.formState.isValid ||

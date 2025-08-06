@@ -1,21 +1,25 @@
-FROM node:20-alpine AS build
+FROM node:lts-alpine AS build
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+RUN corepack enable
+
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 COPY . .
-RUN npm run build
+RUN yarn run build
 
-FROM node:20-alpine
+FROM node:lts-alpine
 
 WORKDIR /app
 
+RUN corepack enable
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile
+
 COPY --from=build /app/dist ./dist
-COPY package*.json ./
-RUN npm install --production
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["yarn", "start:prod"]

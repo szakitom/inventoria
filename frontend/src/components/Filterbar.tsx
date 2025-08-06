@@ -1,5 +1,13 @@
+import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate, type AnyRoute } from '@tanstack/react-router'
-import { useEffect, useId, useState } from 'react'
+import {
+  ArrowDown01,
+  ArrowDownAZ,
+  ArrowUp01,
+  ArrowUpAZ,
+  RotateCcw,
+  Search,
+} from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -8,27 +16,20 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Input } from '@components/ui/input'
-import {
-  ArrowDown01,
-  ArrowDownAZ,
-  ArrowUp01,
-  ArrowUpAZ,
-  RotateCcw,
-} from 'lucide-react'
+import { Input } from '@/components/ui/input'
 import { Button } from '@components/ui/button'
-import useDebounce from '@/hooks/useDebounce'
-import { Item } from '@utils/item'
-import Multiselect from '@/components/Multiselect'
-import { arraysEqual } from '@utils/index'
 import { Label } from '@components/ui/label'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
-import { Spinner } from './ui/spinner'
+import { Item } from '@/utils/item'
+import { arraysEqual } from '@/utils/index'
+import useDebounce from '@/hooks/useDebounce'
+import Multiselect from '@/components/Multiselect'
 
 interface FilterbarProps {
   route: AnyRoute
@@ -55,6 +56,7 @@ const Filterbar = ({
   } = search
   const selectedLocations = !withShelves ? search.locations : params.location
   const id = useId()
+  const searchRef = useRef<HTMLInputElement>(null)
   const direction = directionSort.startsWith('-') ? '-' : '+'
   const sort = directionSort.replace(/^-/, '')
   const [searchValue, setSearchValue] = useState(searchTerm || '')
@@ -112,6 +114,17 @@ const Filterbar = ({
     params.location,
     search,
   ])
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        searchRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
   const handleSortChange = (value: string) => {
     navigate({
@@ -210,15 +223,26 @@ const Filterbar = ({
             <ResetButton onClick={resetFilters} className="flex md:hidden" />
           </div>
 
-          <Input
-            placeholder="Search"
-            className="w-full sm:w-[200px] md:w-[240px] focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500 "
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
-            }}
-          />
+          <div className="relative w-full sm:w-[200px] md:w-[240px]">
+            <Input
+              className="ps-8 pe-10 focus:ring-2 focus:!ring-blue-500 dark:focus:!ring-blue-500"
+              placeholder="Search..."
+              type="search"
+              ref={searchRef}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+              }}
+            />
+            <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 peer-disabled:opacity-50">
+              <Search size={16} />
+            </div>
+            <div className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-2">
+              <ShortcutKey />
+            </div>
+          </div>
+
           {withShelves ? (
             <Multiselect
               options={data}
@@ -281,3 +305,31 @@ const ResetButton = ({
     </TooltipContent>
   </Tooltip>
 )
+
+const ShortcutKey = () => {
+  const [modKey, setModKey] = useState('Ctrl')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const uaData = (
+        navigator as Navigator & { userAgentData?: { platforms?: string[] } }
+      ).userAgentData
+
+      if (uaData && Array.isArray(uaData.platforms)) {
+        const isMac = uaData.platforms.some((p: string) =>
+          p.toLowerCase().includes('mac')
+        )
+        setModKey(isMac ? '⌘' : 'Ctrl')
+      } else {
+        const isMac = navigator.userAgent.includes('Macintosh')
+        setModKey(isMac ? '⌘' : 'Ctrl')
+      }
+    }
+  }, [])
+
+  return (
+    <kbd className="text-muted-foreground/70 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+      {modKey}+K
+    </kbd>
+  )
+}

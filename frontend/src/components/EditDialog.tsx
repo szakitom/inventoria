@@ -1,3 +1,9 @@
+import { useState } from 'react'
+import { ScanBarcode } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { useHookFormMask } from 'use-mask-input'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Dialog,
   DialogContent,
@@ -6,8 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from './ui/button'
-import { Input } from '@components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
@@ -16,18 +22,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { ScrollArea } from './ui/scroll-area'
-import AmountInput from './ui/amountinput'
-import { useHookFormMask } from 'use-mask-input'
-import type { IItem } from './Items'
-import { Spinner } from './ui/spinner'
-import { Item } from '@utils/item'
-import { ScanBarcode } from 'lucide-react'
-import BarcodeDrawer from './BarcodeDrawer'
-import { useState } from 'react'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import AmountInput from '@/components/ui/amountinput'
+import { Spinner } from '@/components/ui/spinner'
+import { Item } from '@/utils/item'
+import type { IItem } from '@/components/Items'
+import BarcodeDrawer from '@/components/BarcodeDrawer'
 
 interface EditDialogProps {
   isOpen: boolean

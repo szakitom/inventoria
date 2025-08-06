@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useGlobalDialog } from './useGlobalDialog'
+import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 
 export const useDialog = <
   TProps extends { data?: unknown } = { data?: unknown },

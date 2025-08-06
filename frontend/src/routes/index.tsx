@@ -1,19 +1,18 @@
-import { DialogProvider } from '@/hooks/DialogProvider'
-import FeatureBar from '@components/FeatureBar'
-import Filterbar from '@components/Filterbar'
-import Items from '@components/Items'
-import Pagination from '@components/Pagination'
+import { useTransition } from 'react'
 import {
   createFileRoute,
   defer,
   stripSearchParams,
   useNavigate,
 } from '@tanstack/react-router'
-
 import { zodValidator } from '@tanstack/zod-adapter'
-import { fetchFeaturedItems, fetchItems, fetchLocations } from '@utils/api'
-import { Item } from '@utils/item'
-import { useTransition } from 'react'
+import { DialogProvider } from '@/hooks/DialogProvider'
+import { fetchFeaturedItems, fetchItems, fetchLocations } from '@/utils/api'
+import { Item } from '@/utils/item'
+import FeatureBar from '@/components/FeatureBar'
+import Filterbar from '@/components/Filterbar'
+import Items from '@/components/Items'
+import Pagination from '@/components/Pagination'
 
 export const Route = createFileRoute('/')({
   component: Index,

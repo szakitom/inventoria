@@ -7,9 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useTheme, type Theme } from './theme-provider'
+import { useTheme, type Theme } from '@/components/ui/theme-provider'
+import { useState } from 'react'
 
-function switchTheme(theme: Theme) {
+const switchTheme = (theme: Theme) => {
   const root = document.documentElement
   root.classList.remove('light', 'dark')
 
@@ -27,6 +28,7 @@ function switchTheme(theme: Theme) {
 
 export function ModeToggle() {
   const { theme: currentTheme, setTheme } = useTheme()
+  const [open, setOpen] = useState(false)
 
   const handleTheme = (theme: Theme) => {
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
@@ -39,7 +41,9 @@ export function ModeToggle() {
       currentTheme === 'system' ? systemTheme : currentTheme
 
     // If new theme equals current effective theme, no need to switch
-    const shouldSwitch = theme !== effectiveCurrentTheme && theme !== 'system'
+    const shouldSwitch =
+      (theme !== effectiveCurrentTheme && theme !== 'system') ||
+      (theme === 'system' && effectiveCurrentTheme !== systemTheme)
 
     if (!document.startViewTransition) {
       switchTheme(theme)
@@ -55,10 +59,13 @@ export function ModeToggle() {
     } else {
       setTheme(theme)
     }
+    setTimeout(() => {
+      setOpen(false)
+    }, 100)
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
           <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
@@ -68,19 +75,31 @@ export function ModeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
-          onClick={() => handleTheme('light')}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleTheme('light')
+          }}
           disabled={currentTheme === 'light'}
         >
           Light
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => handleTheme('dark')}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleTheme('dark')
+          }}
           disabled={currentTheme === 'dark'}
         >
           Dark
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => handleTheme('system')}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleTheme('system')
+          }}
           disabled={currentTheme === 'system'}
         >
           System

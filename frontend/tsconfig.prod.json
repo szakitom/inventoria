@@ -3,24 +3,8 @@
   "compilerOptions": {
     "skipLibCheck": true,
     "noEmit": true,
-    // The following options will ignore most TypeScript errors
-    "allowJs": true,
-    "checkJs": false,
-    "strict": false,
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "strictFunctionTypes": false,
-    "strictBindCallApply": false,
-    "strictPropertyInitialization": false,
-    "noImplicitThis": false,
-    "useUnknownInCatchVariables": false,
-    "alwaysStrict": false,
+    "strict": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "exactOptionalPropertyTypes": false,
-    "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": false,
-    "noImplicitOverride": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noUnusedParameters": false
   }
 }

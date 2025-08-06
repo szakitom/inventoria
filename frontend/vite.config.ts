@@ -4,14 +4,12 @@ import mkcert from 'vite-plugin-mkcert'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
-// Removed the import for ignoreTsErrors
 
 import { config } from 'dotenv'
 config()
 
 console.log(`Using backend URL: ${process.env.BACKEND_URL}`)
 
-// https://vite.dev/config/
 export default defineConfig({
   base: '/',
   plugins: [
@@ -22,8 +20,6 @@ export default defineConfig({
     reactPlugin(),
     tailwindcss(),
     mkcert(),
-    // Temporarily removed the custom plugin
-    // ignoreTsErrors(),
   ],
   resolve: {
     alias: {
@@ -42,18 +38,8 @@ export default defineConfig({
       },
     },
   },
-  // Configuration to ignore TypeScript errors
-  esbuild: {
-    logOverride: {
-      'ts-resolver-finding-file': 'silent',
-      'ts-resolver-not-found': 'silent',
-      'ts-resolver-type-only-import': 'silent',
-    },
-  },
-  // Add a custom plugin to ignore TypeScript errors during dev and build
   optimizeDeps: {
     esbuildOptions: {
-      // Disable type checking in dependencies
       tsconfig: './tsconfig.json',
     },
   },

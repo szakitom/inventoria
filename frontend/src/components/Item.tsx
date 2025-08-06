@@ -1,3 +1,15 @@
+import { memo, useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { motion, AnimatePresence } from 'motion/react'
+import { useRouter } from '@tanstack/react-router'
+import {
+  ChevronDownIcon,
+  MoreVertical,
+  Move,
+  Pencil,
+  Trash2,
+  X,
+} from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -14,30 +26,18 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
-import { toast } from 'sonner'
-
 import { Button } from '@/components/ui/button'
-import {
-  ChevronDownIcon,
-  MoreVertical,
-  Move,
-  Pencil,
-  Trash2,
-  X,
-} from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Label } from '@/components/ui/label'
+import AmountInput from '@/components/ui/amountinput'
+import { Separator } from '@/components/ui/separator'
+
 import { cn } from '@/lib/utils'
-import { Label } from '@components/ui/label'
-import { motion, AnimatePresence } from 'motion/react'
-import AmountInput from './ui/amountinput'
-import { type IItem } from './Items'
-import { Separator } from './ui/separator'
-import SaveButton from './Savebutton'
-import { deleteItem, moveItem, movePartialItem, updateItem } from '@utils/api'
-import { useRouter } from '@tanstack/react-router'
-import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { getExpirationStatus, getLocationIcon } from '@utils/index'
-import ImageBarcodeTab from './ImageBarcodeTab'
+import { deleteItem, moveItem, movePartialItem, updateItem } from '@/utils/api'
+import { useGlobalDialog } from '@/hooks/useGlobalDialog'
+import { type IItem } from '@/components/Items'
+import SaveButton from '@/components/Savebutton'
+import ImageBarcodeTab from '@/components/ImageBarcodeTab'
 
 const Item = ({ item, from }: { item: IItem; from?: string }) => {
   const [isExpanded, setExpanded] = useState(false)
@@ -315,4 +315,4 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
     </Card>
   )
 }
-export default Item
+export default memo(Item)

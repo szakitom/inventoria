@@ -1,19 +1,19 @@
-import Barcode from 'react-barcode'
-import { Label } from './ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
-import type { IItem } from './Items'
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { cn } from '@/lib/utils'
 import { Barcode as BarcodeIcon, Image, Utensils } from 'lucide-react'
+import Barcode from 'react-barcode'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card'
-import { Separator } from './ui/separator'
+} from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import type { IItem } from '@/components/Items'
+import { cn } from '@/lib/utils'
 
 type Nutriments = NonNullable<IItem['openFoodFacts']>['nutriments']
 
