@@ -2,7 +2,7 @@ name: 'inventoria-prod'
 services:
   minio:
     image: quay.io/minio/minio
-    container_name: minio-prod
+    container_name: s3-prod
     command: server /data --console-address ":9001"
     ports:
       - '9000:9000' # S3 API
@@ -16,14 +16,14 @@ services:
 
   mc:
     image: minio/mc
-    container_name: minio-client-prod
+    container_name: s3-client-prod
     depends_on:
       - minio
     entrypoint: >
       /bin/sh -c "
         sleep 5 && \
-        mc alias set localminio http://minio:9000 minio miniopassword && \
-        mc mb -p localminio/inventoria && \
+        mc alias set s3 http://s3-prod:9000 minio miniopassword && \
+        mc mb -p s3/inventoria && \
         echo '✅ Bucket created: inventoria' || echo '⚠️ Bucket may already exist'
       "
     restart: 'no'

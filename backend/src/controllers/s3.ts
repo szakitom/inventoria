@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import s3Client, { bucket } from '../s3'
+import { ListObjectsV2Command } from '@aws-sdk/client-s3'
 
 export const presignURL = async (req, res, next) => {
   try {
@@ -12,6 +13,27 @@ export const presignURL = async (req, res, next) => {
     res.json({ url: presignedUrl, uuid })
   } catch (err) {
     next(err)
+  }
+}
+
+export const getFiles = async (req, res, next) => {
+  try {
+    const command = new ListObjectsV2Command({
+      Bucket: bucket,
+    })
+
+    const response = await s3Client.send(command)
+
+    if (response.Contents) {
+      response.Contents.forEach((obj) => {
+        console.log(`- ${obj.Key} (${obj.Size} bytes)`)
+      })
+    }
+    console.log(response.Contents)
+    return res.json(response.Contents || [])
+  } catch (error) {
+    console.error('Error listing objects:', error)
+    next(error)
   }
 }
 

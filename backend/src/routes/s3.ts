@@ -5,5 +5,6 @@ const router = Router()
 
 router.get('/presign', s3Controller.presignURL)
 router.get('/get/:filename', s3Controller.getFileURL)
+router.get('/files', s3Controller.getFiles)
 
 export default router

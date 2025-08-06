@@ -36,8 +36,8 @@ services:
     volumes:
       - ./rustfs/data:/data
     environment:
-      - RUSTFS_ACCESS_KEY=rustfsadmin
-      - RUSTFS_SECRET_KEY=rustfsadmin
+      - RUSTFS_ACCESS_KEY=minio
+      - RUSTFS_SECRET_KEY=miniopassword
     restart: no
 
   rustfs-init:
@@ -48,7 +48,7 @@ services:
     entrypoint: >
       /bin/sh -c "
         sleep 5 && \
-        mc alias set rustfs http://rustfs:9000 rustfsadmin rustfsadmin && \
+        mc alias set rustfs http://rustfs:9000 minio miniopassword && \
         mc mb -p rustfs/inventoria && \
         echo '✅ Bucket created: inventoria' || echo '⚠️ Bucket may already exist'
       "
