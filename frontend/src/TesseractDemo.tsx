@@ -10,6 +10,8 @@ interface WordBox {
   confidence: number
 }
 
+// Use 'any' type to avoid TypeScript errors with the OpenCV library
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let cv: any
 
 const TesseractDemo = () => {
@@ -20,7 +22,8 @@ const TesseractDemo = () => {
   const wordBoxesRef = useRef<WordBox[]>([])
   const selectedWordsRef = useRef<WordBox[]>([])
 
-  const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([])
+  // Array of available video devices, currently not displayed in UI but used in the camera selection logic
+  const [, setVideoDevices] = useState<MediaDeviceInfo[]>([])
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null)
   const [webcamKey, setWebcamKey] = useState(0)
   const [showWebcam, setShowWebcam] = useState(true)
@@ -29,9 +32,10 @@ const TesseractDemo = () => {
     height: 2160,
   })
 
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  // Display state is controlled via uploaded image URL
+  const [, setUploadedImage] = useState<string | null>(null)
   const [preprocessingMode, setPreprocessingMode] = useState<string>('adaptive')
-  const [psmMode, setPsmMode] = useState<number>(PSM.SPARSE_TEXT_OSD)
+  const [psmMode, setPsmMode] = useState<PSM>(PSM.SPARSE_TEXT_OSD)
   const [confidenceThreshold, setConfidenceThreshold] = useState<number>(70)
 
   const [showPreprocessed, setShowPreprocessed] = useState<boolean>(false)
@@ -189,7 +193,8 @@ const TesseractDemo = () => {
 
     await worker.setParameters({
       tessedit_ocr_engine_mode: OEM.LSTM_ONLY,
-      tessedit_pageseg_mode: psmMode,
+      // Cast psmMode to number for compatibility with Tesseract API
+      tessedit_pageseg_mode: psmMode as unknown as PSM,
       tessedit_char_whitelist:
         '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
     })
@@ -417,14 +422,16 @@ const TesseractDemo = () => {
         <label>
           PSM Mode:
           <select
-            value={psmMode}
-            onChange={(e) => setPsmMode(Number(e.target.value))}
+            value={String(psmMode)}
+            onChange={(e) =>
+              setPsmMode(Number(e.target.value) as unknown as PSM)
+            }
           >
             {Object.entries(PSM)
-              .filter(([k]) => !isNaN(Number(PSM[k])))
+              .filter(([, v]) => typeof v === 'number')
               .map(([name, val]) => (
-                <option key={val} value={val}>
-                  {val} - {name}
+                <option key={String(val)} value={String(val)}>
+                  {String(val)} - {name}
                 </option>
               ))}
           </select>

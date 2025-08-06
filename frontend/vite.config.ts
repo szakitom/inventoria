@@ -1,19 +1,46 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import reactPlugin from '@vitejs/plugin-react-swc'
 import mkcert from 'vite-plugin-mkcert'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 
 import { config } from 'dotenv'
 config()
 
-// https://vite.dev/config/
+console.log(`Using backend URL: ${process.env.BACKEND_URL}`)
+
 export default defineConfig({
-  plugins: [react(), mkcert()],
+  base: '/',
+  plugins: [
+    tanstackRouter({
+      target: 'react',
+      autoCodeSplitting: true,
+    }),
+    reactPlugin(),
+    tailwindcss(),
+    mkcert(),
+  ],
+  resolve: {
+    alias: {
+      '@components': '/src/components',
+      '@routes': '/src/routes',
+      '@utils': '/src/utils',
+      '@assets': '/src/assets',
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
     proxy: {
       '/api': {
-        target: process.env.BACKEND_URL || 'http://localhost:3000',
+        target: process.env.BACKEND_URL,
         changeOrigin: true,
       },
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      tsconfig: './tsconfig.json',
     },
   },
 })

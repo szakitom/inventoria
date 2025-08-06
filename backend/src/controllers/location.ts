@@ -4,7 +4,7 @@ import { Location, Shelf } from '../models'
 export const createLocation = async (req, res, next) => {
   const session = await mongoose.startSession()
   try {
-    const { name, count } = req.body
+    const { name, count, type } = req.body
 
     if (!name || typeof count !== 'number' || count <= 0) {
       return res
@@ -13,7 +13,7 @@ export const createLocation = async (req, res, next) => {
     }
     session.startTransaction()
 
-    const location = await Location.create([{ name }], { session })
+    const location = await Location.create([{ name, type }], { session })
     const locationDoc = location[0]
 
     const shelves = await Promise.all(
@@ -47,6 +47,23 @@ export const createLocation = async (req, res, next) => {
   }
 }
 
+export const updateLocation = async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const location = await Location.findByIdAndUpdate(id, req.body, {
+      new: true,
+    })
+    if (!location) {
+      return res.status(404).json({ error: 'Item not found' })
+    }
+
+    res.json(location)
+  } catch (err) {
+    next(err)
+  }
+}
+
 export const getLocations = async (req, res, next) => {
   try {
     const locations = await Location.find()
@@ -58,21 +75,44 @@ export const getLocations = async (req, res, next) => {
   }
 }
 
+export const getShelves = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const location = await Location.findById(id).populate('shelves', 'name')
+    if (!location) {
+      return res.status(404).json({ error: 'Location not found' })
+    }
+    res.json(location.shelves)
+  } catch (err) {
+    next(err)
+  }
+}
+
 export const getLocation = async (req, res, next) => {
   try {
     const { id } = req.params
-    const location = await Location.findById(id).populate({
-      path: 'shelves',
-      select: 'name items',
-      populate: {
-        path: 'items',
-      },
-    })
+    const location = await Location.findById(id).populate('shelves')
 
     if (!location) {
       return res.status(404).json({ error: 'Location not found' })
     }
     res.json(location)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const getLocationShelf = async (req, res, next) => {
+  try {
+    const { id: location_id, shelf: shelf_id } = req.params
+    const [location, shelf] = await Promise.all([
+      Location.findById(location_id).select('name'),
+      Shelf.findById(shelf_id).populate('items'),
+    ])
+    if (!shelf) {
+      return res.status(404).json({ error: 'Shelf not found' })
+    }
+    res.json({ ...shelf.toJSON({ virtuals: true }), location })
   } catch (err) {
     next(err)
   }
