@@ -39,12 +39,6 @@ const Header = () => {
               Locations
             </Link>
             <ModeToggle />
-            <Link
-              to="/test"
-              className="text-sm text-muted-foreground hover:text-foreground transition"
-            >
-              teszt
-            </Link>
             <Button asChild>
               <Link to="/add">+ Add Item</Link>
             </Button>
@@ -76,12 +70,6 @@ const Header = () => {
                 onClick={() => setOpen(false)}
               >
                 Locations
-              </Link>
-              <Link
-                to="/test"
-                className="text-sm text-muted-foreground hover:text-foreground transition"
-              >
-                teszt
               </Link>
               <div className="flex items-center justify-between gap-2">
                 <Button
