@@ -28,6 +28,31 @@ services:
       "
     restart: 'no'
 
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: rustfs
+    ports:
+      - '9000:9000'
+    volumes:
+      - ./rustfs/data:/data
+    environment:
+      - RUSTFS_ACCESS_KEY=rustfsadmin
+      - RUSTFS_SECRET_KEY=rustfsadmin
+    restart: no
+
+  rustfs-init:
+    image: minio/mc
+    container_name: rustfs-client
+    depends_on:
+      - rustfs
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5 && \
+        mc alias set rustfs http://rustfs:9000 rustfsadmin rustfsadmin && \
+        mc mb -p rustfs/inventoria && \
+        echo '✅ Bucket created: inventoria' || echo '⚠️ Bucket may already exist'
+      "
+
   mongo:
     image: mongo
     container_name: mongo

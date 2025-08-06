@@ -1,6 +1,7 @@
 # Docker volumes
 minio/data/
 mongo/data/
+rustfs/data/
 
 # Environment variables
 .env
