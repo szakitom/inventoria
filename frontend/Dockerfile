@@ -1,12 +1,13 @@
 # Stage 1: Build
-FROM node:20-alpine AS build
+FROM node:lts-alpine AS build
 
 WORKDIR /app
 COPY . .
 
 # RUN npm ci
-RUN npm install
-RUN npm run build:ignore-errors
+RUN npm ci
+RUN npm install --production
+RUN npm run build:prod
 
 # Stage 2: Serve static files
 FROM nginx:stable-alpine
