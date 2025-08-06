@@ -27,6 +27,8 @@ MINIO_BUCKET=inventoria
 
 <https://originui.com/>
 <https://shadcnstudio.com/components>
+<https://github.com/m-maaz-azhar/react-tesseract>
+<https://github.com/bvaughn/react-error-boundary>
 
 ```bash
 podman run -d -p 9000:9000 -p 9001:9001 -v /data:/data quay.io/rustfs/rustfs
