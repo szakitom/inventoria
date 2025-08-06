@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react'
-import useCameras from '@/hooks/useCameras'
+import { Flashlight, FlashlightOff } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -8,8 +8,8 @@ import {
   SelectValue,
 } from '@components/ui/select'
 import { Toggle } from '@components/ui/toggle'
-import { Flashlight, FlashlightOff } from 'lucide-react'
 import { Spinner } from '@components/ui/spinner'
+import useCameras from '@/hooks/useCameras'
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner'
 
 const BarcodeScanner = ({
