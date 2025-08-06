@@ -22,15 +22,15 @@ const Header = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 hover:opacity-80 transition"
+            className="flex items-center gap-2 hover:opacity-80 transition "
             onClick={() => setOpen(false)}
           >
             <img
               src="/logo.svg"
               alt="Logo"
-              className="w-6 h-6 dark:bg-foreground rounded-full"
+              className="w-7 h-7 dark:bg-foreground rounded-full"
             />
-            <span className="font-semibold text-lg tracking-tight">
+            <span className="font-semibold text-lg tracking-tight text-foreground select-none">
               {import.meta.env.VITE_APP_TITLE}
             </span>
           </Link>
