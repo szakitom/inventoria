@@ -26,6 +26,8 @@ import type { IItem } from './Items'
 import { Spinner } from './ui/spinner'
 import { Item } from '@utils/item'
 import { ScanBarcode } from 'lucide-react'
+import BarcodeDrawer from './BarcodeDrawer'
+import { useState } from 'react'
 
 interface EditDialogProps {
   isOpen: boolean
@@ -68,6 +70,12 @@ const EditDialog = ({
   })
 
   const registerWithMask = useHookFormMask(form.register)
+  const [bardcodeScanOpen, setBarcodeScanOpen] = useState(false)
+
+  const handleBarcodeSubmit = (barcode: string) => {
+    form.setValue('barcode', barcode)
+    setBarcodeScanOpen(false)
+  }
 
   const onSubmit = async (values: FormValues) => {
     const payload = {
@@ -139,8 +147,7 @@ const EditDialog = ({
                                 type="button"
                                 className="rounded-s-none rounded-e-md text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground transition-[color]"
                                 aria-label="Scan Barcode"
-                                // TODO: Implement barcode scanning
-                                onClick={() => alert('not implemented yet')}
+                                onClick={() => setBarcodeScanOpen(true)}
                               >
                                 <ScanBarcode size={16} aria-hidden="true" />
                               </Button>
@@ -230,6 +237,11 @@ const EditDialog = ({
           </div>
         </ScrollArea>
       </DialogContent>
+      <BarcodeDrawer
+        open={bardcodeScanOpen}
+        onBarcode={handleBarcodeSubmit}
+        handleOpenChange={setBarcodeScanOpen}
+      />
     </Dialog>
   )
 }
