@@ -43,6 +43,7 @@ const BarcodeScanner = ({
     container: scannerRef.current,
     onDetected: onDetected,
     cameraId: selected ?? undefined,
+    // constraints,
   })
 
   const toggleTorch = useCallback(() => {
