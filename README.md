@@ -25,6 +25,10 @@ S3_BUCKET=inventoria
 
 ## TODO
 
+- ability to refresh off data if we have barcode (but no off data)
+- make it pwa
+- sse handling of expiring items
+
 <https://originui.com/>
 <https://shadcnstudio.com/components>
 <https://github.com/m-maaz-azhar/react-tesseract>
