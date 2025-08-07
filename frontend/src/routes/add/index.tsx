@@ -22,6 +22,7 @@ import { createItem, fetchLocations } from '@/utils/api'
 import { Item } from '@/utils/item'
 import LocationSelect from '@components/LocationSelect'
 import BarcodeDrawer from '@components/BarcodeDrawer'
+import ImageUpload from '@components/ImageUpload'
 
 export const Route = createFileRoute('/add/')({
   component: Add,
@@ -45,6 +46,7 @@ function Add() {
       amount: 1 as number | undefined,
       quantity: '' as string | undefined,
       shelf: '' as string | undefined,
+      image: '' as string | undefined,
     },
   })
 
@@ -63,6 +65,7 @@ function Add() {
       }
 
       await createItem(payload)
+      console.log(payload)
       toast.success('Item created successfully!')
 
       form.reset({
@@ -72,6 +75,7 @@ function Add() {
         amount: 1,
         quantity: '',
         shelf: currentShelf,
+        image: '',
       })
     } catch (error) {
       toast.error('Failed to create item.')
@@ -89,23 +93,40 @@ function Add() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Product Name"
-                      {...field}
-                      className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex items-start space-x-4 w-full">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Product Name"
+                        {...field}
+                        className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500 w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="relative inline-flex">
+                <FormField
+                  control={form.control}
+                  name="image"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel className="sr-only">Name</FormLabel>
+                      <FormControl>
+                        <ImageUpload {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <FormField
               control={form.control}
