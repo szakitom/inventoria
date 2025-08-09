@@ -1,5 +1,9 @@
-import { Client as MinioClient } from 'minio'
-import { S3Client as AWSClient, ListBucketsCommand } from '@aws-sdk/client-s3'
+import {
+  S3Client as AWSClient,
+  PutObjectCommand,
+  PutObjectCommandInput,
+} from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 const { S3_USER, S3_PASSWORD, S3_ENDPOINT, S3_PORT, S3_BUCKET } = process.env
 
@@ -9,15 +13,35 @@ if (!S3_USER || !S3_PASSWORD) {
 
 export const bucket = S3_BUCKET || 'inventoria'
 
-const minioClient = new MinioClient({
-  endPoint: S3_ENDPOINT || 'localhost',
-  port: Number(S3_PORT) || 9000,
-  useSSL: process.env.NODE_ENV === 'production' ? true : false,
-  accessKey: S3_USER,
-  secretKey: S3_PASSWORD,
-})
+class S3Client {
+  client: AWSClient
+  constructor(config) {
+    this.client = new AWSClient(config)
+  }
 
-const awsClient = new AWSClient({
+  async presignUrl(key, fileType) {
+    const params: PutObjectCommandInput = {
+      Key: key,
+      ContentType: fileType,
+      Bucket: bucket,
+      Metadata: { 'Content-Type': fileType },
+    }
+    const command = new PutObjectCommand(params)
+    const url = await getSignedUrl(this.client, command, {
+      expiresIn: 10 * 60, // 10 minutes
+    })
+    console.info(`🖼️ Presigned URL for ${key} created: ${url}`)
+    const cleanURL = url.replace(
+      `http://${S3_ENDPOINT || 'localhost'}:${S3_PORT || 9000}/${bucket}/`,
+      `/s3/${bucket}/`
+    )
+    return cleanURL
+  }
+}
+
+// TODO: periodically delete incomplete uploads
+
+export default new S3Client({
   endpoint: `http://${S3_ENDPOINT || 'localhost'}:${S3_PORT || 9000}`,
   region: 'eu',
   credentials: {
@@ -26,9 +50,3 @@ const awsClient = new AWSClient({
   },
   forcePathStyle: true, // Required for RustFS
 })
-
-// TODO: periodically delete incomplete uploads
-
-const s3Client = awsClient
-
-export default s3Client
