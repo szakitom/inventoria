@@ -18,7 +18,7 @@ import { Input } from '@components/ui/input'
 import AmountInput from '@components/ui/amountinput'
 import { Button } from '@components/ui/button'
 import { Spinner } from '@components/ui/spinner'
-import { createItem, fetchLocations } from '@/utils/api'
+import { createItem, fetchLocations, getPresignUrl } from '@/utils/api'
 import { Item } from '@/utils/item'
 import LocationSelect from '@components/LocationSelect'
 import BarcodeDrawer from '@components/BarcodeDrawer'
@@ -29,6 +29,7 @@ export const Route = createFileRoute('/add/')({
   loader: async ({ abortController }) => {
     return {
       locations: defer(fetchLocations({ signal: abortController.signal })),
+      presign: await getPresignUrl({ signal: abortController.signal }),
     }
   },
 })
@@ -65,7 +66,7 @@ function Add() {
       }
 
       await createItem(payload)
-      console.log(payload)
+      console.log(payload, data.presign.uuid)
       toast.success('Item created successfully!')
 
       form.reset({
@@ -119,7 +120,7 @@ function Add() {
                     <FormItem className="w-full">
                       <FormLabel className="sr-only">Name</FormLabel>
                       <FormControl>
-                        <ImageUpload {...field} />
+                        <ImageUpload presignURL={data.presign.url} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -12,8 +12,10 @@ import {
   DialogTitle,
 } from './ui/dialog'
 import { getCroppedImg } from '@utils/canvas'
+import { Progress } from './ui/progress'
 
-const ImageUpload = ({ field }) => {
+const ImageUpload = ({ presignURL, ...field }) => {
+  console.log(field)
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -27,6 +29,8 @@ const ImageUpload = ({ field }) => {
   const handleClick = () => {
     inputRef.current?.click()
   }
+
+  console.log(presignURL)
 
   useEffect(() => {
     let dragCounter = 0
@@ -115,6 +119,12 @@ const ImageUpload = ({ field }) => {
     }
   }
 
+  const resetImage = () => {
+    setCroppedImage(null)
+    setFile(null)
+    inputRef.current!.value = '' // Clear the input field
+  }
+
   return (
     <>
       {dragging && (
@@ -135,7 +145,6 @@ const ImageUpload = ({ field }) => {
           )}
           aria-label={croppedImage ? 'Change image' : 'Upload image'}
           onClick={handleClick}
-          // onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragEnter={handleDragOver}
         >
@@ -171,6 +180,7 @@ const ImageUpload = ({ field }) => {
         )}
       </div>
       <input
+        {...field}
         ref={inputRef}
         type="file"
         className="sr-only"
@@ -179,29 +189,36 @@ const ImageUpload = ({ field }) => {
         aria-label="Upload image file"
         onChange={handleFileChange}
         tabIndex={-1}
-        {...field}
       />
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(e) => {
+          console.log(e)
+          if (isDialogOpen) {
+            resetImage()
+          }
+          setIsDialogOpen(!isDialogOpen)
+        }}
+      >
         <DialogContent className="gap-0 p-0 sm:max-w-140 *:[button]:hidden">
-          <DialogDescription className="sr-only">
-            Crop image dialog
-          </DialogDescription>
-          <DialogHeader className="contents space-y-0 text-left">
-            <DialogTitle className="flex items-center justify-between border-b p-4 text-base">
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="-my-1 opacity-60"
-                  onClick={() => setIsDialogOpen(false)}
-                  aria-label="Cancel"
-                >
-                  <ArrowLeft aria-hidden="true" />
-                </Button>
-                <span>Crop image</span>
-              </div>
+          <DialogDescription className="sr-only">Crop image</DialogDescription>
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between border-b text-base px-4 py-2">
+              <span>Crop image</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="-mx-2"
+                onClick={() => {
+                  setIsDialogOpen(false)
+                  resetImage()
+                }}
+                aria-label="Cancel"
+              >
+                <X aria-hidden="true" />
+              </Button>
             </DialogTitle>
           </DialogHeader>
           <div className="relative h-[400px] w-full overflow-hidden">
@@ -224,13 +241,14 @@ const ImageUpload = ({ field }) => {
               }}
             />
           </div>
-          <DialogFooter className="border-t px-4 py-6">
+          <DialogFooter className="border-t w-full px-4 py-6 flex gap-4 items-center space-x-2">
+            <Progress value={33} />
             <Button
-              className="-my-1"
+              className="w-full md:w-min mb-2 md:mb-0"
               onClick={showCroppedImage}
               // disabled={!previewUrl}
             >
-              Apply
+              Upload
             </Button>
           </DialogFooter>
         </DialogContent>

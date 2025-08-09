@@ -176,3 +176,12 @@ export const fetchFeaturedItems = async ({
   if (!res.ok) throw new Error('Failed to fetch featured items')
   return res.json()
 }
+
+export const getPresignUrl = async ({ signal }: { signal: AbortSignal }) => {
+  if (signal.aborted) {
+    throw new Error('Fetch aborted')
+  }
+  const res = await fetch('/api/s3/presign', { signal })
+  if (!res.ok) throw new Error('Failed to get presigned URL')
+  return res.json()
+}

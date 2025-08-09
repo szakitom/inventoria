@@ -36,6 +36,11 @@ export default defineConfig({
         target: process.env.BACKEND_URL,
         changeOrigin: true,
       },
+      '/s3': {
+        target: process.env.S3_URL,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/s3/, ''),
+      },
     },
   },
   optimizeDeps: {
