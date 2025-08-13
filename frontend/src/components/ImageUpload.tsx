@@ -1,14 +1,14 @@
-import { ImageUp, X } from 'lucide-react'
-import { Button } from './ui/button'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { cn } from '@/lib/utils'
-import ImageCropper from './ImageCropper'
-import { Dialog } from './ui/dialog'
-import { deleteFileFromS3 } from '@/utils/api'
+import { ImageUp, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import ImageCropper from '@/components/ImageCropper'
+import { Dialog } from '@/components/ui/dialog'
 import { useDialog } from '@/hooks/useDialog'
-import DeleteDialog from './DeleteDialog'
+import DeleteDialog from '@/components/DeleteDialog'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
+import { deleteFileFromS3 } from '@/utils/api'
+import { cn } from '@/lib/utils'
 
 type ImageUploadProps = {
   presignURL: string

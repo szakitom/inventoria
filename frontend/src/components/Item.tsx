@@ -38,6 +38,7 @@ import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { type IItem } from '@/components/Items'
 import SaveButton from '@/components/Savebutton'
 import ImageBarcodeTab from '@/components/ImageBarcodeTab'
+import ImagePreview from '@/components/ImagePreview'
 
 const Item = ({ item, from }: { item: IItem; from?: string }) => {
   const [isExpanded, setExpanded] = useState(false)
@@ -116,21 +117,24 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
     >
       <CardHeader className="p-0 pb-0 gap-0">
         <div className="flex items-start justify-between">
-          <div className="min-w-0">
-            <CardTitle className="text-base font-semibold leading-tight truncate">
-              {item.name}
-            </CardTitle>
-            <div className="flex items-center space-x-1 text-sm mt-1 truncate">
-              <LocationIcon className="h-4 w-4 text-blue-500" />
-              <span className="truncate">
-                {item.location.location.name}
-                <Badge variant="outline" className="ml-2">
-                  {item.location.name.replace('Shelf', '')}
-                </Badge>
-              </span>
+          <div className={cn('flex gap-2 min-h-16 items-start')}>
+            <ImagePreview image={item.image} name={item.name} />
+
+            <div className="min-w-0">
+              <CardTitle className="text-base font-semibold leading-tight truncate">
+                {item.name}
+              </CardTitle>
+              <div className="flex items-center space-x-1 text-sm mt-1 truncate">
+                <LocationIcon className="h-4 w-4 text-blue-500" />
+                <span className="truncate">
+                  {item.location.location.name}
+                  <Badge variant="outline" className="ml-2">
+                    {item.location.name.replace('Shelf', '')}
+                  </Badge>
+                </span>
+              </div>
             </div>
           </div>
-
           {dataChanged ? (
             <SaveButton onClick={handleSaveChanges} />
           ) : (
