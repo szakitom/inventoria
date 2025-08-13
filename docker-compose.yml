@@ -50,7 +50,8 @@ services:
         sleep 5 && \
         mc alias set rustfs http://rustfs:9000 minio miniopassword && \
         mc mb -p rustfs/inventoria && \
-        echo '✅ Bucket created: inventoria' || echo '⚠️ Bucket may already exist'
+        mc anonymous set download rustfs/inventoria && \
+        echo '✅ Bucket created: inventoria (read-only public)' || echo '⚠️ Bucket may already exist'
       "
 
   mongo:
