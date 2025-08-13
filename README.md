@@ -28,6 +28,9 @@ S3_BUCKET=inventoria
 - ability to refresh off data if we have barcode (but no off data)
 - make it pwa
 - sse handling of expiring items
+- showing items 0 wrong
+- rows per page -> items per page
+- real time updates (socket?)
 
 <https://originui.com/>
 <https://shadcnstudio.com/components>
