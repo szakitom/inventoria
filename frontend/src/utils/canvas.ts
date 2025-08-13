@@ -1,22 +1,16 @@
-export const createImage = (url) =>
+const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image()
     image.addEventListener('load', () => resolve(image))
     image.addEventListener('error', (error) => reject(error))
-    image.setAttribute('crossOrigin', 'anonymous') // needed to avoid cross-origin issues on CodeSandbox
     image.src = url
   })
 
-export function getRadianAngle(degreeValue) {
+const getRadianAngle = (degreeValue: number) => {
   return (degreeValue * Math.PI) / 180
 }
 
-/**
- * Returns the new bounding area of a rotated rectangle.
- */
-export function rotateSize(width, height, rotation) {
-  const rotRad = getRadianAngle(rotation)
-
+const rotateSize = (width: number, height: number, rotRad: number) => {
   return {
     width:
       Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
@@ -25,18 +19,21 @@ export function rotateSize(width, height, rotation) {
   }
 }
 
-/**
- * This function was adapted from the one in the ReadMe of https://github.com/DominicTobias/react-image-crop
- */
-/**
- * This function was adapted from the one in the ReadMe of https://github.com/DominicTobias/react-image-crop
- */
-export async function getCroppedImg(
-  imageSrc,
-  pixelCrop,
+export interface CroppedArea {
+  width: number
+  height: number
+  x: number
+  y: number
+}
+
+export const getCroppedImg = async (
+  imageSrc: string,
+  pixelCrop: CroppedArea,
   rotation = 0,
+  targetWidth = 512,
+  targetHeight = 512,
   flip = { horizontal: false, vertical: false }
-) {
+) => {
   const image = await createImage(imageSrc)
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
@@ -47,11 +44,10 @@ export async function getCroppedImg(
 
   const rotRad = getRadianAngle(rotation)
 
-  // calculate bounding box of the rotated image
   const { width: bBoxWidth, height: bBoxHeight } = rotateSize(
     image.width,
     image.height,
-    rotation
+    rotRad
   )
 
   // set canvas size to match the bounding box
@@ -93,18 +89,51 @@ export async function getCroppedImg(
     pixelCrop.height
   )
 
-  // As Base64 string
-  // return croppedCanvas.toDataURL('image/jpeg');
+  const resizedCanvas = document.createElement('canvas')
+  const resizedCtx = resizedCanvas.getContext('2d')
+  if (!resizedCtx) {
+    return null
+  }
+  resizedCanvas.width = targetWidth
+  resizedCanvas.height = targetHeight
+
+  const aspectRatio = pixelCrop.width / pixelCrop.height
+  let drawWidth = targetWidth
+  let drawHeight = targetHeight
+
+  if (aspectRatio > 1) {
+    // Wider than tall
+    drawHeight = targetWidth / aspectRatio
+  } else {
+    // Taller than wide
+    drawWidth = targetHeight * aspectRatio
+  }
+
+  resizedCtx.fillStyle = 'transparent'
+  resizedCtx.fillRect(0, 0, targetWidth, targetHeight)
+  resizedCtx.imageSmoothingQuality = 'high'
+
+  resizedCtx.drawImage(
+    croppedCanvas,
+    (targetWidth - drawWidth) / 2,
+    (targetHeight - drawHeight) / 2,
+    drawWidth,
+    drawHeight
+  )
 
   // As a blob
-  return new Promise((resolve, reject) => {
-    croppedCanvas.toBlob((file) => {
-      resolve(URL.createObjectURL(file))
+  return new Promise<Blob>((resolve, reject) => {
+    resizedCanvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob)
+      } else {
+        reject(new Error('Failed to create blob'))
+      }
     }, 'image/png')
   })
 }
 
-export async function getRotatedImage(imageSrc, rotation = 0) {
+export const getRotatedImage = async (imageSrc: string, rotation = 0) => {
   const image = await createImage(imageSrc)
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
@@ -119,13 +148,19 @@ export async function getRotatedImage(imageSrc, rotation = 0) {
     canvas.height = image.height
   }
 
+  if (!ctx) {
+    return null
+  }
+
   ctx.translate(canvas.width / 2, canvas.height / 2)
   ctx.rotate((rotation * Math.PI) / 180)
   ctx.drawImage(image, -image.width / 2, -image.height / 2)
 
-  return new Promise((resolve) => {
-    canvas.toBlob((file) => {
-      resolve(URL.createObjectURL(file))
+  return new Promise<Blob>((resolve) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob)
+      }
     }, 'image/png')
   })
 }
