@@ -65,7 +65,7 @@ export interface IItem {
       }
     }
   }
-  imageUrl?: string
+  image?: string
 }
 
 interface ItemsProps {

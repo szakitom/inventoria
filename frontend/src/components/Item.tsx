@@ -234,7 +234,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
       <CardFooter
         className={cn(
           '-mx-3 -mb-3 p-0',
-          (item.openFoodFacts || item.imageUrl || item.barcode) && 'bg-muted'
+          (item.openFoodFacts || item.image || item.barcode) && 'bg-muted'
         )}
       >
         <Collapsible
@@ -247,7 +247,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
               <div
                 className={cn(
                   'text-sm',
-                  item.openFoodFacts || item.imageUrl
+                  item.openFoodFacts || item.image
                     ? 'font-bold text-foreground'
                     : 'font-normal'
                 )}
@@ -303,7 +303,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
                   )}
                   <ImageBarcodeTab
                     off={item.openFoodFacts}
-                    image={item.imageUrl}
+                    image={item.image}
                     barcode={item.barcode}
                   />
                 </div>
