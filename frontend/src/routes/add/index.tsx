@@ -23,6 +23,7 @@ import { Item } from '@/utils/item'
 import LocationSelect from '@/components/LocationSelect'
 import BarcodeDrawer from '@/components/BarcodeDrawer'
 import ImageUpload from '@/components/ImageUpload'
+import { DialogProvider } from '@/hooks/DialogProvider'
 
 export const Route = createFileRoute('/add/')({
   component: Add,
@@ -48,12 +49,32 @@ function Add() {
       quantity: '' as string | undefined,
       shelf: '' as string | undefined,
       image: '' as string | undefined,
-      uuid: data.presign.uuid,
+      uuid: '' as string | undefined,
     },
   })
 
   const registerWithMask = useHookFormMask(form.register)
   const [bardcodeScanOpen, setBarcodeScanOpen] = useState(false)
+  const [presignURL, setPresignURL] = useState(data.presign.url)
+  const [presignUUID, setPresignUUID] = useState(data.presign.uuid)
+
+  const refreshPresignURL = async () => {
+    const controller = new AbortController()
+    const { signal } = controller
+
+    try {
+      const newPresign = await getPresignUrl({ signal })
+      setPresignURL(newPresign.url)
+      setPresignUUID(newPresign.uuid)
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return
+      }
+      console.error('Failed to refresh presign URL', err)
+    }
+
+    return () => controller.abort()
+  }
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -64,6 +85,7 @@ function Add() {
           ? new Date(values.expiration).toISOString()
           : null,
         location: currentShelf,
+        uuid: presignUUID,
       }
 
       await createItem(payload)
@@ -78,6 +100,7 @@ function Add() {
         shelf: currentShelf,
         image: '',
       })
+      await refreshPresignURL()
     } catch (error) {
       toast.error('Failed to create item.')
       console.error('Error creating item:', error)
@@ -90,170 +113,169 @@ function Add() {
   }
 
   return (
-    <main className="p-4 max-w-lg mx-auto">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid gap-4">
-            <div className="flex items-start space-x-4 w-full">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Product Name"
-                        {...field}
-                        className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500 w-full"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="relative inline-flex">
+    <DialogProvider>
+      <main className="p-4 max-w-lg mx-auto">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="grid gap-4">
+              <div className="flex items-start space-x-4 w-full">
                 <FormField
                   control={form.control}
-                  name="image"
+                  name="name"
                   render={({ field }) => (
                     <FormItem className="w-full">
-                      <FormLabel className="sr-only">Name</FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <ImageUpload
-                          presignURL={data.presign.url}
-                          field={field}
+                        <Input
+                          placeholder="Product Name"
+                          {...field}
+                          className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500 w-full"
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                <div className="relative inline-flex">
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="sr-only">Name</FormLabel>
+                        <FormControl>
+                          <ImageUpload presignURL={presignURL} field={field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
+
+              <FormField
+                control={form.control}
+                name="barcode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Barcode</FormLabel>
+                    <FormControl>
+                      <div className="w-full space-y-2">
+                        <div className="flex rounded-md shadow-xs">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="Barcode"
+                            className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10 focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                            {...field}
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            type="button"
+                            className="rounded-s-none rounded-e-md text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground transition-[color]"
+                            aria-label="Scan Barcode"
+                            onClick={() => setBarcodeScanOpen(true)}
+                          >
+                            <ScanBarcode size={16} aria-hidden="true" />
+                          </Button>
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="expiration"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Expiration</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...registerWithMask('expiration', '9999/99/99', {
+                          tabThrough: true,
+                        })}
+                        placeholder="YYYY/MM/DD"
+                        className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <AmountInput
+                        value={field.value}
+                        onChange={(value) => field.onChange(value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="quantity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quantity</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="kg"
+                        {...field}
+                        className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="shelf"
+                render={({ field }) => (
+                  <FormItem>
+                    <LocationSelect
+                      locations={data.locations}
+                      label={<FormLabel>Location</FormLabel>}
+                      shelfLabel={<FormLabel>Shelf</FormLabel>}
+                      onSelect={(value: string) => field.onChange(value)}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <FormField
-              control={form.control}
-              name="barcode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Barcode</FormLabel>
-                  <FormControl>
-                    <div className="w-full space-y-2">
-                      <div className="flex rounded-md shadow-xs">
-                        <Input
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="Barcode"
-                          className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10 focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-                          {...field}
-                        />
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          type="button"
-                          className="rounded-s-none rounded-e-md text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground transition-[color]"
-                          aria-label="Scan Barcode"
-                          onClick={() => setBarcodeScanOpen(true)}
-                        >
-                          <ScanBarcode size={16} aria-hidden="true" />
-                        </Button>
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="expiration"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Expiration</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...registerWithMask('expiration', '9999/99/99', {
-                        tabThrough: true,
-                      })}
-                      placeholder="YYYY/MM/DD"
-                      className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <AmountInput
-                      value={field.value}
-                      onChange={(value) => field.onChange(value)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="quantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantity</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="kg"
-                      {...field}
-                      className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="shelf"
-              render={({ field }) => (
-                <FormItem>
-                  <LocationSelect
-                    locations={data.locations}
-                    label={<FormLabel>Location</FormLabel>}
-                    shelfLabel={<FormLabel>Shelf</FormLabel>}
-                    onSelect={(value: string) => field.onChange(value)}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <Button
-            className="cursor-pointer bg-blue-500 dark:bg-blue-800 dark:hover:bg-blue-900 hover:bg-blue-600 min-w-20 w-full text-white rounded-md"
-            type="submit"
-            disabled={
-              !form.formState.isValid ||
-              form.formState.isSubmitting ||
-              !form.formState.isDirty ||
-              !form.getValues('shelf')
-            }
-          >
-            {form.formState.isSubmitting ? <Spinner /> : 'Save'}
-          </Button>
-        </form>
-      </Form>
-      <BarcodeDrawer
-        open={bardcodeScanOpen}
-        onBarcode={handleBarcodeSubmit}
-        handleOpenChange={setBarcodeScanOpen}
-      />
-    </main>
+            <Button
+              className="cursor-pointer bg-blue-500 dark:bg-blue-800 dark:hover:bg-blue-900 hover:bg-blue-600 min-w-20 w-full text-white rounded-md"
+              type="submit"
+              disabled={
+                !form.formState.isValid ||
+                form.formState.isSubmitting ||
+                !form.formState.isDirty ||
+                !form.getValues('shelf')
+              }
+            >
+              {form.formState.isSubmitting ? <Spinner /> : 'Save'}
+            </Button>
+          </form>
+        </Form>
+        <BarcodeDrawer
+          open={bardcodeScanOpen}
+          onBarcode={handleBarcodeSubmit}
+          handleOpenChange={setBarcodeScanOpen}
+        />
+      </main>
+    </DialogProvider>
   )
 }

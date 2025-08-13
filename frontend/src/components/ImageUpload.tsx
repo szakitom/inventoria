@@ -6,6 +6,9 @@ import ImageCropper from './ImageCropper'
 import { Dialog } from './ui/dialog'
 import { deleteFileFromS3 } from '@/utils/api'
 import { toast } from 'sonner'
+import { useDialog } from '@/hooks/useDialog'
+import DeleteDialog from './DeleteDialog'
+import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 
 type ImageUploadProps = {
   presignURL: string
@@ -24,6 +27,9 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
   const [file, setFile] = useState<File | null>(null)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  useDialog(DeleteDialog, 'delete')
+  const { open } = useGlobalDialog()
 
   const { name, ref: rhfRef, onBlur, onChange: rhfOnChange } = field
 
@@ -121,12 +127,12 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
     setIsDialogOpen(false)
   }
 
-  const handleDeleteUploadedImage = () => {
-    // TODO: Confirm before deleting
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    confirm('Are you sure you want to delete this image?') &&
-      deleteUploadedImage()
-  }
+  useEffect(() => {
+    setFile(null)
+    setUploadedImage(null)
+    inputRef.current!.value = ''
+  }, [presignURL])
+
 
   return (
     <>
@@ -156,7 +162,7 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
               width={64}
               height={64}
               style={{ objectFit: 'cover' }}
-              src={uploadedImage}
+              src={`${uploadedImage}?hash=${Math.random()}`}
             />
           ) : (
             <div aria-hidden="true">
@@ -170,7 +176,13 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
             type="button"
             className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
             aria-label="Remove image"
-            onClick={handleDeleteUploadedImage}
+            onClick={() =>
+              open('delete', {
+                onSubmit: async () => {
+                  await deleteUploadedImage()
+                },
+              })
+            }
           >
             <X className="size-3.5" />
           </Button>
