@@ -11,6 +11,19 @@ export const presignURL = async (req, res, next) => {
   }
 }
 
+export const presignURLForId = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    if (!id) {
+      return res.status(400).json({ error: 'ID is required' })
+    }
+    const presignedUrl = await S3Client.presignUrl(id, 'image/png')
+    res.json({ url: presignedUrl, uuid: id })
+  } catch (err) {
+    next(err)
+  }
+}
+
 export const deleteFile = async (req, res, next) => {
   try {
     const { url } = req.body

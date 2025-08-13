@@ -186,6 +186,21 @@ export const getPresignUrl = async ({ signal }: { signal: AbortSignal }) => {
   return res.json()
 }
 
+export const getPresignUrlForId = async ({
+  signal,
+  id,
+}: {
+  signal: AbortSignal
+  id: string
+}) => {
+  if (signal.aborted) {
+    throw new Error('Fetch aborted')
+  }
+  const res = await fetch(`/api/s3/presign/${id}`, { signal })
+  if (!res.ok) throw new Error('Failed to get presigned URL for ID')
+  return res.json()
+}
+
 export const uploadFileToS3 = (
   file: Blob,
   presignedUrl: string,
