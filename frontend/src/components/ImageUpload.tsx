@@ -133,6 +133,21 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
     inputRef.current!.value = ''
   }, [presignURL])
 
+  useEffect(() => {
+    const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
+      if (uploadedImage) {
+        e.preventDefault()
+        e.returnValue = ''
+        await deleteUploadedImage()
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [deleteUploadedImage, uploadedImage])
 
   return (
     <>
