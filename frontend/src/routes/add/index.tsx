@@ -142,7 +142,7 @@ function Add() {
                     name="image"
                     render={({ field }) => (
                       <FormItem className="w-full">
-                        <FormLabel className="sr-only">Name</FormLabel>
+                        <FormLabel className="sr-only">Image</FormLabel>
                         <FormControl>
                           <ImageUpload presignURL={presignURL} field={field} />
                         </FormControl>
