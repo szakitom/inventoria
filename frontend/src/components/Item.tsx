@@ -32,7 +32,7 @@ import AmountInput from '@/components/ui/amountinput'
 import { Separator } from '@/components/ui/separator'
 
 import { cn } from '@/lib/utils'
-import { getExpirationStatus, getLocationIcon } from '@utils/index'
+import { getExpirationStatus, getLocationIcon } from '@/utils/index'
 import { deleteItem, moveItem, movePartialItem, updateItem } from '@/utils/api'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { type IItem } from '@/components/Items'

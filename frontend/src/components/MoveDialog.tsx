@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { CheckboxCard } from '@/components/ui/checkboxcard'
 import AmountInput from '@/components/ui/amountinput'
-import { getLocationIcon } from '@utils/index'
+import { getLocationIcon } from '@/utils/index'
 import LocationSelect, {
   type Shelf,
   type Location,
