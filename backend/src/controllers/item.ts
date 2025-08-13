@@ -2,8 +2,8 @@ import mongoose, { Query } from 'mongoose'
 import { Temporal } from '@js-temporal/polyfill'
 import { Item, Location, Shelf } from '../models'
 import { getProduct } from './OpenFoodFacts'
-import { deleteFile } from './s3'
 import { IItem } from '../models/Item'
+import S3Client from '../s3'
 
 export const getItems = async (req, res, next) => {
   // IDEA: cursor based pagination
@@ -178,7 +178,7 @@ export const createItem = async (req, res, next) => {
   const session = await mongoose.startSession()
   session.startTransaction()
   try {
-    const { barcode, location } = req.body
+    const { barcode, location, uuid } = req.body
     let { expiration } = req.body
     if (expiration) {
       const date = new Date(expiration)
@@ -206,6 +206,7 @@ export const createItem = async (req, res, next) => {
       [
         {
           ...req.body,
+          _id: uuid,
           expiration,
           openFoodFacts: offData,
           name: req.body.name || offData?.product_name || barcode,
@@ -225,7 +226,7 @@ export const createItem = async (req, res, next) => {
       await session.abortTransaction()
     }
     if (req.body?.image) {
-      deleteFile(req.body.image)
+      S3Client.deleteFile(req.body.image)
     }
     next(err)
   } finally {
@@ -250,7 +251,7 @@ export const deleteItem = async (req, res, next) => {
     await session.commitTransaction()
     res.json({ message: 'Item deleted successfully' })
     if (item.image) {
-      deleteFile(item.image)
+      S3Client.deleteFile(item.image)
     }
   } catch (err) {
     if (session.inTransaction()) {

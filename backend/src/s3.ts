@@ -1,5 +1,7 @@
 import {
   S3Client as AWSClient,
+  DeleteObjectCommand,
+  DeleteObjectCommandInput,
   PutObjectCommand,
   PutObjectCommandInput,
 } from '@aws-sdk/client-s3'
@@ -26,16 +28,39 @@ class S3Client {
       Bucket: bucket,
       Metadata: { 'Content-Type': fileType },
     }
-    const command = new PutObjectCommand(params)
-    const url = await getSignedUrl(this.client, command, {
-      expiresIn: 10 * 60, // 10 minutes
-    })
-    console.info(`🖼️ Presigned URL for ${key} created: ${url}`)
-    const cleanURL = url.replace(
-      `http://${S3_ENDPOINT || 'localhost'}:${S3_PORT || 9000}/${bucket}/`,
-      `/s3/${bucket}/`
-    )
-    return cleanURL
+    try {
+      const url = await getSignedUrl(
+        this.client,
+        new PutObjectCommand(params),
+        {
+          expiresIn: 10 * 60, // 10 minutes
+        }
+      )
+      console.info(`🖼️ Presigned URL for ${key} created: ${url}`)
+      const cleanURL = url.replace(
+        `http://${S3_ENDPOINT || 'localhost'}:${S3_PORT || 9000}/${bucket}/`,
+        `/s3/${bucket}/`
+      )
+      return cleanURL
+    } catch (error) {
+      console.error(`❌ Failed to create presigned URL for ${key}:`, error)
+      throw error
+    }
+  }
+
+  async deleteFile(url) {
+    const key = url.replace(`/s3/${bucket}/`, '')
+    const params: DeleteObjectCommandInput = {
+      Bucket: bucket,
+      Key: key,
+    }
+    try {
+      await this.client.send(new DeleteObjectCommand(params))
+      console.info(`🗑️ File ${key} deleted successfully`)
+    } catch (error) {
+      console.error(`❌ Failed to delete file ${key}:`, error)
+      throw error
+    }
   }
 }
 
