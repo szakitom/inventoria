@@ -1,36 +1,35 @@
-import { ArrowLeft, CircleUserRound, X } from 'lucide-react'
+import { ImageUp, X } from 'lucide-react'
 import { Button } from './ui/button'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
-import Cropper from 'react-easy-crop'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog'
-import { getCroppedImg } from '@utils/canvas'
-import { Progress } from './ui/progress'
+import ImageCropper from './ImageCropper'
+import { Dialog } from './ui/dialog'
+import { deleteFileFromS3 } from '@/utils/api'
+import { toast } from 'sonner'
 
-const ImageUpload = ({ presignURL, ...field }) => {
-  console.log(field)
+type ImageUploadProps = {
+  presignURL: string
+  field: {
+    value?: string
+    onChange: (value: string) => void
+    name: string
+    ref: (instance: HTMLInputElement | null) => void
+    onBlur: () => void
+  }
+}
+
+const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [rotation, setRotation] = useState(0)
-  const [zoom, setZoom] = useState(1)
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
-  const [croppedImage, setCroppedImage] = useState(null)
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const handleClick = () => {
+  const { name, ref: rhfRef, onBlur, onChange: rhfOnChange } = field
+
+  const handleClick = useCallback(() => {
     inputRef.current?.click()
-  }
-
-  console.log(presignURL)
+  }, [inputRef])
 
   useEffect(() => {
     let dragCounter = 0
@@ -62,11 +61,11 @@ const ImageUpload = ({ presignURL, ...field }) => {
           file.type.startsWith('image/')
         )
 
-        if (image) {
-          console.log('Dropped image file:', image)
-          handleFileChange({
-            target: { files: [image] },
-          } as React.ChangeEvent<HTMLInputElement>)
+        if (image && inputRef.current) {
+          const dt = new DataTransfer()
+          dt.items.add(image)
+          inputRef.current.files = dt.files
+          inputRef.current.dispatchEvent(new Event('change', { bubbles: true }))
         }
       }
     }
@@ -84,50 +83,54 @@ const ImageUpload = ({ presignURL, ...field }) => {
     }
   }, [])
 
-  const onCropComplete = (croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels)
-  }
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragging(true)
-  }
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      console.log('Selected file:', file)
       setFile(file)
       setIsDialogOpen(true)
     }
   }
 
-  const showCroppedImage = async () => {
+  const handleDialog = () => {
+    if (isDialogOpen) {
+      setFile(null)
+      inputRef.current!.value = ''
+    }
+    setIsDialogOpen(!isDialogOpen)
+  }
+
+  const deleteUploadedImage = async () => {
     try {
-      const croppedImage = await getCroppedImg(
-        file && URL.createObjectURL(file),
-        croppedAreaPixels,
-        rotation
-      )
-      console.log('donee', { croppedImage })
-      setCroppedImage(croppedImage)
-      setIsDialogOpen(false)
-      setFile(null) // Reset file after submission
-      inputRef.current!.value = '' // Clear the input field
-    } catch (e) {
-      console.error(e)
+      await deleteFileFromS3(uploadedImage!)
+      setUploadedImage(null)
+      setFile(null)
+      rhfOnChange('')
+      if (inputRef.current) {
+        inputRef.current.value = ''
+      }
+      toast.success('Image deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting uploaded image:', error)
     }
   }
 
-  const resetImage = () => {
-    setCroppedImage(null)
-    setFile(null)
-    inputRef.current!.value = '' // Clear the input field
+  const handleUploadComplete = (imageUrl: string) => {
+    toast.success('Image uploaded successfully!')
+    setUploadedImage(imageUrl)
+    rhfOnChange(imageUrl)
+    setIsDialogOpen(false)
+  }
+
+  const handleDeleteUploadedImage = () => {
+    // TODO: Confirm before deleting
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    confirm('Are you sure you want to delete this image?') &&
+      deleteUploadedImage()
   }
 
   return (
     <>
-      {dragging && (
+      {dragging && !uploadedImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity pointer-events-none">
           <div className="rounded-lg bg-white/80 px-6 py-3 text-lg font-medium text-gray-800 shadow-md">
             Drop the image anywhere
@@ -143,115 +146,59 @@ const ImageUpload = ({ presignURL, ...field }) => {
             dragging ? 'border-blue-500 ring-2 ring-blue-300' : '',
             'focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500'
           )}
-          aria-label={croppedImage ? 'Change image' : 'Upload image'}
+          aria-label={uploadedImage ? 'Change image' : 'Upload image'}
           onClick={handleClick}
-          onDragOver={handleDragOver}
-          onDragEnter={handleDragOver}
         >
-          {croppedImage ? (
+          {uploadedImage ? (
             <img
               className="size-full object-cover"
               alt="Preview of uploaded image"
               width={64}
               height={64}
               style={{ objectFit: 'cover' }}
-              src={croppedImage}
+              src={uploadedImage}
             />
           ) : (
             <div aria-hidden="true">
-              <CircleUserRound className="size-5 opacity-60" />
+              <ImageUp className="size-5 opacity-60" />
             </div>
           )}
         </Button>
-        {croppedImage && (
+        {uploadedImage && (
           <Button
             size="icon"
             type="button"
             className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
             aria-label="Remove image"
-            onClick={() => {
-              setCroppedImage(null)
-              setFile(null)
-              inputRef.current!.value = '' // Clear the input field
-            }}
+            onClick={handleDeleteUploadedImage}
           >
             <X className="size-3.5" />
           </Button>
         )}
       </div>
       <input
-        {...field}
-        ref={inputRef}
+        ref={(el) => {
+          inputRef.current = el
+          rhfRef(el)
+        }}
         type="file"
+        name={name}
+        onBlur={onBlur}
         className="sr-only"
         accept="image/*"
         style={{ display: 'none' }}
         aria-label="Upload image file"
         onChange={handleFileChange}
         tabIndex={-1}
+        disabled={!!uploadedImage}
       />
-
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={(e) => {
-          console.log(e)
-          if (isDialogOpen) {
-            resetImage()
-          }
-          setIsDialogOpen(!isDialogOpen)
-        }}
-      >
-        <DialogContent className="gap-0 p-0 sm:max-w-140 *:[button]:hidden">
-          <DialogDescription className="sr-only">Crop image</DialogDescription>
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between border-b text-base px-4 py-2">
-              <span>Crop image</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="-mx-2"
-                onClick={() => {
-                  setIsDialogOpen(false)
-                  resetImage()
-                }}
-                aria-label="Cancel"
-              >
-                <X aria-hidden="true" />
-              </Button>
-            </DialogTitle>
-          </DialogHeader>
-          <div className="relative h-[400px] w-full overflow-hidden">
-            <Cropper
-              image={file ? URL.createObjectURL(file) : ''}
-              crop={crop}
-              rotation={rotation}
-              zoom={zoom}
-              aspect={1}
-              onCropChange={setCrop}
-              onRotationChange={setRotation}
-              onCropComplete={onCropComplete}
-              onZoomChange={setZoom}
-              showGrid={false}
-              objectFit="contain"
-              style={{
-                cropAreaStyle: {
-                  borderRadius: '12px',
-                },
-              }}
-            />
-          </div>
-          <DialogFooter className="border-t w-full px-4 py-6 flex gap-4 items-center space-x-2">
-            <Progress value={33} />
-            <Button
-              className="w-full md:w-min mb-2 md:mb-0"
-              onClick={showCroppedImage}
-              // disabled={!previewUrl}
-            >
-              Upload
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+      <Dialog open={isDialogOpen} onOpenChange={handleDialog}>
+        <ImageCropper
+          image={file ? URL.createObjectURL(file) : ''}
+          presignURL={presignURL}
+          onCancel={handleDialog}
+          onUpload={handleUploadComplete}
+        />
       </Dialog>
     </>
   )
