@@ -19,13 +19,22 @@ type ImageUploadProps = {
     ref: (instance: HTMLInputElement | null) => void
     onBlur: () => void
   }
+  imageURL?: string
+  editing?: boolean
 }
 
-const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
+const ImageUpload = ({
+  presignURL,
+  field,
+  imageURL,
+  editing,
+}: ImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
   const [file, setFile] = useState<File | null>(null)
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [uploadedImage, setUploadedImage] = useState<string | null>(
+    imageURL || null
+  )
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   useDialog(DeleteDialog, 'delete')
@@ -125,17 +134,23 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
     setUploadedImage(imageUrl)
     rhfOnChange(imageUrl)
     setIsDialogOpen(false)
+    setFile(null)
+    if (inputRef.current) {
+      inputRef.current.value = ''
+    }
   }
 
   useEffect(() => {
-    setFile(null)
-    setUploadedImage(null)
-    inputRef.current!.value = ''
-  }, [presignURL])
+    if (!imageURL) {
+      setFile(null)
+      setUploadedImage(null)
+      inputRef.current!.value = ''
+    }
+  }, [presignURL, imageURL])
 
   useEffect(() => {
     const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
-      if (uploadedImage) {
+      if (uploadedImage && !editing) {
         e.preventDefault()
         e.returnValue = ''
         await deleteUploadedImage()
@@ -147,11 +162,17 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
-  }, [deleteUploadedImage, uploadedImage])
+  }, [deleteUploadedImage, editing, uploadedImage])
+
+  useEffect(() => {
+    if (imageURL) {
+      setUploadedImage(imageURL)
+    }
+  }, [imageURL])
 
   return (
     <>
-      {dragging && !uploadedImage && (
+      {dragging && (!uploadedImage || editing) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity pointer-events-none">
           <div className="rounded-lg bg-white/80 px-6 py-3 text-lg font-medium text-gray-800 shadow-md">
             Drop the image anywhere
@@ -217,7 +238,7 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
         aria-label="Upload image file"
         onChange={handleFileChange}
         tabIndex={-1}
-        disabled={!!uploadedImage}
+        disabled={!!uploadedImage && !editing}
       />
       <Dialog open={isDialogOpen} onOpenChange={handleDialog}>
         <ImageCropper
