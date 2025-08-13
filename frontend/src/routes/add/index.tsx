@@ -13,16 +13,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@components/ui/form'
-import { Input } from '@components/ui/input'
-import AmountInput from '@components/ui/amountinput'
-import { Button } from '@components/ui/button'
-import { Spinner } from '@components/ui/spinner'
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import AmountInput from '@/components/ui/amountinput'
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { createItem, fetchLocations, getPresignUrl } from '@/utils/api'
 import { Item } from '@/utils/item'
-import LocationSelect from '@components/LocationSelect'
-import BarcodeDrawer from '@components/BarcodeDrawer'
-import ImageUpload from '@components/ImageUpload'
+import LocationSelect from '@/components/LocationSelect'
+import BarcodeDrawer from '@/components/BarcodeDrawer'
+import ImageUpload from '@/components/ImageUpload'
 
 export const Route = createFileRoute('/add/')({
   component: Add,
@@ -48,6 +48,7 @@ function Add() {
       quantity: '' as string | undefined,
       shelf: '' as string | undefined,
       image: '' as string | undefined,
+      uuid: data.presign.uuid,
     },
   })
 
@@ -66,7 +67,6 @@ function Add() {
       }
 
       await createItem(payload)
-      console.log(payload, data.presign.uuid)
       toast.success('Item created successfully!')
 
       form.reset({
@@ -120,7 +120,10 @@ function Add() {
                     <FormItem className="w-full">
                       <FormLabel className="sr-only">Name</FormLabel>
                       <FormControl>
-                        <ImageUpload presignURL={data.presign.url} {...field} />
+                        <ImageUpload
+                          presignURL={data.presign.url}
+                          field={field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

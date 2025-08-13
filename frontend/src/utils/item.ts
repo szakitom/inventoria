@@ -60,5 +60,6 @@ export class Item {
     quantity: z.string().optional(),
     shelf: z.string().optional(),
     image: z.string().optional(),
+    uuid: z.string().optional(),
   })
 }
