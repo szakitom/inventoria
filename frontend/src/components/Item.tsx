@@ -118,7 +118,11 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
       <CardHeader className="p-0 pb-0 gap-0">
         <div className="flex items-start justify-between">
           <div className={cn('flex gap-2 min-h-16 items-start')}>
-            <ImagePreview image={item.image} name={item.name} />
+            <ImagePreview
+              image={item.image}
+              name={item.name}
+              openFoodFacts={item.openFoodFacts}
+            />
 
             <div className="min-w-0">
               <CardTitle className="text-base font-semibold leading-tight truncate">
@@ -251,7 +255,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
               <div
                 className={cn(
                   'text-sm',
-                  item.openFoodFacts || item.image
+                  item.openFoodFacts
                     ? 'font-bold text-foreground'
                     : 'font-normal'
                 )}
@@ -307,7 +311,6 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
                   )}
                   <ImageBarcodeTab
                     off={item.openFoodFacts}
-                    image={item.image}
                     barcode={item.barcode}
                   />
                 </div>
