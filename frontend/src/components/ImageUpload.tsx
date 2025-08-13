@@ -105,7 +105,7 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
     setIsDialogOpen(!isDialogOpen)
   }
 
-  const deleteUploadedImage = async () => {
+  const deleteUploadedImage = useCallback(async () => {
     try {
       await deleteFileFromS3(uploadedImage!)
       setUploadedImage(null)
@@ -118,7 +118,7 @@ const ImageUpload = ({ presignURL, field }: ImageUploadProps) => {
     } catch (error) {
       console.error('Error deleting uploaded image:', error)
     }
-  }
+  }, [rhfOnChange, uploadedImage])
 
   const handleUploadComplete = (imageUrl: string) => {
     toast.success('Image uploaded successfully!')
