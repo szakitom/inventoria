@@ -185,3 +185,46 @@ export const getPresignUrl = async ({ signal }: { signal: AbortSignal }) => {
   if (!res.ok) throw new Error('Failed to get presigned URL')
   return res.json()
 }
+
+export const uploadFileToS3 = (
+  file: Blob,
+  presignedUrl: string,
+  onProgress?: (percent: number) => void
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && onProgress) {
+        const percent = Math.round((event.loaded / event.total) * 100)
+        onProgress(percent)
+      }
+    }
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(presignedUrl.split('?')[0])
+      } else {
+        reject(new Error(`Failed to upload file: ${xhr.statusText}`))
+      }
+    }
+
+    xhr.onerror = () => reject(new Error('Upload failed'))
+
+    xhr.open('PUT', presignedUrl)
+    xhr.setRequestHeader('Content-Type', file.type)
+    xhr.send(file)
+  })
+}
+
+export const deleteFileFromS3 = async (url: string) => {
+  const res = await fetch('/api/s3', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ url }),
+  })
+  if (!res.ok) throw new Error('Failed to create item')
+  return res.json()
+}
