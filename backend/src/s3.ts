@@ -36,7 +36,6 @@ class S3Client {
           expiresIn: 10 * 60, // 10 minutes
         }
       )
-      console.info(`🖼️ Presigned URL for ${key} created: ${url}`)
       const cleanURL = url.replace(
         `http://${S3_ENDPOINT || 'localhost'}:${S3_PORT || 9000}/${bucket}/`,
         `/s3/${bucket}/`
@@ -56,7 +55,6 @@ class S3Client {
     }
     try {
       await this.client.send(new DeleteObjectCommand(params))
-      console.info(`🗑️ File ${key} deleted successfully`)
     } catch (error) {
       console.error(`❌ Failed to delete file ${key}:`, error)
       throw error
