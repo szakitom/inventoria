@@ -9,6 +9,7 @@ import { config } from 'dotenv'
 config()
 
 console.log(`Using backend URL: ${process.env.BACKEND_URL}`)
+console.log(`Using S3 URL: ${process.env.S3_URL}`)
 
 export default defineConfig({
   base: '/',
