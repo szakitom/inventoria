@@ -26,20 +26,22 @@ OFF_APP_NAME=
 
 ## TODO
 
-- use virtualizer for list
-- ability to refresh off data if we have barcode (but no off data)
 - make it pwa
+- ability to refresh off data if we have barcode (but no off data)
 - automate database and s3 backup
 - sse handling of expiring items
-- autoremove initializer docker containers
+- make environment setup easier
 - automate docker build
+- ssr route splitting
 - if empty redirect to location create
 - real time updates (socket?)
+- edit shelves, no replace
 - edit locations (only empty?)
+- main route add error boundary with the ability to toast <https://github.com/bvaughn/react-error-boundary>
+- schedule s3 cleanup
+- swagger documentation
+- add text recognition? <https://github.com/m-maaz-azhar/react-tesseract>
 - clean up code
-
-<https://github.com/m-maaz-azhar/react-tesseract>
-<https://github.com/bvaughn/react-error-boundary>
 
 ## Production
 

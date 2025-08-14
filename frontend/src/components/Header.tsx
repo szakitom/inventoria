@@ -29,7 +29,7 @@ const Header = () => {
               className="w-7 h-7 dark:bg-foreground rounded-full"
             />
             <span className="font-semibold text-lg tracking-tight text-foreground select-none">
-              {import.meta.env.VITE_APP_TITLE}
+              {import.meta.env.VITE_APP_TITLE || 'Inventoria'}
             </span>
           </Link>
 
