@@ -124,8 +124,8 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
               blurhash={item.blurhash}
             />
 
-            <div className="min-w-0">
-              <CardTitle className="text-base font-semibold leading-tight truncate">
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <CardTitle className="text-base font-semibold leading-tight line-clamp-2">
                 {item.name}
               </CardTitle>
               <div className="flex items-center space-x-1 text-sm mt-1 truncate">
