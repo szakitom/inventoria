@@ -1,5 +1,11 @@
+const { OFF_USER_AGENT } = process.env
+
+if (!OFF_USER_AGENT) {
+  throw new Error('OFF_APP_NAME environment variable is not set')
+}
+
 const headers = {
-  'User-Agent': 'Inventoria/1.0 ()',
+  'User-Agent': OFF_USER_AGENT,
   'Content-Type': 'application/json',
 }
 

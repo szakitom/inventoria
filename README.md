@@ -21,6 +21,7 @@ S3_PASSWORD=miniopassword
 S3_ENDPOINT=s3-prod
 S3_PORT=9000
 S3_BUCKET=inventoria
+OFF_APP_NAME=
 ```
 
 ## TODO
