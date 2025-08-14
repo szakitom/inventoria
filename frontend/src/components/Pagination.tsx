@@ -62,7 +62,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
           htmlFor={id}
           className="cursor-pointer h-full w-full whitespace-nowrap"
         >
-          Rows per page
+          Items per page
         </Label>
 
         <Select value={limit.toString()} onValueChange={changeLimit}>
@@ -88,8 +88,8 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
       </div>
 
       <div>
-        <Label className="text-sm font-medium whitespace-nowrap">
-          Showing items {limit * (currentPage - 1) + 1} -{' '}
+        <Label className="text-sm font-medium whitespace-nowrap min-w-54">
+          Showing items {total ? limit * (currentPage - 1) + 1 : 0} -{' '}
           {limit * (currentPage - 1) + currentItems.length} of {total}
         </Label>
       </div>
