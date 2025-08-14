@@ -85,6 +85,14 @@ interface SuspendedMarqueeProps {
 const SuspendedMarquee = ({ data }: SuspendedMarqueeProps) => {
   const items = use(data instanceof Promise ? data : Promise.resolve(data))
 
+  if (!items || items.length === 0) {
+    return (
+      <div className="text-center flex items-center justify-center w-full h-full text-muted-foreground">
+        No featured items found.
+      </div>
+    )
+  }
+
   return (
     <Marquee speed={20} autoFill pauseOnHover className="h-full w-full">
       {items.map((item, i) => (
