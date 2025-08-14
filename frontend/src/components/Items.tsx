@@ -6,6 +6,7 @@ import Item from '@/components/Item'
 import DeleteDialog from '@/components/DeleteDialog'
 import MoveDialog from '@/components/MoveDialog'
 import EditDialog from '@/components/EditDialog'
+import ImageDialog from '@/components/ImageDialog'
 
 const variants = {
   enter: (direction: 'next' | 'prev') => ({
@@ -100,6 +101,7 @@ const Items = ({ navigate, from }: ItemsProps) => {
   useDialog(DeleteDialog, 'delete')
   useDialog(MoveDialog, 'move')
   useDialog(EditDialog, 'edit')
+  useDialog(ImageDialog, 'image')
 
   if (prevPageRef.current !== page) {
     setDirection(page > prevPageRef.current ? 'next' : 'prev')
