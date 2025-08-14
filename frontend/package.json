@@ -34,6 +34,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-router": "^1.125.6",
     "@tanstack/react-router-devtools": "^1.125.6",
+    "@tanstack/react-virtual": "^3.13.12",
     "@tanstack/zod-adapter": "^1.128.4",
     "@techstark/opencv-js": "^4.11.0-release.1",
     "blurhash": "^2.0.5",
