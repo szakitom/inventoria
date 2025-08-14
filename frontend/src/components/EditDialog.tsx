@@ -132,7 +132,10 @@ const EditDialog = ({
 
   if (!isOpen) return null
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => !open && !form.formState.isDirty && onCancel()}
+    >
       <DialogContent className="flex max-h-[min(600px,80vh)] md:max-h-[90vh] flex-col gap-0 p-0 sm:max-w-md">
         <ScrollArea className="flex max-h-full flex-col overflow-hidden">
           <DialogHeader className="contents space-y-0 text-left">
