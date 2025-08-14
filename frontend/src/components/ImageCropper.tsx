@@ -34,6 +34,10 @@ const ImageCropper = ({
   const [progress, setProgress] = useState<number | null>(null)
   const [uploading, setUploading] = useState(false)
 
+  if (!image) {
+    return null
+  }
+
   const handleCropComplete = async (
     _: CroppedArea,
     croppedAreaPixels: CroppedArea

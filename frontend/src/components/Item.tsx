@@ -242,7 +242,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
       <CardFooter
         className={cn(
           '-mx-3 -mb-3 p-0',
-          (item.openFoodFacts || item.image || item.barcode) && 'bg-muted'
+          (item.openFoodFacts || item.barcode) && 'bg-muted'
         )}
       >
         <Collapsible
