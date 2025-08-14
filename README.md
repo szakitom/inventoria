@@ -26,13 +26,18 @@ OFF_APP_NAME=
 
 ## TODO
 
+- use virtualizer for list
 - ability to refresh off data if we have barcode (but no off data)
 - make it pwa
+- automate database and s3 backup
 - sse handling of expiring items
+- autoremove initializer docker containers
+- automate docker build
+- if empty redirect to location create
 - real time updates (socket?)
+- edit locations (only empty?)
+- clean up code
 
-<https://originui.com/>
-<https://shadcnstudio.com/components>
 <https://github.com/m-maaz-azhar/react-tesseract>
 <https://github.com/bvaughn/react-error-boundary>
 
