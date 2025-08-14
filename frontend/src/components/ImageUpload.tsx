@@ -189,15 +189,20 @@ const ImageUpload = ({
         }`}
       >
         {visible && (
-          <div className="flex flex-col items-center gap-2 rounded-xl bg-white/90 px-8 py-4 shadow-lg border border-gray-200 transition-transform duration-200 ease-out transform scale-95">
+          <div
+            className={`
+    flex flex-col items-center gap-2 rounded-xl bg-card/90 px-8 py-4 shadow-lg border border-gray-200
+    transition-transform duration-200 ease-out transform
+    ${dragging ? 'scale-105 opacity-100' : 'scale-95 opacity-0'}
+  `}
+          >
             <Plus className="h-8 w-8 text-blue-500 animate-bounce" />
-            <p className="text-gray-800 text-lg font-semibold">
-              Drop the image here
-            </p>
-            <p className="text-gray-500 text-sm">or click to select</p>
+            <p className="text-lg font-semibold">Drop the image anywhere</p>
+            <p className="text-sm">or click to select</p>
           </div>
         )}
       </div>
+
       <div className="relative">
         <Button
           variant="outline"
