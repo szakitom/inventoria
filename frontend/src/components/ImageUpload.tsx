@@ -9,6 +9,7 @@ import DeleteDialog from '@/components/DeleteDialog'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { deleteFileFromS3 } from '@/utils/api'
 import { cn } from '@/lib/utils'
+import { useDialogBlocker } from '@/hooks/useDialogBlocker'
 
 type ImageUploadProps = {
   presignURL: string
@@ -36,6 +37,12 @@ const ImageUpload = ({
     imageURL || null
   )
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { BlockDialog } = useDialogBlocker(
+    Boolean(uploadedImage && !editing),
+    async () => {
+      await deleteUploadedImage()
+    }
+  )
 
   useDialog(DeleteDialog, 'delete')
   const { open } = useGlobalDialog()
@@ -202,7 +209,6 @@ const ImageUpload = ({
           </div>
         )}
       </div>
-
       <div className="relative">
         <Button
           variant="outline"
@@ -271,6 +277,7 @@ const ImageUpload = ({
           onUpload={handleUploadComplete}
         />
       </Dialog>
+      <BlockDialog />
     </>
   )
 }
