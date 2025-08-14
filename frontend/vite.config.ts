@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import reactPlugin from '@vitejs/plugin-react-swc'
+import { VitePWA } from 'vite-plugin-pwa'
 import mkcert from 'vite-plugin-mkcert'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import path from 'path'
@@ -21,6 +22,63 @@ export default defineConfig({
     reactPlugin(),
     tailwindcss(),
     mkcert(),
+    VitePWA({
+      registerType: 'prompt',
+      includeAssets: [
+        'favicon.svg',
+        'favicon.ico',
+        'robots.txt',
+        'apple-touch-icon-180x180.png',
+      ],
+      devOptions: {
+        enabled: true,
+      },
+      // selfDestroying: true,
+      manifest: {
+        name: 'Inventoria',
+        short_name: 'Inventoria',
+        description: 'A modern inventory management system',
+        theme_color: '#ffffff',
+        display: 'standalone',
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+        screenshots: [
+          {
+            src: 'screenshot-wide.png',
+            sizes: '1599x800',
+            type: 'image/png',
+            form_factor: 'wide',
+          },
+          {
+            src: 'screenshot-mobile.png',
+            sizes: '393x851',
+            type: 'image/png',
+          },
+        ],
+      },
+    }),
   ],
   resolve: {
     alias: {

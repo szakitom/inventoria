@@ -27,7 +27,6 @@ OFF_USER_AGENT=<name>/<version> (<url>) # according to openfoodfacts terms
 
 ## TODOs
 
-- [ ] make it into a pwa
 - [ ] ability to refresh off data if we have barcode (but no off data)
 - [ ] automate database and s3 backup
 - [ ] sse handling of expiring items

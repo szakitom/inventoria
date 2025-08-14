@@ -88,7 +88,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
       </div>
 
       <div>
-        <Label className="text-sm font-medium whitespace-nowrap min-w-54">
+        <Label className="text-sm font-medium whitespace-nowrap min-w-54 text-center flex items-center justify-center md:justify-start">
           Showing items {total ? limit * (currentPage - 1) + 1 : 0} -{' '}
           {limit * (currentPage - 1) + currentItems.length} of {total}
         </Label>
