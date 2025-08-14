@@ -35,11 +35,15 @@ const ImagePreview = ({ image, name, openFoodFacts: off }: Partial<IItem>) => {
       variant="ghost"
       size="icon"
     >
-      <img
-        src={`${imageToUse}`}
-        alt={`Image of ${name}`}
-        className="w-16 aspect-square object-cover rounded-md border-1"
-      />
+      <div className="relative overflow-hidden">
+        <div className="bg-gradient-to-br from-slate-400 to-slate-300 w-16 aspect-square rounded-md border blur-sm animate-pulse" />
+        <img
+          src={`${imageToUse}`}
+          alt={`Image of ${name}`}
+          className="w-16 aspect-square object-cover rounded-md border-1 absolute top-0 left-0 z-10"
+          loading="lazy"
+        />
+      </div>
     </Button>
   )
 }
