@@ -81,10 +81,6 @@ const Items = ({ navigate, from }: ItemsProps) => {
         Math.floor((containerWidth + gridGap) / (minItemWidth + gridGap))
       )
 
-      console.log(
-        `Container width: ${containerWidth}px, Calculated columns: ${columns}`
-      )
-
       setColumnCount(columns)
     }
 
@@ -143,10 +139,6 @@ const Items = ({ navigate, from }: ItemsProps) => {
         Math.floor((containerWidth + gridGap) / (minItemWidth + gridGap))
       )
 
-      console.log(
-        `Initial container width: ${containerWidth}px, Initial columns: ${columns}`
-      )
-
       setColumnCount(columns)
 
       setTimeout(() => {
@@ -155,9 +147,6 @@ const Items = ({ navigate, from }: ItemsProps) => {
           const updatedColumns = Math.max(
             1,
             Math.floor((updatedWidth + gridGap) / (minItemWidth + gridGap))
-          )
-          console.log(
-            `Updated width: ${updatedWidth}px, Updated columns: ${updatedColumns}`
           )
           setColumnCount(updatedColumns)
         }
@@ -214,6 +203,7 @@ const Items = ({ navigate, from }: ItemsProps) => {
             height: `${rowVirtualizer.getTotalSize()}px`,
           }}
         >
+          {console.log(items)}
           {items.length === 0 ? (
             <div className="text-center col-span-full text-muted-foreground">
               No items found.
