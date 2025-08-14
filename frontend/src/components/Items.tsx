@@ -154,6 +154,14 @@ const Items = ({ navigate, from }: ItemsProps) => {
     }
   }
 
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-20 text-muted-foreground">
+        No items found.
+      </div>
+    )
+  }
+
   return (
     <AnimatePresence mode="wait" custom={direction}>
       <div
@@ -203,49 +211,42 @@ const Items = ({ navigate, from }: ItemsProps) => {
             height: `${rowVirtualizer.getTotalSize()}px`,
           }}
         >
-          {console.log(items)}
-          {items.length === 0 ? (
-            <div className="text-center col-span-full text-muted-foreground">
-              No items found.
-            </div>
-          ) : (
-            rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const rowItems: IItem[] = []
-              for (let col = 0; col < columnCount; col++) {
-                const itemIndex = virtualRow.index * columnCount + col
-                if (itemIndex < items.length) {
-                  rowItems.push(items[itemIndex])
-                }
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const rowItems: IItem[] = []
+            for (let col = 0; col < columnCount; col++) {
+              const itemIndex = virtualRow.index * columnCount + col
+              if (itemIndex < items.length) {
+                rowItems.push(items[itemIndex])
               }
+            }
 
-              return (
-                <div
-                  key={virtualRow.key}
-                  ref={(el) => rowVirtualizer.measureElement(el)}
-                  data-index={virtualRow.index}
-                  className="absolute top-0 left-0 w-full grid gap-4 pb-4"
-                  style={{
-                    transform: `translateY(${virtualRow.start}px)`,
-                    gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
-                  }}
-                >
-                  {rowItems.map((item: IItem) => (
-                    <div
-                      key={item.id}
-                      onClick={(e) => {
-                        if (isDraggingRef.current) {
-                          e.preventDefault()
-                          e.stopPropagation()
-                        }
-                      }}
-                    >
-                      <Item item={item} from={from} />
-                    </div>
-                  ))}
-                </div>
-              )
-            })
-          )}
+            return (
+              <div
+                key={virtualRow.key}
+                ref={(el) => rowVirtualizer.measureElement(el)}
+                data-index={virtualRow.index}
+                className="absolute top-0 left-0 w-full grid gap-4 pb-4"
+                style={{
+                  transform: `translateY(${virtualRow.start}px)`,
+                  gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+                }}
+              >
+                {rowItems.map((item: IItem) => (
+                  <div
+                    key={item.id}
+                    onClick={(e) => {
+                      if (isDraggingRef.current) {
+                        e.preventDefault()
+                        e.stopPropagation()
+                      }
+                    }}
+                  >
+                    <Item item={item} from={from} />
+                  </div>
+                ))}
+              </div>
+            )
+          })}
         </motion.div>
       </div>
     </AnimatePresence>
