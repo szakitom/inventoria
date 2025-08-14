@@ -74,9 +74,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
+    build: ./frontend
     container_name: inventoria-frontend
     ports:
       - '3000:80'
