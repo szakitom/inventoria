@@ -1,5 +1,5 @@
 import { Blurhash } from 'react-blurhash'
-import { Image } from 'lucide-react'
+import { Image, ImageOff } from 'lucide-react'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -13,16 +13,26 @@ const ImagePreview = ({
 }: Partial<IItem>) => {
   const { open } = useGlobalDialog()
   const [loaded, setLoaded] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
   const imageToUse =
+    image ??
     off?.selected_images?.front?.display?.[
       Object.keys(off.selected_images?.front?.display || {})[0] || ''
-    ] || image
+    ]
 
   if (!imageToUse) {
     return (
       <div className="w-16 aspect-square bg-muted rounded-md flex items-center justify-center border-1">
         <Image className="size-6 opacity-60" />
+      </div>
+    )
+  }
+
+  if (hasError) {
+    return (
+      <div className="w-16 aspect-square bg-muted border-1 border-red-400 rounded-md flex items-center justify-center">
+        <ImageOff className="size-6 opacity-60" />
       </div>
     )
   }
@@ -61,6 +71,7 @@ const ImagePreview = ({
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
           loading="lazy"
           onLoad={() => setLoaded(true)}
+          onError={() => setHasError(true)}
         />
       </div>
     </Button>
