@@ -62,8 +62,6 @@ class S3Client {
   }
 }
 
-// TODO: periodically delete incomplete uploads
-
 export default new S3Client({
   endpoint: `http://${S3_ENDPOINT || 'localhost'}:${S3_PORT || 9000}`,
   region: 'eu',
