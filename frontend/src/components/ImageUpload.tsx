@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ImageUp, X } from 'lucide-react'
+import { ImageUp, Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import ImageCropper from '@/components/ImageCropper'
@@ -170,15 +170,34 @@ const ImageUpload = ({
     }
   }, [imageURL])
 
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    if (dragging && (!uploadedImage || editing)) {
+      setVisible(true)
+    } else {
+      const timeout = setTimeout(() => setVisible(false), 200)
+      return () => clearTimeout(timeout)
+    }
+  }, [dragging, uploadedImage, editing])
+
   return (
     <>
-      {dragging && (!uploadedImage || editing) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity pointer-events-none">
-          <div className="rounded-lg bg-white/80 px-6 py-3 text-lg font-medium text-gray-800 shadow-md">
-            Drop the image anywhere
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300 pointer-events-none ${
+          dragging ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        {visible && (
+          <div className="flex flex-col items-center gap-2 rounded-xl bg-white/90 px-8 py-4 shadow-lg border border-gray-200 transition-transform duration-200 ease-out transform scale-95">
+            <Plus className="h-8 w-8 text-blue-500 animate-bounce" />
+            <p className="text-gray-800 text-lg font-semibold">
+              Drop the image here
+            </p>
+            <p className="text-gray-500 text-sm">or click to select</p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <div className="relative">
         <Button
           variant="outline"
