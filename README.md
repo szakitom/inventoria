@@ -11,8 +11,8 @@ wget https://raw.githubusercontent.com/szakitom/inventoria/refs/heads/main/docke
 touch .env
 # ⏳ Fill in env using .env example
 # Run containers
-docker compose -f docker-compose-prod.yml -p inventoria-prod up -d
-# Now application is available on localhost:3000
+docker compose -f docker-compose-prod.yml -p inventoria-prod up -d --pull always
+# Now the application is available on localhost:3000
 # ⚠️ Please create a location before anything else
 ```
 
