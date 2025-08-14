@@ -18,8 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { getLocationIcon } from '@/utils/index'
-import { LocationType } from '@/components/Items'
+import { getLocationIcon, LocationType } from '@/utils/index'
 import type { Location } from '@/components/LocationSelect'
 
 interface EditLocationDialogProps {

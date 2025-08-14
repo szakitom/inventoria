@@ -12,8 +12,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import type { IItem } from '@/components/Items'
 import { cn } from '@/lib/utils'
+import type { IItem } from '@/utils/index'
 
 type Nutriments = NonNullable<IItem['openFoodFacts']>['nutriments']
 

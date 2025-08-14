@@ -20,8 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { Location } from '@/components/LocationSelect'
-import { getLocationIcon } from '@/utils/index'
-import { LocationType } from '@/components/Items'
+import { getLocationIcon, LocationType } from '@/utils/index'
 
 interface CreateLocationDialogProps {
   isOpen: boolean

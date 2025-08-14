@@ -26,10 +26,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import AmountInput from '@/components/ui/amountinput'
 import { Spinner } from '@/components/ui/spinner'
 import { Item } from '@/utils/item'
-import type { IItem } from '@/components/Items'
 import BarcodeDrawer from '@/components/BarcodeDrawer'
 import ImageUpload from '@/components/ImageUpload'
 import { getPresignUrlForId } from '@utils/api'
+import type { IItem } from '@/utils/index'
 
 interface EditDialogProps {
   isOpen: boolean

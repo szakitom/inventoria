@@ -6,8 +6,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
-import { getExpirationStatus } from '@/utils/index'
-import type { IItem } from '@/components/Items'
+import { getExpirationStatus, type IItem } from '@/utils/index'
 
 interface FeatureBarProps {
   from: '/'

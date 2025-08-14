@@ -1,5 +1,5 @@
-import type { IItem } from '@/components/Items'
 import type { Location } from '@/components/LocationSelect'
+import type { IItem } from '@/utils/index'
 
 export const fetchItems = async ({
   sort,

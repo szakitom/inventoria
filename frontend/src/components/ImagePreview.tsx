@@ -3,7 +3,7 @@ import { Image } from 'lucide-react'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
-import type { IItem } from '@/components/Items'
+import type { IItem } from '@utils/index'
 
 const ImagePreview = ({
   image,
