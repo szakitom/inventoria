@@ -1,7 +1,11 @@
 import { Image } from 'lucide-react'
-import type { IItem } from './Items'
+import { useGlobalDialog } from '@/hooks/useGlobalDialog'
+import { Button } from '@/components/ui/button'
+import type { IItem } from '@/components/Items'
 
 const ImagePreview = ({ image, name, openFoodFacts: off }: Partial<IItem>) => {
+  const { open } = useGlobalDialog()
+
   const imageToUse =
     off?.selected_images?.front?.display[
       Object.keys(off.selected_images?.front?.display)[0]
@@ -16,11 +20,27 @@ const ImagePreview = ({ image, name, openFoodFacts: off }: Partial<IItem>) => {
   }
 
   return (
-    <img
-      className="w-16 aspect-square object-cover rounded-md border-1"
-      src={`${imageToUse}`}
-      alt={`Image of ${name}`}
-    />
+    <Button
+      asChild
+      type="button"
+      onClick={() =>
+        open('image', {
+          data: {
+            image: imageToUse,
+            name: name || '',
+          },
+        })
+      }
+      className="w-16 h-16 object-cover rounded-md border-1"
+      variant="ghost"
+      size="icon"
+    >
+      <img
+        src={`${imageToUse}`}
+        alt={`Image of ${name}`}
+        className="w-16 aspect-square object-cover rounded-md border-1"
+      />
+    </Button>
   )
 }
 
