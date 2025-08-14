@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { uploadFileToS3 } from '@/utils/api'
 import { getCroppedImg, type CroppedArea } from '@/utils/canvas'
+import { toast } from 'sonner'
 
 interface ImageCropperProps {
   image: string
@@ -71,6 +72,15 @@ const ImageCropper = ({
       }, 1000)
     } catch (error) {
       console.error('Error uploading cropped image:', error)
+      toast.error('Failed to upload cropped image')
+    } finally {
+      setUploading(false)
+      setTimeout(() => {
+        setRotation(0)
+        setZoom(1)
+        setCrop({ x: 0, y: 0 })
+        setCroppedArea(null)
+      }, 1000)
     }
   }
 
