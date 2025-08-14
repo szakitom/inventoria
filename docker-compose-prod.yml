@@ -2,7 +2,7 @@ name: 'inventoria-prod'
 services:
   rustfs:
     image: rustfs/rustfs:latest
-    container_name: rustfs-prod
+    container_name: s3-prod
     ports:
       - '9000:9000'
     volumes:
@@ -14,14 +14,14 @@ services:
 
   rustfs-init:
     image: minio/mc
-    container_name: rustfs-init-prod
+    container_name: s3-init-prod
     restart: no
     depends_on:
       - rustfs
     entrypoint: >
       /bin/sh -c "
         sleep 5 && \
-        mc alias set rustfs http://rustfs:9000 ${RUSTFS_ACCESS_KEY} ${RUSTFS_SECRET_KEY} && \
+        mc alias set rustfs http://s3:9000 ${RUSTFS_ACCESS_KEY} ${RUSTFS_SECRET_KEY} && \
         mc mb -p rustfs/inventoria && \
         mc anonymous set download rustfs/inventoria && \
         echo '✅ Bucket created: inventoria (read-only public)' || echo '⚠️ Bucket may already exist'
@@ -58,10 +58,10 @@ services:
     image: szaki/inventoria-backend
     container_name: inventoria-backend-prod
     ports:
-      - '3001:3000' # exposed as 3001 externally
+      - '3001:3000'
     depends_on:
       - mongo
-      - minio
+      - rustfs
     env_file:
       - ./backend/.env
     restart: unless-stopped
