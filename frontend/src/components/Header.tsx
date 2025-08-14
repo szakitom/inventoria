@@ -40,6 +40,20 @@ const Header = () => {
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link
+                      to="/test"
+                      activeProps={{
+                        className:
+                          'font-semibold text-primary ring-1 ring-muted-foreground/20 underline underline-offset-4',
+                      }}
+                      className="transition-colors px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-primary hover:bg-muted min-w-24 text-center"
+                    >
+                      Test
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
                       to="/locations"
                       activeProps={{
                         className:
