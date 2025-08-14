@@ -39,6 +39,7 @@ export default defineConfig({
         short_name: 'Inventoria',
         description: 'A modern inventory management system',
         theme_color: '#ffffff',
+        display: 'standalone',
         icons: [
           {
             src: 'pwa-192x192.png',
@@ -61,6 +62,19 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
+          },
+        ],
+        screenshots: [
+          {
+            src: 'screenshot-wide.png',
+            sizes: '1599x800',
+            type: 'image/png',
+            form_factor: 'wide',
+          },
+          {
+            src: 'screenshot-mobile.png',
+            sizes: '393x851',
+            type: 'image/png',
           },
         ],
       },
