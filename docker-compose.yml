@@ -61,9 +61,16 @@ services:
       - '3001:3000'
     depends_on:
       - mongo
-    env_file:
-      - ./backend/.env
       - rustfs
+    environment:
+      DB_URI: mongodb://mongo?retryWrites=true&replicaSet=rs0&directConnection=true
+      DB_NAME: inventoria
+      PORT: 3000
+      S3_USER: ${RUSTFS_ACCESS_KEY}
+      S3_PASSWORD: ${RUSTFS_SECRET_KEY}
+      S3_ENDPOINT: http://s3:9000
+      S3_BUCKET: inventoria
+      OFF_USER_AGENT: Inventoria/1.0 (inventoria.szaboo.com)
     restart: unless-stopped
 
   frontend:
