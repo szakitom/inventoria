@@ -134,7 +134,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
                 <span className="truncate">
                   {item.location.location.name}
                   <Badge variant="outline" className="ml-2">
-                    {item.location.name.replace('Shelf', '')}
+                    {item.location.name.split(' ')[1]}
                   </Badge>
                 </span>
               </div>

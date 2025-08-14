@@ -61,7 +61,7 @@ const Location = ({ location }: { location: LocationType }) => {
               className="p-2 border rounded hover:bg-muted hover:no-underline transition"
             >
               <div className="text-base flex flex-wrap w-full gap-2">
-                {shelf.name.replace('Shelf ', 'Polc ')}
+                {shelf.name}
               </div>
             </Link>
           </Badge>

@@ -105,8 +105,7 @@ const SuspendedMarquee = ({ data }: SuspendedMarqueeProps) => {
           </h3>
           <p className="text-sm ">Amount: {item.amount}</p>
           <p className="text-sm ">
-            Location: {item.locationName} -{' '}
-            {item.shelfName?.replace('Shelf ', '')}
+            Location: {item.locationName} - {item.shelfName?.split(' ')[1]}
           </p>
           <p className="text-sm ">
             Expires in:{' '}

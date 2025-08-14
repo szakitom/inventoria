@@ -250,7 +250,7 @@ const Filterbar = ({
               selectedText="shelf selected"
               dataKey="shelves"
               optionLabel="name"
-              optionLabelFn={(name) => name.replace('Shelf', 'Polc')}
+              // optionLabelFn={(name) => name.replace('Shelf', 'Polc')}
               optionValue="id"
               onSelect={setShelves}
               className="w-full sm:w-[200px] max-w-full"

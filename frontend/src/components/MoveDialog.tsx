@@ -98,7 +98,7 @@ const MoveDialog = ({
               <span className="truncate">
                 {currentLocation?.name}
                 <Badge variant="outline" className="ml-2">
-                  {currentShelf.name.replace('Shelf', '')}
+                  {currentShelf.name.split(' ')[1]}
                 </Badge>
               </span>
             </span>
