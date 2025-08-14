@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-const { S3_USER, S3_PASSWORD, S3_ENDPOINT, S3_PORT, S3_BUCKET } = process.env
+const { S3_USER, S3_PASSWORD, S3_ENDPOINT, S3_BUCKET } = process.env
 
 if (!S3_USER || !S3_PASSWORD) {
   throw new Error('S3_USER and S3_PASSWORD must be defined')
@@ -21,7 +21,7 @@ class S3Client {
     this.client = new AWSClient(config)
   }
 
-  async presignUrl(key, fileType) {
+  async presignUrl(key: string, fileType: string) {
     const params: PutObjectCommandInput = {
       Key: key,
       ContentType: fileType,
@@ -36,11 +36,8 @@ class S3Client {
           expiresIn: 10 * 60, // 10 minutes
         }
       )
-      const cleanURL = url.replace(
-        `http://${S3_ENDPOINT || 'localhost'}:${S3_PORT || 9000}/${bucket}/`,
-        `/s3/${bucket}/`
-      )
-      return cleanURL
+      const publicUrl = url.replace(S3_ENDPOINT!, '/s3')
+      return publicUrl
     } catch (error) {
       console.error(`❌ Failed to create presigned URL for ${key}:`, error)
       throw error
@@ -63,7 +60,7 @@ class S3Client {
 }
 
 export default new S3Client({
-  endpoint: `http://${S3_ENDPOINT || 'localhost'}:${S3_PORT || 9000}`,
+  endpoint: S3_ENDPOINT,
   region: 'eu',
   credentials: {
     accessKeyId: S3_USER,
