@@ -70,7 +70,7 @@ services:
       S3_PASSWORD: ${RUSTFS_SECRET_KEY}
       S3_ENDPOINT: http://s3:9000
       S3_BUCKET: inventoria
-      OFF_USER_AGENT: Inventoria/1.0 (inventoria.szaboo.com)
+      OFF_USER_AGENT: ${OFF_USER_AGENT}
     restart: unless-stopped
 
   frontend:
