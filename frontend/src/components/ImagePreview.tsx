@@ -14,9 +14,8 @@ const ImagePreview = ({
   const { open } = useGlobalDialog()
   const [loaded, setLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
-
   const imageToUse =
-    image ??
+    image ||
     off?.selected_images?.front?.display?.[
       Object.keys(off.selected_images?.front?.display || {})[0] || ''
     ]
