@@ -18,7 +18,7 @@ interface ImageCropperProps {
   image: string
   onCancel: () => void
   presignURL: string
-  onUpload: (response: string) => void
+  onUpload: (response: string, blurhash: string) => void
 }
 
 const ImageCropper = ({
@@ -49,16 +49,20 @@ const ImageCropper = ({
     try {
       setUploading(true)
       setProgress(0)
-      const croppedImage = await getCroppedImg(image, croppedArea!, rotation)
+      const canvasResponse = await getCroppedImg(image, croppedArea!, rotation)
+      if (!canvasResponse || !canvasResponse.blob) {
+        throw new Error('Failed to crop image')
+      }
+      const blurhash = await canvasResponse.blurhash
       const response = await uploadFileToS3(
-        croppedImage!,
+        canvasResponse.blob,
         presignURL,
         (percent) => {
           setProgress(percent)
         }
       )
       setUploading(false)
-      onUpload(response)
+      onUpload(response, blurhash)
       setTimeout(() => {
         setRotation(0)
         setZoom(1)

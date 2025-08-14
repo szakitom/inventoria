@@ -70,6 +70,7 @@ const EditDialog = ({
       amount: item?.amount ? Number(item.amount) : 0,
       quantity: item?.quantity as string | undefined,
       image: item?.image as string | undefined,
+      blurhash: item?.blurhash as string | undefined,
     },
   })
 
@@ -79,7 +80,7 @@ const EditDialog = ({
   const [bardcodeScanOpen, setBarcodeScanOpen] = useState(false)
 
   const handleBarcodeSubmit = (barcode: string) => {
-    form.setValue('barcode', barcode)
+    form.setValue('barcode', barcode, { shouldDirty: true })
     setBarcodeScanOpen(false)
   }
 
@@ -99,7 +100,10 @@ const EditDialog = ({
       if (form.formState.isDirty) {
         e.preventDefault()
         e.returnValue = ''
-        await submitDialog({ image: form.getValues('image') })
+        await submitDialog({
+          image: form.getValues('image'),
+          blurhash: form.getValues('blurhash'),
+        })
       }
     }
 
@@ -129,6 +133,10 @@ const EditDialog = ({
     }
     fetchPresignURL()
   }, [item])
+
+  const handleHashChange = async (blurhash: string) => {
+    form.setValue('blurhash', blurhash, { shouldDirty: true })
+  }
 
   if (!isOpen) return null
   return (
@@ -184,6 +192,7 @@ const EditDialog = ({
                                 field={field}
                                 imageURL={item?.image as string | undefined}
                                 editing
+                                onHashChange={handleHashChange}
                               />
                             </FormControl>
                             <FormMessage />

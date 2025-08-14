@@ -122,6 +122,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
               image={item.image}
               name={item.name}
               openFoodFacts={item.openFoodFacts}
+              blurhash={item.blurhash}
             />
 
             <div className="min-w-0">

@@ -67,6 +67,7 @@ export interface IItem {
     }
   }
   image?: string
+  blurhash?: string
 }
 
 interface ItemsProps {

@@ -1,3 +1,5 @@
+import { encode } from 'blurhash'
+
 const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image()
@@ -122,15 +124,29 @@ export const getCroppedImg = async (
   )
 
   // As a blob
-  return new Promise<Blob>((resolve, reject) => {
+  return new Promise<CanvasResponse>((resolve, reject) => {
     resizedCanvas.toBlob((blob) => {
       if (blob) {
-        resolve(blob)
+        resolve({
+          blob,
+          blurhash: getBlurhashFromCanvas(
+            resizedCtx.getImageData(0, 0, drawWidth, drawHeight)
+          ),
+        })
       } else {
         reject(new Error('Failed to create blob'))
       }
     }, 'image/png')
   })
+}
+
+type CanvasResponse = {
+  blob: Blob
+  blurhash: string
+}
+
+const getBlurhashFromCanvas = (imageData: ImageData) => {
+  return encode(imageData.data, imageData.width, imageData.height, 4, 4)
 }
 
 export const getRotatedImage = async (imageSrc: string, rotation = 0) => {

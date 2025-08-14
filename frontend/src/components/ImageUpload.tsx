@@ -22,6 +22,7 @@ type ImageUploadProps = {
   }
   imageURL?: string
   editing?: boolean
+  onHashChange: (blurhash: string) => void
 }
 
 const ImageUpload = ({
@@ -29,6 +30,7 @@ const ImageUpload = ({
   field,
   imageURL,
   editing,
+  onHashChange,
 }: ImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -136,10 +138,11 @@ const ImageUpload = ({
     }
   }, [rhfOnChange, uploadedImage])
 
-  const handleUploadComplete = (imageUrl: string) => {
+  const handleUploadComplete = (imageUrl: string, blurhash: string) => {
     toast.success('Image uploaded successfully!')
     setUploadedImage(imageUrl)
     rhfOnChange(imageUrl)
+    onHashChange(blurhash)
     setIsDialogOpen(false)
     setFile(null)
     if (inputRef.current) {

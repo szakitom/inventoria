@@ -50,6 +50,7 @@ function Add() {
       shelf: '' as string | undefined,
       image: '' as string | undefined,
       uuid: '' as string | undefined,
+      blurhash: '' as string | undefined,
     },
   })
 
@@ -74,6 +75,10 @@ function Add() {
     }
 
     return () => controller.abort()
+  }
+
+  const handleHashChange = (blurhash: string) => {
+    form.setValue('blurhash', blurhash, { shouldDirty: true })
   }
 
   const onSubmit = async (values: FormValues) => {
@@ -108,7 +113,7 @@ function Add() {
   }
 
   const handleBarcodeSubmit = (barcode: string) => {
-    form.setValue('barcode', barcode)
+    form.setValue('barcode', barcode, { shouldDirty: true })
     setBarcodeScanOpen(false)
   }
 
@@ -144,7 +149,11 @@ function Add() {
                       <FormItem className="w-full">
                         <FormLabel className="sr-only">Image</FormLabel>
                         <FormControl>
-                          <ImageUpload presignURL={presignURL} field={field} />
+                          <ImageUpload
+                            presignURL={presignURL}
+                            field={field}
+                            onHashChange={handleHashChange}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

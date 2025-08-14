@@ -61,5 +61,6 @@ export class Item {
     shelf: z.string().optional(),
     image: z.string().optional(),
     uuid: z.string().optional(),
+    blurhash: z.string().optional(),
   })
 }

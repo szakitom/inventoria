@@ -1,14 +1,22 @@
+import { Blurhash } from 'react-blurhash'
 import { Image } from 'lucide-react'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
 import { Button } from '@/components/ui/button'
+import { useState } from 'react'
 import type { IItem } from '@/components/Items'
 
-const ImagePreview = ({ image, name, openFoodFacts: off }: Partial<IItem>) => {
+const ImagePreview = ({
+  image,
+  name,
+  openFoodFacts: off,
+  blurhash,
+}: Partial<IItem>) => {
   const { open } = useGlobalDialog()
+  const [loaded, setLoaded] = useState(false)
 
   const imageToUse =
-    off?.selected_images?.front?.display[
-      Object.keys(off.selected_images?.front?.display)[0]
+    off?.selected_images?.front?.display?.[
+      Object.keys(off.selected_images?.front?.display || {})[0] || ''
     ] || image
 
   if (!imageToUse) {
@@ -25,23 +33,34 @@ const ImagePreview = ({ image, name, openFoodFacts: off }: Partial<IItem>) => {
       type="button"
       onClick={() =>
         open('image', {
-          data: {
-            image: imageToUse,
-            name: name || '',
-          },
+          data: { image: imageToUse, name: name || '' },
         })
       }
-      className="w-16 h-16 object-cover rounded-md border-1"
+      className="w-16 h-16 rounded-md border-1"
       variant="ghost"
       size="icon"
     >
-      <div className="relative overflow-hidden">
-        <div className="bg-gradient-to-br from-slate-400 to-slate-300 w-16 aspect-square rounded-md border blur-sm animate-pulse" />
+      <div className="relative w-16 aspect-square overflow-hidden rounded-md">
+        {!loaded &&
+          (blurhash ? (
+            <Blurhash
+              hash={blurhash}
+              width={64}
+              height={64}
+              resolutionX={32}
+              resolutionY={32}
+              punch={1}
+              className="absolute inset-0"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-400 to-slate-300 blur-sm animate-pulse" />
+          ))}
         <img
-          src={`${imageToUse}`}
+          src={imageToUse}
           alt={`Image of ${name}`}
-          className="w-16 aspect-square object-cover rounded-md border-1 absolute top-0 left-0 z-10"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
           loading="lazy"
+          onLoad={() => setLoaded(true)}
         />
       </div>
     </Button>
