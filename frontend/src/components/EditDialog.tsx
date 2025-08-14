@@ -161,7 +161,7 @@ const EditDialog = ({
                             <Input
                               placeholder="Product Name"
                               {...field}
-                              className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500 w-full"
+                              className="w-full"
                             />
                           </FormControl>
                           <FormMessage />
@@ -202,7 +202,7 @@ const EditDialog = ({
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="Barcode"
-                                className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10 focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                                className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
                                 {...field}
                               />
                               <Button
@@ -234,7 +234,6 @@ const EditDialog = ({
                               tabThrough: true,
                             })}
                             placeholder="YYYY/MM/DD"
-                            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
                           />
                         </FormControl>
                         <FormMessage />
@@ -264,11 +263,7 @@ const EditDialog = ({
                       <FormItem>
                         <FormLabel>Quantity</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Quantity"
-                            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-                            {...field}
-                          />
+                          <Input placeholder="Quantity" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

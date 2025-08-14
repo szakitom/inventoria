@@ -71,10 +71,7 @@ const LocationSelect = ({
         </Label>
       )}
       <Select value={selectedLocation} onValueChange={handleLocationChange}>
-        <SelectTrigger
-          id={locationSelectId}
-          className="w-full focus:ring-2 focus:ring-blue-500 cursor-pointer dark:focus:ring-2 dark:focus:ring-blue-500"
-        >
+        <SelectTrigger id={locationSelectId} className="w-full cursor-pointer">
           <SelectValue placeholder="Location" />
         </SelectTrigger>
 
@@ -113,10 +110,7 @@ const LocationSelect = ({
             </Label>
           )}
           <Select value={selectedShelf} onValueChange={handleShelfChange}>
-            <SelectTrigger
-              id={shelfSelectId}
-              className="w-full focus:ring-2 focus:ring-blue-500 cursor-pointer dark:focus:ring-2 dark:focus:ring-blue-500"
-            >
+            <SelectTrigger id={shelfSelectId} className="w-full cursor-pointer">
               <SelectValue placeholder="Select a Shelf" />
             </SelectTrigger>
             <SelectContent>

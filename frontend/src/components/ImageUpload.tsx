@@ -185,8 +185,7 @@ const ImageUpload = ({
           type="button"
           className={cn(
             'relative size-15 overflow-hidden p-0 shadow-none transition-colors',
-            dragging ? 'border-blue-500 ring-2 ring-blue-300' : '',
-            'focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500'
+            dragging && 'border-blue-500 ring-2 ring-blue-300'
           )}
           aria-label={uploadedImage ? 'Change image' : 'Upload image'}
           onClick={handleClick}
@@ -210,7 +209,7 @@ const ImageUpload = ({
           <Button
             size="icon"
             type="button"
-            className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
+            className="border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
             aria-label="Remove image"
             onClick={() =>
               open('delete', {

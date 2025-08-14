@@ -170,7 +170,7 @@ const Filterbar = ({
               <Select value={sort} onValueChange={handleSortChange}>
                 <SelectTrigger
                   id={id}
-                  className="w-full md:w-[200px] focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                  className="w-full md:w-[200px] cursor-pointer"
                 >
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -225,7 +225,7 @@ const Filterbar = ({
 
           <div className="relative w-full sm:w-[200px] md:w-[240px]">
             <Input
-              className="ps-8 pe-10 focus:ring-2 focus:!ring-blue-500 dark:focus:!ring-blue-500"
+              className="ps-8 pe-10"
               placeholder="Search..."
               type="search"
               ref={searchRef}

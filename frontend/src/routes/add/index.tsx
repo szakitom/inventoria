@@ -129,7 +129,7 @@ function Add() {
                         <Input
                           placeholder="Product Name"
                           {...field}
-                          className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500 w-full"
+                          className="w-full"
                         />
                       </FormControl>
                       <FormMessage />
@@ -166,7 +166,7 @@ function Add() {
                             type="text"
                             inputMode="numeric"
                             placeholder="Barcode"
-                            className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10 focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                            className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
                             {...field}
                           />
                           <Button
@@ -199,7 +199,6 @@ function Add() {
                           tabThrough: true,
                         })}
                         placeholder="YYYY/MM/DD"
-                        className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
                       />
                     </FormControl>
                     <FormMessage />
@@ -229,11 +228,7 @@ function Add() {
                   <FormItem>
                     <FormLabel>Quantity</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="kg"
-                        {...field}
-                        className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-                      />
+                      <Input placeholder="kg" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

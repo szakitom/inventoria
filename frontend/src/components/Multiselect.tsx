@@ -95,7 +95,7 @@ const Multiselect = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="flex items-center justify-between cursor-pointer focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+          className="flex items-center justify-between cursor-pointer"
         >
           <span className="flex items-center ">
             <Badge variant="outline">
