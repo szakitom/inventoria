@@ -2,7 +2,7 @@ import { Router } from 'express'
 import itemsRouter from './items'
 import locationsRouter from './locations'
 import offRouter from './off'
-import minioRouter from './minio'
+import s3Router from './s3'
 
 const router = Router()
 
@@ -12,7 +12,7 @@ router.use('/locations', locationsRouter)
 
 router.use('/off', offRouter)
 
-router.use('/minio', minioRouter)
+router.use('/s3', s3Router)
 
 router.get('/heartbeat', (req, res) => {
   res.json({ connection: 'ok' })

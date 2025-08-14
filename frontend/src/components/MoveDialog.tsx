@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { CheckboxCard } from '@/components/ui/checkboxcard'
 import AmountInput from '@/components/ui/amountinput'
-import { getLocationIcon } from '@utils/index'
+import { getLocationIcon } from '@/utils/index'
 import LocationSelect, {
   type Shelf,
   type Location,
@@ -98,7 +98,7 @@ const MoveDialog = ({
               <span className="truncate">
                 {currentLocation?.name}
                 <Badge variant="outline" className="ml-2">
-                  {currentShelf.name.replace('Shelf', '')}
+                  {currentShelf.name.split(' ')[1]}
                 </Badge>
               </span>
             </span>

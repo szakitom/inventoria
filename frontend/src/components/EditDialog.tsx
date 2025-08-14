@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ScanBarcode } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -26,8 +26,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import AmountInput from '@/components/ui/amountinput'
 import { Spinner } from '@/components/ui/spinner'
 import { Item } from '@/utils/item'
-import type { IItem } from '@/components/Items'
 import BarcodeDrawer from '@/components/BarcodeDrawer'
+import ImageUpload from '@/components/ImageUpload'
+import { getPresignUrlForId } from '@utils/api'
+import type { IItem } from '@/utils/index'
 
 interface EditDialogProps {
   isOpen: boolean
@@ -41,6 +43,7 @@ interface EditDialogProps {
         name?: string
       }
     }
+    id: string
     [key: string]: unknown
   }
 }
@@ -66,14 +69,18 @@ const EditDialog = ({
         : '',
       amount: item?.amount ? Number(item.amount) : 0,
       quantity: item?.quantity as string | undefined,
+      image: item?.image as string | undefined,
+      blurhash: item?.blurhash as string | undefined,
     },
   })
+
+  const [presignURL, setPresignURL] = useState()
 
   const registerWithMask = useHookFormMask(form.register)
   const [bardcodeScanOpen, setBarcodeScanOpen] = useState(false)
 
   const handleBarcodeSubmit = (barcode: string) => {
-    form.setValue('barcode', barcode)
+    form.setValue('barcode', barcode, { shouldDirty: true })
     setBarcodeScanOpen(false)
   }
 
@@ -88,9 +95,55 @@ const EditDialog = ({
     await submitDialog(payload)
   }
 
+  useEffect(() => {
+    const handleBeforeUnload = async (e: BeforeUnloadEvent) => {
+      if (form.formState.isDirty) {
+        e.preventDefault()
+        e.returnValue = ''
+        await submitDialog({
+          image: form.getValues('image'),
+          blurhash: form.getValues('blurhash'),
+        })
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [form, form.formState.isDirty, submitDialog])
+
+  useEffect(() => {
+    const fetchPresignURL = async () => {
+      const controller = new AbortController()
+      const { signal } = controller
+
+      try {
+        const newPresign = await getPresignUrlForId({ signal, id: item!.id })
+        setPresignURL(newPresign.url)
+      } catch (err: unknown) {
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return
+        }
+        console.error('Failed to refresh presign URL', err)
+      }
+
+      return () => controller.abort()
+    }
+    fetchPresignURL()
+  }, [item])
+
+  const handleHashChange = async (blurhash: string) => {
+    form.setValue('blurhash', blurhash, { shouldDirty: true })
+  }
+
   if (!isOpen) return null
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => !open && !form.formState.isDirty && onCancel()}
+    >
       <DialogContent className="flex max-h-[min(600px,80vh)] md:max-h-[90vh] flex-col gap-0 p-0 sm:max-w-md">
         <ScrollArea className="flex max-h-full flex-col overflow-hidden">
           <DialogHeader className="contents space-y-0 text-left">
@@ -108,23 +161,46 @@ const EditDialog = ({
                 className="space-y-8"
               >
                 <div className="grid gap-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Name"
-                            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex items-start space-x-4 w-full">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Product Name"
+                              {...field}
+                              className="w-full"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="relative inline-flex">
+                      <FormField
+                        control={form.control}
+                        name="image"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel className="sr-only">Image</FormLabel>
+                            <FormControl>
+                              <ImageUpload
+                                presignURL={presignURL || ''}
+                                field={field}
+                                imageURL={item?.image as string | undefined}
+                                editing
+                                onHashChange={handleHashChange}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
                   <FormField
                     control={form.control}
                     name="barcode"
@@ -138,7 +214,7 @@ const EditDialog = ({
                                 type="text"
                                 inputMode="numeric"
                                 placeholder="Barcode"
-                                className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10 focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+                                className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
                                 {...field}
                               />
                               <Button
@@ -170,7 +246,6 @@ const EditDialog = ({
                               tabThrough: true,
                             })}
                             placeholder="YYYY/MM/DD"
-                            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
                           />
                         </FormControl>
                         <FormMessage />
@@ -200,11 +275,7 @@ const EditDialog = ({
                       <FormItem>
                         <FormLabel>Quantity</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Quantity"
-                            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-                            {...field}
-                          />
+                          <Input placeholder="Quantity" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -10,10 +10,14 @@ import {
 } from 'react'
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
 import { arraysEqual, getLocationIcon } from '@/utils/index'
-import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
-import { Command, CommandItem, CommandList } from '@components/ui/command'
-import { Button } from '@components/ui/button'
-import { Badge } from '@components/ui/badge'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { Command, CommandItem, CommandList } from '@/components/ui/command'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 interface OptionType {
   [key: string]: string
@@ -91,7 +95,7 @@ const Multiselect = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="flex items-center justify-between cursor-pointer focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+          className="flex items-center justify-between cursor-pointer"
         >
           <span className="flex items-center ">
             <Badge variant="outline">

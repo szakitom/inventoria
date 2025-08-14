@@ -20,8 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { Location } from '@/components/LocationSelect'
-import { getLocationIcon } from '@utils/index'
-import { LocationType } from '@/components/Items'
+import { getLocationIcon, LocationType } from '@/utils/index'
 
 interface CreateLocationDialogProps {
   isOpen: boolean
@@ -75,12 +74,7 @@ const CreateLocationDialog = ({
           >
             Name
           </Label>
-          <Input
-            id={nameId}
-            value={name}
-            onChange={handleNameChange}
-            className="focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
-          />
+          <Input id={nameId} value={name} onChange={handleNameChange} />
           <Label
             htmlFor={typeSelectId}
             className="text-sm font-medium whitespace-nowrap cursor-pointer"
@@ -88,10 +82,7 @@ const CreateLocationDialog = ({
             Type
           </Label>
           <Select value={type} onValueChange={handleTypeChange}>
-            <SelectTrigger
-              id={typeSelectId}
-              className="w-full focus:ring-2 focus:ring-blue-500 cursor-pointer"
-            >
+            <SelectTrigger id={typeSelectId} className="w-full cursor-pointer">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
 

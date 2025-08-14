@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLoaderData, useSearch } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
+import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import { useDialog } from '@/hooks/useDialog'
 import Item from '@/components/Item'
 import DeleteDialog from '@/components/DeleteDialog'
 import MoveDialog from '@/components/MoveDialog'
 import EditDialog from '@/components/EditDialog'
+import ImageDialog from '@/components/ImageDialog'
+import type { IItem } from '@/utils/index'
 
 const variants = {
   enter: (direction: 'next' | 'prev') => ({
@@ -18,56 +21,6 @@ const variants = {
     opacity: 0,
   }),
 }
-
-export const LocationType = {
-  Freezer: 'Freezer',
-  Refrigerator: 'Refrigerator',
-  Pantry: 'Pantry',
-  Other: 'Other',
-} as const
-
-export interface IItem {
-  id: string
-  name: string
-  location: {
-    location: {
-      name: string
-      type: (typeof LocationType)[keyof typeof LocationType]
-    }
-    name: string
-  }
-  locationName?: string
-  shelfName?: string
-  barcode: string
-  quantity?: string | number
-  expiration?: string | null
-  createdAt: string
-  expiresIn?: number
-  amount?: string | number
-  openFoodFacts?: {
-    code: string
-    nutriments: {
-      'energy-kj_100g': number
-      'energy-kcal_100g': number
-      fat_100g: number
-      'saturated-fat_100g': number
-      sugars_100g: number
-      proteins_100g: number
-      salt_100g: number
-      carbohydrates_100g: number
-    }
-    product_name: string
-    selected_images: {
-      front: {
-        display: { [lang: string]: string }
-        small: { [lang: string]: string }
-        thumb: { [lang: string]: string }
-      }
-    }
-  }
-  imageUrl?: string
-}
-
 interface ItemsProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   navigate: any
@@ -97,9 +50,76 @@ const Items = ({ navigate, from }: ItemsProps) => {
   const swipeThreshold = 180
   const minSwipeVelocity = 300
 
+  const parentRef = useRef<HTMLDivElement>(null)
+  const [columnCount, setColumnCount] = useState(4)
+
+  const minItemWidth = 300
+  const gridGap = 16
+
+  useEffect(() => {
+    const setInitialColumnCount = () => {
+      const width = window.innerWidth
+      if (width < 640) return setColumnCount(1) // sm
+      if (width < 768) return setColumnCount(2) // md
+      if (width < 1024) return setColumnCount(3) // lg
+      const estimatedColumns = Math.max(
+        1,
+        Math.floor((width - gridGap * 2) / (minItemWidth + gridGap))
+      )
+      setColumnCount(estimatedColumns)
+    }
+
+    setInitialColumnCount()
+
+    const updateColumnCount = () => {
+      if (!parentRef.current) return
+
+      const containerWidth = parentRef.current.clientWidth - gridGap * 2
+
+      const columns = Math.max(
+        1,
+        Math.floor((containerWidth + gridGap) / (minItemWidth + gridGap))
+      )
+
+      setColumnCount(columns)
+    }
+
+    const resizeObserver = new ResizeObserver(updateColumnCount)
+
+    const timeoutId = setTimeout(() => {
+      if (parentRef.current) {
+        resizeObserver.observe(parentRef.current)
+        updateColumnCount()
+      }
+    }, 0)
+
+    window.addEventListener('resize', updateColumnCount)
+
+    return () => {
+      clearTimeout(timeoutId)
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateColumnCount)
+    }
+  }, [])
+
+  const rowCount = Math.ceil(items.length / columnCount)
+
+  const rowVirtualizer = useWindowVirtualizer({
+    count: rowCount,
+    estimateSize: () => 300,
+    scrollMargin: 0,
+    overscan: 5,
+    paddingStart: 0,
+    paddingEnd: 0,
+    measureElement: (element) => {
+      return element.getBoundingClientRect().height
+    },
+  })
+
   useDialog(DeleteDialog, 'delete')
   useDialog(MoveDialog, 'move')
   useDialog(EditDialog, 'edit')
+  useDialog(ImageDialog, 'image')
 
   if (prevPageRef.current !== page) {
     setDirection(page > prevPageRef.current ? 'next' : 'prev')
@@ -110,9 +130,44 @@ const Items = ({ navigate, from }: ItemsProps) => {
     setItems(incomingItems)
   }, [incomingItems])
 
+  const setParentRef = (element: HTMLDivElement | null) => {
+    if (element && element !== parentRef.current) {
+      parentRef.current = element
+      const containerWidth = element.clientWidth - gridGap * 2
+      const columns = Math.max(
+        1,
+        Math.floor((containerWidth + gridGap) / (minItemWidth + gridGap))
+      )
+
+      setColumnCount(columns)
+
+      setTimeout(() => {
+        if (parentRef.current) {
+          const updatedWidth = parentRef.current.clientWidth - gridGap * 2
+          const updatedColumns = Math.max(
+            1,
+            Math.floor((updatedWidth + gridGap) / (minItemWidth + gridGap))
+          )
+          setColumnCount(updatedColumns)
+        }
+      }, 100)
+    }
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-20 text-muted-foreground">
+        No items found.
+      </div>
+    )
+  }
+
   return (
     <AnimatePresence mode="wait" custom={direction}>
-      <div className="relative overflow-hidden w-full p-4">
+      <div
+        className="relative overflow-hidden w-full px-2 pt-2 md:px-4 md:pt-4"
+        ref={setParentRef}
+      >
         <motion.div
           key={page}
           drag="x"
@@ -151,28 +206,47 @@ const Items = ({ navigate, from }: ItemsProps) => {
           animate="center"
           exit="exit"
           transition={{ duration: 0.25, ease: 'easeInOut' }}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4
-           xl:grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-4 touch-pan-y select-none  active:cursor-grabbing"
+          className="relative w-full touch-pan-y select-none active:cursor-grabbing"
+          style={{
+            height: `${rowVirtualizer.getTotalSize()}px`,
+          }}
         >
-          {items.length === 0 ? (
-            <div className="text-center col-span-full text-muted-foreground">
-              No items found.
-            </div>
-          ) : (
-            items.map((item: IItem) => (
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const rowItems: IItem[] = []
+            for (let col = 0; col < columnCount; col++) {
+              const itemIndex = virtualRow.index * columnCount + col
+              if (itemIndex < items.length) {
+                rowItems.push(items[itemIndex])
+              }
+            }
+
+            return (
               <div
-                key={item.id}
-                onClick={(e) => {
-                  if (isDraggingRef.current) {
-                    e.preventDefault()
-                    e.stopPropagation()
-                  }
+                key={virtualRow.key}
+                ref={(el) => rowVirtualizer.measureElement(el)}
+                data-index={virtualRow.index}
+                className="absolute top-0 left-0 w-full grid gap-4 pb-4"
+                style={{
+                  transform: `translateY(${virtualRow.start}px)`,
+                  gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
                 }}
               >
-                <Item item={item} from={from} />
+                {rowItems.map((item: IItem) => (
+                  <div
+                    key={item.id}
+                    onClick={(e) => {
+                      if (isDraggingRef.current) {
+                        e.preventDefault()
+                        e.stopPropagation()
+                      }
+                    }}
+                  >
+                    <Item item={item} from={from} />
+                  </div>
+                ))}
               </div>
-            ))
-          )}
+            )
+          })}
         </motion.div>
       </div>
     </AnimatePresence>

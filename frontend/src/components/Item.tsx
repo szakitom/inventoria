@@ -32,12 +32,12 @@ import AmountInput from '@/components/ui/amountinput'
 import { Separator } from '@/components/ui/separator'
 
 import { cn } from '@/lib/utils'
-import { getExpirationStatus, getLocationIcon } from '@utils/index'
+import { getExpirationStatus, getLocationIcon, type IItem } from '@/utils/index'
 import { deleteItem, moveItem, movePartialItem, updateItem } from '@/utils/api'
 import { useGlobalDialog } from '@/hooks/useGlobalDialog'
-import { type IItem } from '@/components/Items'
 import SaveButton from '@/components/Savebutton'
 import ImageBarcodeTab from '@/components/ImageBarcodeTab'
+import ImagePreview from '@/components/ImagePreview'
 
 const Item = ({ item, from }: { item: IItem; from?: string }) => {
   const [isExpanded, setExpanded] = useState(false)
@@ -116,21 +116,29 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
     >
       <CardHeader className="p-0 pb-0 gap-0">
         <div className="flex items-start justify-between">
-          <div className="min-w-0">
-            <CardTitle className="text-base font-semibold leading-tight truncate">
-              {item.name}
-            </CardTitle>
-            <div className="flex items-center space-x-1 text-sm mt-1 truncate">
-              <LocationIcon className="h-4 w-4 text-blue-500" />
-              <span className="truncate">
-                {item.location.location.name}
-                <Badge variant="outline" className="ml-2">
-                  {item.location.name.replace('Shelf', '')}
-                </Badge>
-              </span>
+          <div className={cn('flex gap-2 min-h-16 items-start')}>
+            <ImagePreview
+              image={item.image}
+              name={item.name}
+              openFoodFacts={item.openFoodFacts}
+              blurhash={item.blurhash}
+            />
+
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <CardTitle className="text-base font-semibold leading-tight line-clamp-2">
+                {item.name}
+              </CardTitle>
+              <div className="flex items-center space-x-1 text-sm mt-1 truncate">
+                <LocationIcon className="h-4 w-4 text-blue-500" />
+                <span className="truncate">
+                  {item.location.location.name}
+                  <Badge variant="outline" className="ml-2">
+                    {item.location.name.split(' ')[1]}
+                  </Badge>
+                </span>
+              </div>
             </div>
           </div>
-
           {dataChanged ? (
             <SaveButton onClick={handleSaveChanges} />
           ) : (
@@ -234,7 +242,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
       <CardFooter
         className={cn(
           '-mx-3 -mb-3 p-0',
-          (item.openFoodFacts || item.imageUrl || item.barcode) && 'bg-muted'
+          (item.openFoodFacts || item.barcode) && 'bg-muted'
         )}
       >
         <Collapsible
@@ -247,7 +255,7 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
               <div
                 className={cn(
                   'text-sm',
-                  item.openFoodFacts || item.imageUrl
+                  item.openFoodFacts
                     ? 'font-bold text-foreground'
                     : 'font-normal'
                 )}
@@ -303,7 +311,6 @@ const Item = ({ item, from }: { item: IItem; from?: string }) => {
                   )}
                   <ImageBarcodeTab
                     off={item.openFoodFacts}
-                    image={item.imageUrl}
                     barcode={item.barcode}
                   />
                 </div>

@@ -12,11 +12,13 @@ export interface IItem extends Document {
   owner?: string
   location: Schema.Types.ObjectId
   openFoodFacts?: object
+  blurhash?: string
 }
 
 const ItemSchema = new Schema<IItem>({
   name: { type: String, required: true, index: true, trim: true },
   image: { type: String },
+  blurhash: { type: String },
   barcode: { type: String, index: true, trim: true },
   amount: { type: Number, required: true, default: 1 },
   quantity: { type: String, default: '', trim: true },

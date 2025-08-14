@@ -9,6 +9,7 @@ import { config } from 'dotenv'
 config()
 
 console.log(`Using backend URL: ${process.env.BACKEND_URL}`)
+console.log(`Using S3 URL: ${process.env.S3_URL}`)
 
 export default defineConfig({
   base: '/',
@@ -35,6 +36,11 @@ export default defineConfig({
       '/api': {
         target: process.env.BACKEND_URL,
         changeOrigin: true,
+      },
+      '/s3': {
+        target: process.env.S3_URL,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/s3/, ''),
       },
     },
   },

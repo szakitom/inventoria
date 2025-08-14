@@ -12,8 +12,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import type { IItem } from '@/components/Items'
 import { cn } from '@/lib/utils'
+import type { IItem } from '@/utils/index'
 
 type Nutriments = NonNullable<IItem['openFoodFacts']>['nutriments']
 
@@ -23,10 +23,9 @@ interface ImageBarcodeTabProps {
   barcode: string
 }
 
-const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
+const ImageBarcodeTab = ({ off, barcode }: ImageBarcodeTabProps) => {
   const hasNutrition = !!off
   const hasBarcode = !!barcode
-  const hasImage = !!image
 
   const tabs: {
     id: string
@@ -47,11 +46,10 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
       })
     }
 
-    const imageToUse = hasImage
-      ? image
-      : off.selected_images?.front?.display[
-          Object.keys(off.selected_images?.front?.display)[0]
-        ]
+    const imageToUse =
+      off.selected_images?.front?.display[
+        Object.keys(off.selected_images?.front?.display)[0]
+      ]
     if (imageToUse) {
       tabs.push({
         id: 'image',
@@ -65,8 +63,6 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
       tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
     }
   } else {
-    if (hasImage)
-      tabs.push({ id: 'image', label: 'Image', image: image, icon: Image })
     if (hasBarcode)
       tabs.push({ id: 'barcode', label: 'Barcode', icon: BarcodeIcon })
   }
@@ -79,8 +75,6 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
     const tab = tabs[0]
     if (tab.id === 'barcode') {
       return <BarcodeDisplay barcode={barcode} />
-    } else if (tab.id === 'image') {
-      return <ImageDisplay src={image!} />
     }
   }
 
@@ -95,10 +89,10 @@ const ImageBarcodeTab = ({ off, image, barcode }: ImageBarcodeTabProps) => {
               key={tab.id}
               layout
               className={cn(
-                'flex h-8 items-center justify-center overflow-hidden rounded-md',
+                'flex h-8 items-center justify-center overflow-hidden rounded-md bg-card',
                 isActive ? 'flex-1' : 'flex-none'
               )}
-              style={{ background: 'transparent' }}
+              // style={{ background: 'transparent' }}
               onClick={() => setActiveTab(tab.id)}
               initial={false}
               animate={{

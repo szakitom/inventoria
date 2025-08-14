@@ -62,13 +62,13 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
           htmlFor={id}
           className="cursor-pointer h-full w-full whitespace-nowrap"
         >
-          Rows per page
+          Items per page
         </Label>
 
         <Select value={limit.toString()} onValueChange={changeLimit}>
           <SelectTrigger
             id={id}
-            className="cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-2 dark:focus:ring-blue-500"
+            className="cursor-pointer select-none"
             aria-labelledby={id}
           >
             <SelectValue placeholder="Items per page" />
@@ -88,8 +88,8 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
       </div>
 
       <div>
-        <Label className="text-sm font-medium whitespace-nowrap">
-          Showing items {limit * (currentPage - 1) + 1} -{' '}
+        <Label className="text-sm font-medium whitespace-nowrap min-w-54">
+          Showing items {total ? limit * (currentPage - 1) + 1 : 0} -{' '}
           {limit * (currentPage - 1) + currentItems.length} of {total}
         </Label>
       </div>
@@ -247,7 +247,7 @@ const PaginationNumber = ({
       <PaginationLink
         onClick={handleClick}
         isActive={page === currentPage}
-        className="cursor-pointer select-none focus:outline-none data-[active=true]:bg-blue-500 data-[active=true]:text-white dark:data-[active=true]:bg-blue-800"
+        className="cursor-pointer select-none data-[active=true]:bg-blue-500 data-[active=true]:text-white dark:data-[active=true]:bg-blue-800"
         aria-current={page === currentPage ? 'page' : undefined}
       >
         {page}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Save } from 'lucide-react'
-import { Button } from '@components/ui/button'
-import { Spinner } from '@components/ui/spinner'
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 
 const SaveButton = ({ onClick }: { onClick: () => Promise<void> }) => {
   const [loading, setLoading] = useState(false)

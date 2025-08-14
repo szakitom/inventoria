@@ -14,9 +14,13 @@ interface BaseDialogProps {
   [key: string]: unknown
 }
 
+type OpenDialog = {
+  type: DialogKey
+  props: DialogProps
+}
+
 export const DialogProvider = ({ children }: { children: ReactNode }) => {
-  const [dialogType, setDialogType] = useState<DialogKey | null>(null)
-  const [props, setProps] = useState<DialogProps | null>(null)
+  const [openDialogs, setOpenDialogs] = useState<OpenDialog[]>([])
 
   const dialogMap = useRef(new Map<DialogKey, FC<BaseDialogProps>>())
 
@@ -28,48 +32,57 @@ export const DialogProvider = ({ children }: { children: ReactNode }) => {
   )
 
   const open = useCallback((type: DialogKey, data?: unknown) => {
-    setDialogType(type)
-    setProps((data as DialogProps) || null)
+    setOpenDialogs((prev) => [
+      ...prev,
+      { type, props: (data as DialogProps) || {} },
+    ])
   }, [])
 
-  const close = useCallback(() => {
-    setDialogType(null)
-    setProps(null)
+  const close = useCallback((type?: DialogKey) => {
+    setOpenDialogs((prev) => {
+      if (!type) {
+        // close the top dialog
+        return prev.slice(0, -1)
+      }
+      // close specific dialog
+      return prev.filter((d) => d.type !== type)
+    })
   }, [])
 
   const value: DialogContextType = {
     open,
     register,
-    current: { type: dialogType, data: props },
+    current: openDialogs.length
+      ? {
+          type: openDialogs[openDialogs.length - 1].type,
+          data: openDialogs[openDialogs.length - 1].props,
+        }
+      : { type: null, data: {} },
   }
 
   return (
     <DialogContext.Provider value={value}>
       {children}
-      {/* Render the current dialog if registered */}
-      {dialogType &&
-        dialogMap.current.has(dialogType) &&
-        (() => {
-          const Component = dialogMap.current.get(dialogType)!
-          return (
-            <Component
-              {...props}
-              isOpen={true}
-              onCancel={() => {
-                if (typeof props?.onCancel === 'function') {
-                  props.onCancel()
-                }
-                close()
-              }}
-              onSubmit={async (...params) => {
-                if (typeof props?.onSubmit === 'function') {
-                  await props.onSubmit(...params)
-                }
-                close()
-              }}
-            />
-          )
-        })()}
+
+      {openDialogs.map(({ type, props }) => {
+        const Component = dialogMap.current.get(type)!
+        return (
+          <Component
+            key={type + openDialogs.indexOf({ type, props })} // ensure unique key for stacking
+            {...props}
+            isOpen={true}
+            onCancel={() => {
+              if (typeof props?.onCancel === 'function') props.onCancel()
+              close(type)
+            }}
+            onSubmit={async (...params) => {
+              if (typeof props?.onSubmit === 'function')
+                await props.onSubmit(...params)
+              close(type)
+            }}
+          />
+        )
+      })}
     </DialogContext.Provider>
   )
 }

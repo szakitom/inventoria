@@ -1,5 +1,54 @@
 import { MapPin, Refrigerator, Rows3, Snowflake } from 'lucide-react'
-import { LocationType } from '@/components/Items'
+
+export const LocationType = {
+  Freezer: 'Freezer',
+  Refrigerator: 'Refrigerator',
+  Pantry: 'Pantry',
+  Other: 'Other',
+} as const
+
+export interface IItem {
+  id: string
+  name: string
+  location: {
+    location: {
+      name: string
+      type: (typeof LocationType)[keyof typeof LocationType]
+    }
+    name: string
+  }
+  locationName?: string
+  shelfName?: string
+  barcode: string
+  quantity?: string | number
+  expiration?: string | null
+  createdAt: string
+  expiresIn?: number
+  amount?: string | number
+  openFoodFacts?: {
+    code: string
+    nutriments: {
+      'energy-kj_100g': number
+      'energy-kcal_100g': number
+      fat_100g: number
+      'saturated-fat_100g': number
+      sugars_100g: number
+      proteins_100g: number
+      salt_100g: number
+      carbohydrates_100g: number
+    }
+    product_name: string
+    selected_images: {
+      front: {
+        display: { [lang: string]: string }
+        small: { [lang: string]: string }
+        thumb: { [lang: string]: string }
+      }
+    }
+  }
+  image?: string
+  blurhash?: string
+}
 
 export const arraysEqual = (a: string[], b: string[]) => {
   if (a === b) return true
