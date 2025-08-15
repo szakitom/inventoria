@@ -17,6 +17,14 @@ import type { IItem } from '@/utils/index'
 
 type Nutriments = NonNullable<IItem['openFoodFacts']>['nutriments']
 
+const toNumber = (value: number | null | undefined, rounded = false) => {
+  if (value === null || value === undefined) return '-'
+  if (rounded) {
+    return Math.round(value).toString()
+  }
+  return Number(value).toFixed(2)
+}
+
 interface ImageBarcodeTabProps {
   off?: Partial<IItem['openFoodFacts']>
   image?: string
@@ -187,6 +195,7 @@ const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
     proteins_100g: proteins,
     salt_100g: salt,
   } = nutriments
+  console.log(nutriments)
   return (
     <Card className="gap-0 w-full p-4">
       <CardHeader className="p-0 pb-2 gap-0">
@@ -203,39 +212,39 @@ const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
           <div className="flex justify-between">
             <dt className="font-semibold">Energia</dt>
             <dd>
-              {Math.round(energyKj) ?? '-'} kJ /{' '}
+              {toNumber(energyKj, true)} kJ /{' '}
               <span className="font-semibold">
-                {Math.round(energyKcal) ?? '-'} kcal
+                {toNumber(energyKcal, true)} kcal
               </span>
             </dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Zsír</dt>
-            <dd>{Number(fat).toFixed(2) ?? '-'} g</dd>
+            <dd>{toNumber(fat)} g</dd>
           </div>
           <div className="flex justify-between pl-4 text-muted-foreground text-xs">
             <dt>ebből telített zsírsavak</dt>
-            <dd>{Number(saturatedFat).toFixed(2) ?? '-'} g</dd>
+            <dd>{toNumber(saturatedFat)} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Szénhidrát</dt>
-            <dd>{Number(carbohydrates).toFixed(2) ?? '-'} g</dd>
+            <dd>{toNumber(carbohydrates)} g</dd>
           </div>
           <div className="flex justify-between pl-4 text-muted-foreground text-xs">
             <dt>ebből cukrok</dt>
-            <dd>{Number(sugars).toFixed(2) ?? '-'} g</dd>
+            <dd>{toNumber(sugars)} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Fehérje</dt>
-            <dd>{Number(proteins).toFixed(2) ?? '-'} g</dd>
+            <dd>{toNumber(proteins)} g</dd>
           </div>
 
           <div className="flex justify-between">
             <dt>Só</dt>
-            <dd>{Number(salt).toFixed(2) ?? '-'} g</dd>
+            <dd>{toNumber(salt)} g</dd>
           </div>
         </dl>
       </CardContent>
