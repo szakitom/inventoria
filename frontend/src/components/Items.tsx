@@ -165,7 +165,7 @@ const Items = ({ navigate, from }: ItemsProps) => {
   return (
     <AnimatePresence mode="wait" custom={direction}>
       <div
-        className="relative overflow-hidden w-full px-2 pt-2 md:px-4 md:pt-4"
+        className="relative overflow-hidden w-full px-2 pt-2 md:px-4 md:pt-4 min-h-[75dvh]"
         ref={setParentRef}
       >
         <motion.div
