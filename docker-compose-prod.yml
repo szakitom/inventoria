@@ -1,0 +1,92 @@
+name: 'inventoria-prod'
+services:
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: s3-prod
+    ports:
+      - '9000:9000'
+    volumes:
+      - ./rustfs/data:/data
+    environment:
+      - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY}
+      - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY}
+    restart: unless-stopped
+
+  rustfs-init:
+    image: minio/mc
+    container_name: s3-init-prod
+    restart: no
+    depends_on:
+      - rustfs
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5 && \
+        mc alias set rustfs http://s3-prod:9000 ${RUSTFS_ACCESS_KEY} ${RUSTFS_SECRET_KEY} && \
+        mc mb -p rustfs/inventoria && \
+        mc anonymous set download rustfs/inventoria && \
+        echo '✅ Bucket created: inventoria (read-only public)' || echo '⚠️ Bucket may already exist'
+      "
+
+  mongo:
+    image: mongo
+    container_name: mongo-prod
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./mongo/data:/data/db
+    restart: unless-stopped
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
+
+  mongo-init:
+    image: mongo
+    container_name: mongo-init-prod
+    depends_on:
+      - mongo
+    restart: 'no'
+    entrypoint: >
+      bash -c "
+        sleep 5 && \
+        mongosh --host mongo --eval '
+          rs.initiate({
+            _id: \"rs0\",
+            members: [{ _id: 0, host: \"mongo:27017\" }]
+          })
+        ' || echo '✅ Replica set may already be initialized.'
+      "
+
+  backend:
+    image: szaki/inventoria-backend
+    container_name: inventoria-backend-prod
+    ports:
+      - '3001:3000'
+    depends_on:
+      - mongo
+      - rustfs
+    environment:
+      DB_URI: mongodb://mongo-prod?retryWrites=true&replicaSet=rs0&directConnection=true
+      DB_NAME: inventoria
+      PORT: 3000
+      S3_USER: ${RUSTFS_ACCESS_KEY}
+      S3_PASSWORD: ${RUSTFS_SECRET_KEY}
+      S3_ENDPOINT: http://s3-prod:9000
+      S3_BUCKET: inventoria
+      OFF_USER_AGENT: ${OFF_USER_AGENT}
+    restart: unless-stopped
+
+  frontend:
+    image: szaki/inventoria-frontend
+    container_name: inventoria-frontend-prod
+    ports:
+      - '3000:80'
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared-tunnel
+    command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend

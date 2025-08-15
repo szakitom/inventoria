@@ -20,4 +20,13 @@ export default tseslint.config([
       globals: globals.browser,
     },
   },
+  {
+    // Disable problematic rules only for shadcn/ui files
+    files: ['src/components/ui/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+      '@typescript-eslint/no-unused-vars': 'off', // if you want
+      '@typescript-eslint/no-explicit-any': 'off', // if you want
+    },
+  },
 ])

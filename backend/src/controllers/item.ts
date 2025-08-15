@@ -1,21 +1,133 @@
-import { RequestHandler } from 'express'
-import mongoose from 'mongoose'
+import mongoose, { Query } from 'mongoose'
 import { Temporal } from '@js-temporal/polyfill'
-import { Item, Shelf } from '../models'
+import { Item, Location, Shelf } from '../models'
 import { getProduct } from './OpenFoodFacts'
-import { deleteFile } from './minio'
+import { IItem } from '../models/Item'
+import S3Client from '../s3'
 
 export const getItems = async (req, res, next) => {
+  // IDEA: cursor based pagination
   try {
-    if (req.query.sort) {
-      const { sort } = req.query
-      const sortOptions = getSortOptions(sort)
-      const items = await Item.find().sort(sortOptions)
-      return res.json(items)
-    } else {
-      const items = await Item.find().sort({ expiration: 1 })
-      res.json(items)
+    let sortOptions: { [key: string]: 1 | -1 } = { name: 1 }
+    let limit = 10
+    let page = 1
+    let baseQuery: any = {}
+
+    if (req.query.page) {
+      page = parseInt(req.query.page as string, 10)
     }
+    if (req.query.limit) {
+      limit = parseInt(req.query.limit as string, 10)
+    }
+    if (req.query.search) {
+      const regex = new RegExp(req.query.search, 'i')
+      baseQuery.$or = [
+        { name: regex },
+        { barcode: regex },
+        { 'openFoodFacts.product_name': regex },
+      ]
+    }
+
+    if (req.query.locations) {
+      let shelfIds: mongoose.Types.ObjectId[]
+      if (req.query.shelves) {
+        // If shelves are provided, filter by shelves in the selected locations
+        shelfIds = (req.query.shelves as string)
+          .split(',')
+          .map((id) => new mongoose.Types.ObjectId(id))
+      } else {
+        // Get shelves from the selected locations
+        const locationIds = (req.query.locations as string)
+          .split(',')
+          .map((id) => new mongoose.Types.ObjectId(id))
+        const locations = await Location.find(
+          { _id: { $in: locationIds } },
+          'shelves'
+        )
+        shelfIds = locations.flatMap((loc) =>
+          loc.shelves.map((s) => new mongoose.Types.ObjectId(s))
+        )
+      }
+
+      baseQuery.location = { $in: shelfIds }
+    }
+
+    if (req.query.sort) {
+      sortOptions = getSortOptions(req.query.sort)
+      const rawSort = req.query.sort as string | undefined
+      if (rawSort === 'expiration' || rawSort === '-expiration') {
+        const sortOrder = rawSort.startsWith('-') ? -1 : 1
+
+        const pipeline: any[] = [
+          { $match: baseQuery },
+          {
+            $addFields: {
+              expirationSort: {
+                $cond: [
+                  { $eq: ['$expiration', null] },
+                  sortOrder === 1
+                    ? new Date('9999-12-31')
+                    : new Date('0000-01-01'),
+                  '$expiration',
+                ],
+              },
+            },
+          },
+          { $sort: { expirationSort: sortOrder, _id: 1 } },
+        ]
+
+        if (limit !== 0) {
+          pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit })
+        }
+
+        // Only fetch _ids to re-fetch via .find() later
+        pipeline.push({ $project: { _id: 1 } })
+
+        const [partialItems, total] = await Promise.all([
+          Item.aggregate(pipeline),
+          Item.countDocuments(baseQuery),
+        ])
+
+        const ids = partialItems.map((doc) => doc._id)
+
+        const items: IItem[] = await prepareItemQuery(
+          { _id: { $in: ids } },
+          sortOptions
+        )
+
+        // Ensure the order matches the aggregation order
+        const itemMap = new Map(
+          items.map((item) => [
+            (item._id as mongoose.Types.ObjectId).toString(),
+            item,
+          ])
+        )
+        const sortedItems = ids.map((id) => itemMap.get(id.toString()))
+
+        return res.json({
+          items: sortedItems,
+          total,
+          pages: limit === 0 ? 1 : Math.ceil(total / limit),
+        })
+      }
+    }
+
+    const query = prepareItemQuery(baseQuery, sortOptions)
+
+    if (limit !== 0) {
+      query.limit(limit).skip((page - 1) * limit)
+    }
+
+    const [items, total] = await Promise.all([
+      query,
+      Item.countDocuments(baseQuery),
+    ])
+
+    res.json({
+      items,
+      total,
+      pages: limit === 0 ? 1 : Math.ceil(total / limit),
+    })
   } catch (err) {
     next(err)
   }
@@ -62,33 +174,40 @@ export const getItem = async (req, res, next) => {
   }
 }
 
-export const createItem: RequestHandler = async (req, res, next) => {
+export const createItem = async (req, res, next) => {
   const session = await mongoose.startSession()
   session.startTransaction()
   try {
-    const { barcode, location, expiration } = req.body
-    let offData
-    let expirationDate: string | null = null
-    try {
-      offData = await getProduct(barcode)
-    } catch (error) {
-      offData = null
-    }
-    try {
-      if (expiration?.month && expiration?.day) {
-        expirationDate = getFullDate(expiration)
+    const { barcode, location, uuid } = req.body
+    let { expiration } = req.body
+    if (expiration) {
+      const date = new Date(expiration)
+      if (isNaN(date.getTime())) {
+        return res.status(400).json({
+          error: 'Invalid expiration date format. Please provide a valid date.',
+        })
       }
-    } catch (error) {
-      expirationDate = null
-      return res.status(400).json({
-        error: 'Invalid expiration date format. Please provide a valid date.',
+      expiration = getFullDate({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate(),
       })
     }
+    let offData
+    if (barcode) {
+      try {
+        offData = await getProduct(barcode)
+      } catch (error) {
+        offData = null
+      }
+    }
+
     const item = await Item.create(
       [
         {
           ...req.body,
-          expiration: expirationDate,
+          _id: uuid,
+          expiration,
           openFoodFacts: offData,
           name: req.body.name || offData?.product_name || barcode,
         },
@@ -106,9 +225,8 @@ export const createItem: RequestHandler = async (req, res, next) => {
     if (session.inTransaction()) {
       await session.abortTransaction()
     }
-    const { image } = req.body
-    if (image) {
-      deleteFile(image)
+    if (req.body?.image) {
+      S3Client.deleteFile(req.body.image)
     }
     next(err)
   } finally {
@@ -133,7 +251,7 @@ export const deleteItem = async (req, res, next) => {
     await session.commitTransaction()
     res.json({ message: 'Item deleted successfully' })
     if (item.image) {
-      deleteFile(item.image)
+      S3Client.deleteFile(item.image)
     }
   } catch (err) {
     if (session.inTransaction()) {
@@ -148,13 +266,31 @@ export const deleteItem = async (req, res, next) => {
 export const updateItem = async (req, res, next) => {
   try {
     const { id } = req.params
-    let { expiration } = req.body
+    let { expiration, barcode } = req.body
     if (expiration) {
-      expiration = getFullDate(expiration)
+      const date = new Date(expiration)
+      if (isNaN(date.getTime())) {
+        return res.status(400).json({
+          error: 'Invalid expiration date format. Please provide a valid date.',
+        })
+      }
+      expiration = getFullDate({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate(),
+      })
+    }
+    let offData
+    if (barcode) {
+      try {
+        offData = await getProduct(barcode)
+      } catch (error) {
+        offData = null
+      }
     }
     const item = await Item.findByIdAndUpdate(
       id,
-      { ...req.body, expiration },
+      { ...req.body, expiration, openFoodFacts: offData },
       { new: true }
     )
     if (!item) {
@@ -214,6 +350,175 @@ export const moveItem = async (req, res, next) => {
   }
 }
 
+export const movePartialItem = async (req, res, next) => {
+  const session = await mongoose.startSession()
+  session.startTransaction()
+  try {
+    const { id } = req.params
+    const { location, amount } = req.body
+    const oldItem = await Item.findById(id)
+    if (!oldItem) {
+      return res.status(404).json({ error: 'Item not found' })
+    }
+    if (oldItem.location.toString() === location) {
+      return res.status(400).json({ error: 'Item is already in this location' })
+    }
+    if (amount <= 0 || amount >= oldItem.amount) {
+      return res.status(400).json({ error: 'Invalid amount to move' })
+    }
+    const newItem = await Item.create(
+      [
+        {
+          ...oldItem.toObject(),
+          amount,
+          location,
+          _id: new mongoose.Types.ObjectId(),
+        },
+      ],
+      { session }
+    )
+    if (!newItem || newItem.length === 0) {
+      return res.status(500).json({ error: 'Failed to create new item' })
+    }
+    // Decrease the amount of the old item
+    await Item.findByIdAndUpdate(
+      id,
+      { $inc: { amount: -amount } },
+      { new: true, session }
+    )
+    await Shelf.findByIdAndUpdate(
+      location,
+      { $push: { items: newItem[0]._id } },
+      { session }
+    )
+    await session.commitTransaction()
+    res.json(newItem[0])
+  } catch (err) {
+    if (session.inTransaction()) {
+      await session.abortTransaction()
+    }
+    next(err)
+  } finally {
+    session.endSession()
+  }
+}
+
+export const getFeaturedItems = async (req, res, next) => {
+  try {
+    const now = Temporal.Now.plainDateISO()
+    const sevenDaysFromNow = now.add({ days: 7 })
+    const nowDate = new Date(now.toString())
+    const sevenDaysFromNowDate = new Date(sevenDaysFromNow.toString())
+
+    const [result] = await Item.aggregate([
+      {
+        $facet: {
+          expiredItems: [
+            {
+              $match: {
+                expiration: { $ne: null, $lt: nowDate },
+              },
+            },
+            { $sort: { expiration: 1 } },
+            { $limit: 10 },
+            {
+              $lookup: {
+                from: 'shelves',
+                localField: 'location',
+                foreignField: '_id',
+                as: 'shelf',
+              },
+            },
+            { $unwind: '$shelf' },
+            {
+              $lookup: {
+                from: 'locations',
+                localField: 'shelf.location',
+                foreignField: '_id',
+                as: 'location',
+              },
+            },
+            { $unwind: '$location' },
+            {
+              $project: {
+                name: 1,
+                amount: 1,
+                expiration: 1,
+                quantity: 1,
+                shelfName: '$shelf.name',
+                locationName: '$location.name',
+                expiresIn: {
+                  $dateDiff: {
+                    startDate: '$$NOW',
+                    endDate: '$expiration',
+                    unit: 'day',
+                  },
+                },
+              },
+            },
+          ],
+          soonExpiringItems: [
+            {
+              $match: {
+                expiration: {
+                  $ne: null,
+                  $gte: nowDate,
+                  $lt: sevenDaysFromNowDate,
+                },
+              },
+            },
+            { $sort: { expiration: 1 } },
+            { $limit: 5 },
+            {
+              $lookup: {
+                from: 'shelves',
+                localField: 'location',
+                foreignField: '_id',
+                as: 'shelf',
+              },
+            },
+            { $unwind: '$shelf' },
+            {
+              $lookup: {
+                from: 'locations',
+                localField: 'shelf.location',
+                foreignField: '_id',
+                as: 'location',
+              },
+            },
+            { $unwind: '$location' },
+            {
+              $project: {
+                name: 1,
+                amount: 1,
+                expiration: 1,
+                quantity: 1,
+                shelfName: '$shelf.name',
+                locationName: '$location.name',
+                expiresIn: {
+                  $dateDiff: {
+                    startDate: '$$NOW',
+                    endDate: '$expiration',
+                    unit: 'day',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    ])
+
+    res.json(
+      [...result.soonExpiringItems, ...result.expiredItems].sort(
+        () => Math.random() - 0.5
+      )
+    )
+  } catch (err) {
+    next(err)
+  }
+}
+
 const getFullDate = ({
   year = Temporal.Now.plainDateISO().year,
   month,
@@ -234,3 +539,21 @@ const getSortOptions = (sort: string): { [key: string]: 1 | -1 } =>
     acc[key] = order
     return acc
   }, {} as { [key: string]: 1 | -1 })
+
+const prepareItemQuery = (
+  filter: object,
+  sortOptions: { [key: string]: 1 | -1 }
+): Query<IItem[], IItem> => {
+  return Item.find(filter)
+    .collation({ locale: 'hu', strength: 2 })
+    .sort(sortOptions)
+    .populate({
+      path: 'location',
+      select: 'name',
+      populate: {
+        path: 'location',
+        select: 'name type',
+      },
+    })
+    .select('+openFoodFacts')
+}

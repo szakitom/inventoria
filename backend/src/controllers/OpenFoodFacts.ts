@@ -1,5 +1,11 @@
+const { OFF_USER_AGENT } = process.env
+
+if (!OFF_USER_AGENT) {
+  throw new Error('OFF_APP_NAME environment variable is not set')
+}
+
 const headers = {
-  'User-Agent': 'Inventoria/1.0 ()',
+  'User-Agent': OFF_USER_AGENT,
   'Content-Type': 'application/json',
 }
 
@@ -12,7 +18,6 @@ export const search = async (req, res, next) => {
 
     const url = `https://world.openfoodfacts.net/cgi/search.pl?search_terms=${term}&search_simple=1&action=process&json=1&page_size=20&sort_by=unique_scans_n`
     const data = await fetchFromAPI(url, headers)
-    console.log(data)
     const products = data?.products
     if (!products || products.length === 0) {
       return res.status(404).json({ error: 'No results found' })
