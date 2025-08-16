@@ -15,7 +15,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="sticky top-0 z-40 bg-background border-b shadow-sm">
+      <div className="sticky top-0 z-40 bg-background border-b shadow-sm pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
         <header className="px-4 py-3 flex items-center justify-between">
           {/* Logo */}
           <Link

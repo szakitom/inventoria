@@ -246,6 +246,7 @@ const EditDialog = ({
                               tabThrough: true,
                             })}
                             placeholder="YYYY/MM/DD"
+                            inputMode="numeric"
                           />
                         </FormControl>
                         <FormMessage />
