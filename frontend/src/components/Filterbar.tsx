@@ -157,8 +157,8 @@ const Filterbar = ({
 
   return (
     <header className="shadow-sm">
-      <nav className="w-full flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4 shadow-sm">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:items-center">
+      <nav className="w-full flex flex-col md:flex-row items-start md:items-center justify-between p-3 md:p-4  shadow-sm">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:items-center pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 w-full">
               <Label

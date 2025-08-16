@@ -56,7 +56,7 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
   }
 
   return (
-    <footer className="flex flex-col md:flex-row items-center md:space-x-4 p-4 gap-4 w-full">
+    <footer className="flex flex-wrap lg:flex-nowrap items-center gap-4 w-full justify-around py-4 pl-[calc(env(safe-area-inset-left)+1rem)] pr-[calc(env(safe-area-inset-right)+1rem)] pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center gap-2 w-full md:w-[250px] mr-0 justify-between md:justify-evenly">
         <Label
           htmlFor={id}
