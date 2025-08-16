@@ -310,21 +310,11 @@ const ShortcutKey = () => {
   const [modKey, setModKey] = useState('Ctrl')
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const uaData = (
-        navigator as Navigator & { userAgentData?: { platforms?: string[] } }
-      ).userAgentData
+    const ua = navigator.userAgent
 
-      if (uaData && Array.isArray(uaData.platforms)) {
-        const isMac = uaData.platforms.some((p: string) =>
-          p.toLowerCase().includes('mac')
-        )
-        setModKey(isMac ? '⌘' : 'Ctrl')
-      } else {
-        const isMac = navigator.userAgent.includes('Macintosh')
-        setModKey(isMac ? '⌘' : 'Ctrl')
-      }
-    }
+    const isMacOrIOS = /Macintosh|iPad|iPhone|iPod/.test(ua)
+
+    setModKey(isMacOrIOS ? '⌘' : 'Ctrl')
   }, [])
 
   return (
