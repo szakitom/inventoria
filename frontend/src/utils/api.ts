@@ -25,7 +25,7 @@ export const fetchItems = async ({
     `/api/items?sort=${sort}&page=${page}&limit=${limit}&search=${search}&locations=${locations?.join(',')}&shelves=${shelves?.join(',')}`,
     { signal }
   )
-  if (!res.ok) throw new Error('Failed to fetch posts')
+  if (!res.ok) throw new Error('Failed to fetch items')
   const data = await res.json()
   return data
 }
@@ -181,7 +181,7 @@ export const getPresignUrl = async ({ signal }: { signal: AbortSignal }) => {
   if (signal.aborted) {
     throw new Error('Fetch aborted')
   }
-  const res = await fetch('/api/s3/presign', { signal })
+  const res = await fetch('/api/s3/presign', { signal, cache: 'no-store' })
   if (!res.ok) throw new Error('Failed to get presigned URL')
   return res.json()
 }

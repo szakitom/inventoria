@@ -27,12 +27,16 @@ import { DialogProvider } from '@/hooks/DialogProvider'
 
 export const Route = createFileRoute('/add/')({
   component: Add,
+  loaderDeps: () => ({
+    nonce: Date.now(), // always different → always refetch
+  }),
   loader: async ({ abortController }) => {
     return {
       locations: defer(fetchLocations({ signal: abortController.signal })),
       presign: await getPresignUrl({ signal: abortController.signal }),
     }
   },
+  gcTime: 0, // <- never cached
 })
 
 function Add() {
@@ -59,12 +63,15 @@ function Add() {
   const [presignURL, setPresignURL] = useState(data.presign.url)
   const [presignUUID, setPresignUUID] = useState(data.presign.uuid)
 
+  console.log('Presign UUID:', presignUUID)
+
   const refreshPresignURL = async () => {
     const controller = new AbortController()
     const { signal } = controller
 
     try {
       const newPresign = await getPresignUrl({ signal })
+      console.log('Using new presign UUID:', newPresign.uuid)
       setPresignURL(newPresign.url)
       setPresignUUID(newPresign.uuid)
     } catch (err: unknown) {
@@ -104,6 +111,8 @@ function Add() {
         quantity: '',
         shelf: currentShelf,
         image: '',
+        uuid: '',
+        blurhash: '',
       })
       await refreshPresignURL()
     } catch (error) {

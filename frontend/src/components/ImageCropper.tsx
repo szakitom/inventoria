@@ -55,6 +55,7 @@ const ImageCropper = ({
         throw new Error('Failed to crop image')
       }
       const blurhash = await canvasResponse.blurhash
+      console.log('Uploading to UUID:', presignURL)
       const response = await uploadFileToS3(
         canvasResponse.blob,
         presignURL,

@@ -101,6 +101,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/s3/, ''),
       },
     },
+    host: true,
   },
   optimizeDeps: {
     esbuildOptions: {
