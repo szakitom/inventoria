@@ -8,6 +8,8 @@ app.use(express.json())
 
 app.use('/api', api)
 
+app.set('trust proxy', 2)
+
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err)
   res.status(500).json({ error: err.message || 'Unknown server error' })
