@@ -159,6 +159,7 @@ function Add() {
                         <FormLabel className="sr-only">Image</FormLabel>
                         <FormControl>
                           <ImageUpload
+                            key={presignUUID}
                             presignURL={presignURL}
                             field={field}
                             onHashChange={handleHashChange}

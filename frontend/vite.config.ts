@@ -24,6 +24,10 @@ export default defineConfig({
     mkcert(),
     VitePWA({
       registerType: 'prompt',
+      workbox: {
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//, /^\/s3\//],
+      },
       includeAssets: [
         'favicon.svg',
         'favicon.ico',
