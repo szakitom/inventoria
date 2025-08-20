@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/logo.svg"
+    "generate-favicon": "pwa-assets-generator --config pwa-assets.config.ts",
+    "generate-all-assets": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --dark-mode && cp src/assets/logo.svg public/logo.svg && yarn generate-favicon"
   },
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
