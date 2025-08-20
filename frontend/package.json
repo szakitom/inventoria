@@ -10,8 +10,12 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-favicon": "pwa-assets-generator --config pwa-assets.config.ts",
-    "generate-all-assets": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --dark-mode && cp src/assets/logo.svg public/logo.svg && yarn generate-favicon"
+    "generate-favicon": "pwa-assets-generator --config pwa-assets.config.ts && cp src/assets/logo.svg public/logo.svg",
+    "generate-pwa-icons": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --icon-only",
+    "generate-pwa-splash-light": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --background white --splash-only",
+    "generate-pwa-splash-dark": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --background black --dark-mode --splash-only",
+    "format-index": "prettier --write index.html",
+    "generate-all-pwa-assets": "yarn generate-favicon && yarn generate-pwa-icons && yarn generate-pwa-splash-light && yarn generate-pwa-splash-dark && yarn format-index"
   },
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
