@@ -3,6 +3,7 @@ import reactPlugin from '@vitejs/plugin-react-swc'
 import { VitePWA } from 'vite-plugin-pwa'
 import mkcert from 'vite-plugin-mkcert'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import svgr from 'vite-plugin-svgr'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -18,6 +19,14 @@ export default defineConfig({
     tanstackRouter({
       target: 'react',
       autoCodeSplitting: true,
+    }),
+    svgr({
+      svgrOptions: {
+        plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
+        svgoConfig: {
+          floatPrecision: 2,
+        },
+      },
     }),
     reactPlugin(),
     tailwindcss(),

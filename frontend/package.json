@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@svgr/plugin-svgo": "^8.1.0",
     "@tanstack/router-plugin": "^1.125.6",
     "@types/node": "^24.0.14",
     "@types/react": "^19.1.8",
@@ -78,6 +79,7 @@
     "typescript-eslint": "^8.34.1",
     "vite": "^7.0.0",
     "vite-plugin-mkcert": "^1.17.8",
-    "vite-plugin-pwa": "^1.0.2"
+    "vite-plugin-pwa": "^1.0.2",
+    "vite-plugin-svgr": "^4.3.0"
   }
 }
