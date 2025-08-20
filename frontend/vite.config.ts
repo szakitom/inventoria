@@ -41,61 +41,12 @@ export default defineConfig({
         'favicon.svg',
         'favicon.ico',
         'robots.txt',
-        'apple-touch-icon-180x180.png',
+        'assets/apple-icon-180.png',
       ],
       devOptions: {
         enabled: true,
       },
       // selfDestroying: true,
-      manifest: {
-        name: 'Inventoria',
-        short_name: 'Inventoria',
-        description: 'A modern inventory management system',
-        theme_color: '#ffffff',
-        display: 'standalone',
-        icons: [
-          {
-            src: 'assets/apple-touch-icon-180x180.png',
-            sizes: '180x180',
-            type: 'image/png',
-          },
-          {
-            src: 'assets/manifest-icon-192.maskable.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'assets/manifest-icon-512.maskable.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: 'assets/manifest-icon-512.maskable.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: 'assets/manifest-icon-512.maskable.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
-        screenshots: [
-          {
-            src: 'screenshot-wide.png',
-            sizes: '1599x800',
-            type: 'image/png',
-            form_factor: 'wide',
-          },
-          {
-            src: 'screenshot-mobile.png',
-            sizes: '393x851',
-            type: 'image/png',
-          },
-        ],
-      },
     }),
   ],
   resolve: {

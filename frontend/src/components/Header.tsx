@@ -9,7 +9,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
-import Logo from '../../public/assets/logo.svg?react'
+import Logo from '@/assets/logo.svg?react'
 
 const Header = () => {
   const [open, setOpen] = useState(false)
