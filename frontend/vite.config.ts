@@ -47,6 +47,7 @@ export default defineConfig({
         enabled: true,
       },
       // selfDestroying: true,
+      manifest: false,
     }),
   ],
   resolve: {
