@@ -9,26 +9,24 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
+import Logo from '@/assets/logo.svg?react'
 
 const Header = () => {
   const [open, setOpen] = useState(false)
 
   return (
     <>
-      <div className="sticky top-0 z-40 bg-background border-b shadow-sm">
+      <div className="sticky top-0 z-40 bg-background border-b shadow-sm pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
         <header className="px-4 py-3 flex items-center justify-between">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 hover:opacity-80 transition "
+            className="flex gap-1 hover:opacity-80 transition items-end"
             onClick={() => setOpen(false)}
           >
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              className="w-7 h-7 dark:bg-foreground rounded-full"
-            />
-            <span className="font-semibold text-lg tracking-tight text-foreground select-none">
+            <Logo className="w-7 h-7 rounded-sm" />
+
+            <span className="font-semibold tracking-normal text-xl text-shadow-2xs leading-4 text-icon dark:text-icon dark:shadow-none">
               {import.meta.env.VITE_APP_TITLE || 'Inventoria'}
             </span>
           </Link>

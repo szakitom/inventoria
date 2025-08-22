@@ -156,7 +156,7 @@ const Items = ({ navigate, from }: ItemsProps) => {
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-20 text-muted-foreground">
+      <div className="text-center py-20 text-muted-foreground md:min-h-[75dvh]">
         No items found.
       </div>
     )
@@ -165,7 +165,7 @@ const Items = ({ navigate, from }: ItemsProps) => {
   return (
     <AnimatePresence mode="wait" custom={direction}>
       <div
-        className="relative overflow-hidden w-full px-2 pt-2 md:px-4 md:pt-4"
+        className="relative overflow-hidden w-full pt-2 md:px-4 md:pt-4 md:min-h-[75dvh] pl-[calc(env(safe-area-inset-left)+0.5rem)] pr-[calc(env(safe-area-inset-right)+0.5rem)] md:pl-[calc(env(safe-area-inset-left)+1rem)] md:pr-[calc(env(safe-area-inset-right)+1rem)]"
         ref={setParentRef}
       >
         <motion.div

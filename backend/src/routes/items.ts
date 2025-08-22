@@ -8,6 +8,7 @@ const productReadLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 90, // Limit to 90 requests per minute actual is 100
   message: { message: 'Too many requests, please try again later.' },
+  keyGenerator: () => 'global',
 })
 
 router.get('/', itemsController.getItems)

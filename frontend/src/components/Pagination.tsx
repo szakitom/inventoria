@@ -56,44 +56,50 @@ const Pagination = ({ route, navigate, isPending }: PaginationProps) => {
   }
 
   return (
-    <footer className="flex flex-col md:flex-row items-center md:space-x-4 p-4 gap-4 w-full">
-      <div className="flex items-center gap-2 w-full md:w-[250px] mr-0 justify-between md:justify-evenly">
-        <Label
-          htmlFor={id}
-          className="cursor-pointer h-full w-full whitespace-nowrap"
-        >
-          Items per page
-        </Label>
-
-        <Select value={limit.toString()} onValueChange={changeLimit}>
-          <SelectTrigger
-            id={id}
-            className="cursor-pointer select-none"
-            aria-labelledby={id}
+    <footer
+      className={cn(
+        'flex flex-col md:flex-row lg:flex-nowrap items-center gap-4 w-full py-4 pl-[calc(env(safe-area-inset-left)+1rem)] pr-[calc(env(safe-area-inset-right)+1rem)] pb-[calc(env(safe-area-inset-bottom)+1rem)]',
+        total ? 'justify-between' : 'justify-start'
+      )}
+    >
+      <div className="w-full flex items-center gap-2 md:gap-4 justify-center flex-wrap sm:justify-between md:justify-start">
+        <div className="flex items-center gap-2  mr-0 justify-between md:justify-evenly">
+          <Label
+            htmlFor={id}
+            className="cursor-pointer h-full w-full whitespace-nowrap"
           >
-            <SelectValue placeholder="Items per page" />
-          </SelectTrigger>
-          <SelectContent>
-            {Item.pageLimitOptions.map((option) => (
-              <SelectItem
-                className="cursor-pointer"
-                key={option.value}
-                value={option.value.toString()}
-              >
-                {option.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+            Items per page
+          </Label>
 
-      <div>
-        <Label className="text-sm font-medium whitespace-nowrap min-w-54 text-center flex items-center justify-center md:justify-start">
-          Showing items {total ? limit * (currentPage - 1) + 1 : 0} -{' '}
-          {limit * (currentPage - 1) + currentItems.length} of {total}
-        </Label>
-      </div>
+          <Select value={limit.toString()} onValueChange={changeLimit}>
+            <SelectTrigger
+              id={id}
+              className="cursor-pointer select-none"
+              aria-labelledby={id}
+            >
+              <SelectValue placeholder="Items per page" />
+            </SelectTrigger>
+            <SelectContent>
+              {Item.pageLimitOptions.map((option) => (
+                <SelectItem
+                  className="cursor-pointer"
+                  key={option.value}
+                  value={option.value.toString()}
+                >
+                  {option.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
+        <div>
+          <Label className="text-sm font-medium whitespace-nowrap min-w-54 text-center grow items-center w-full justify-center md:justify-start">
+            Showing items {total ? limit * (currentPage - 1) + 1 : 0} -{' '}
+            {limit * (currentPage - 1) + currentItems.length} of {total}
+          </Label>
+        </div>
+      </div>
       {pageCount > 1 ? (
         <PaginationShad className="w-full items-center">
           <PaginationContent className="flex items-center justify-between w-full">
