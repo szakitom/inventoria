@@ -21,7 +21,7 @@ const BarcodeDrawer = ({
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
       <DrawerTitle className="sr-only">Scan Barcode</DrawerTitle>
-      <DrawerContent className="h-full md:h-4/5 w-full md:w-1/2 flex flex-col mx-auto overflow-auto">
+      <DrawerContent className="h-full md:h-4/5 w-full md:w-1/2 flex flex-col mx-auto overflow-hidden">
         <DrawerClose className="absolute top-0 right-0 p-2 z-10">
           <X />
         </DrawerClose>
