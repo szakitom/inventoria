@@ -195,7 +195,7 @@ const OffDisplay = ({ nutriments }: { nutriments: Nutriments }) => {
     proteins_100g: proteins,
     salt_100g: salt,
   } = nutriments
-  console.log(nutriments)
+
   return (
     <Card className="gap-0 w-full p-4">
       <CardHeader className="p-0 pb-2 gap-0">

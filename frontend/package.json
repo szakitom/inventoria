@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,12 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/logo.svg"
+    "generate-favicon": "pwa-assets-generator --config pwa-assets.config.ts && cp src/assets/logo.svg public/logo.svg",
+    "generate-pwa-icons": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --icon-only",
+    "generate-pwa-splash-light": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --background white --splash-only",
+    "generate-pwa-splash-dark": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --background black --dark-mode --splash-only",
+    "format-index": "prettier --write index.html",
+    "generate-all-pwa-assets": "yarn generate-favicon && yarn generate-pwa-icons && yarn generate-pwa-splash-light && yarn generate-pwa-splash-dark && yarn format-index"
   },
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
@@ -63,6 +68,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@svgr/plugin-svgo": "^8.1.0",
     "@tanstack/router-plugin": "^1.125.6",
     "@types/node": "^24.0.14",
     "@types/react": "^19.1.8",
@@ -78,6 +84,7 @@
     "typescript-eslint": "^8.34.1",
     "vite": "^7.0.0",
     "vite-plugin-mkcert": "^1.17.8",
-    "vite-plugin-pwa": "^1.0.2"
+    "vite-plugin-pwa": "^1.0.2",
+    "vite-plugin-svgr": "^4.3.0"
   }
 }

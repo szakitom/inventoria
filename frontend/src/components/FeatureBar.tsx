@@ -26,7 +26,7 @@ const FeatureBar = ({ from }: FeatureBarProps) => {
           <Button
             onClick={() => setOpen(true)}
             variant="ghost"
-            className="w-full rounded-none cursor-pointer px-4 py-3 hover:bg-blue-600 dark:hover:bg-blue-900 text-white hover:text-white"
+            className="w-full rounded-none cursor-pointer py-3 text-white hover:bg-blue-600 dark:hover:bg-blue-900 hover:text-white pl-[calc(env(safe-area-inset-left)+1rem)] pr-[calc(env(safe-area-inset-right)+1rem)]"
           >
             <motion.div
               key="collapsed"

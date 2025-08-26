@@ -36,10 +36,13 @@ touch .env
 Fill in your `.env` file using this template:
 
 ```bash
-CF_TUNNEL_TOKEN=<token>
 RUSTFS_ACCESS_KEY=<username>
 RUSTFS_SECRET_KEY=<password>
 OFF_USER_AGENT=<app name>/<version> (<url or contact>) # required by Open Food Facts terms
+# Optional (for cloudflare tunnel)
+CF_TUNNEL_TOKEN=<token>
+CF_ACCESS_CLIENT_ID=<clientid>
+CF_ACCESS_CLIENT_SECRET=<clientsecret>
 ```
 
 ### 3️⃣ Run the Application
