@@ -38,7 +38,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//, /^\/s3\//],
       },
       includeAssets: [
-        'favicon.svg',
+        'logo.svg',
         'favicon.ico',
         'robots.txt',
         'assets/apple-icon-180.png',
