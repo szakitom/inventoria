@@ -35,7 +35,11 @@ export default defineConfig({
       registerType: 'prompt',
       workbox: {
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api\//, /^\/s3\//],
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /^\/s3\//,
+          /^\/cdn-cgi\//, // <-- Cloudflare Access paths excluded
+        ],
       },
       includeAssets: [
         'logo.svg',
