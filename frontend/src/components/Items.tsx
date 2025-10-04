@@ -165,7 +165,7 @@ const Items = ({ navigate, from }: ItemsProps) => {
   return (
     <AnimatePresence mode="wait" custom={direction}>
       <div
-        className="relative overflow-hidden w-full pt-2 md:px-4 md:pt-4 md:min-h-[75dvh] pl-[calc(env(safe-area-inset-left)+0.5rem)] pr-[calc(env(safe-area-inset-right)+0.5rem)] md:pl-[calc(env(safe-area-inset-left)+1rem)] md:pr-[calc(env(safe-area-inset-right)+1rem)]"
+        className="relative overflow-hidden w-full h-full pt-2 md:px-4 md:pt-4 md:min-h-[75dvh] pl-[calc(env(safe-area-inset-left)+0.5rem)] pr-[calc(env(safe-area-inset-right)+0.5rem)] md:pl-[calc(env(safe-area-inset-left)+1rem)] md:pr-[calc(env(safe-area-inset-right)+1rem)]"
         ref={setParentRef}
       >
         <motion.div
@@ -208,7 +208,7 @@ const Items = ({ navigate, from }: ItemsProps) => {
           transition={{ duration: 0.25, ease: 'easeInOut' }}
           className="relative w-full touch-pan-y select-none active:cursor-grabbing"
           style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
+            height: `max(${rowVirtualizer.getTotalSize()}px,70vh)`,
           }}
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
