@@ -250,6 +250,7 @@ export const deleteItem = async (req, res, next) => {
     )
     await session.commitTransaction()
     res.json({ message: 'Item deleted successfully' })
+    // TODO: check if there are other references to the same image before deleting
     if (item.image) {
       S3Client.deleteFile(item.image)
     }
