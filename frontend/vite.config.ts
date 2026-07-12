@@ -32,13 +32,14 @@ export default defineConfig({
     tailwindcss(),
     mkcert(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       workbox: {
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [
           /^\/api\//,
           /^\/s3\//,
           /^\/cdn-cgi\//, // <-- Cloudflare Access paths excluded
+          /^\/reauth$/, // re-auth escape hatch — must reach the network
         ],
       },
       includeAssets: [

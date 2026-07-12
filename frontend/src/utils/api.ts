@@ -1,8 +1,17 @@
-import { createRoot } from 'react-dom/client'
-import React from 'react'
 import type { Location } from '@/components/LocationSelect'
 import type { IItem } from '@/utils/index'
-import AuthRedirect from '@/components/AuthRedirect'
+
+let reauthInProgress = false
+
+// Navigate to /reauth, which is excluded from the service worker's
+// navigateFallback so the request reaches the Cloudflare edge and
+// triggers the Access login flow. Nginx bounces it back to / afterwards.
+const reauth = () => {
+  if (reauthInProgress) return
+  reauthInProgress = true
+  console.warn('Session expired, redirecting to Cloudflare Access login...')
+  window.location.href = '/reauth'
+}
 
 const apiFetch = async <T>(
   url: string,
@@ -10,28 +19,21 @@ const apiFetch = async <T>(
 ): Promise<T> => {
   const res = await fetch(url, {
     credentials: 'include', // send Cloudflare Access cookies
+    redirect: 'manual', // don't follow the cross-origin Access login redirect
     ...options,
   })
 
+  // An expired Cloudflare Access session answers with a redirect to the
+  // login page, which surfaces as an opaque response when unfollowed
+  if (res.type === 'opaqueredirect' || res.status === 0) {
+    reauth()
+    throw new Error('Session expired')
+  }
+
+  // Fallback: some Access configurations return the login page directly
   const contentType = res.headers.get('content-type') || ''
-
-  // Detect when Cloudflare returns the login page instead of JSON
   if (contentType.includes('text/html')) {
-    console.warn('Session expired, redirecting to Cloudflare Access login...')
-    // THIS ONLY REDIRECTS
-    // window.location.href = '/' // trigger Access login flow
-    // THIS Render a temporary screen
-    const root = document.getElementById('root')
-    if (root) {
-      const r = createRoot(root)
-      r.render(React.createElement(AuthRedirect))
-    }
-
-    // Delay slightly so user sees the message
-    setTimeout(() => {
-      window.location.href = '/' // triggers Access login
-    }, 500)
-
+    reauth()
     throw new Error('Session expired')
   }
 
