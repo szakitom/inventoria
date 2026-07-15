@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "generate-favicon": "pwa-assets-generator --config pwa-assets.config.ts && cp src/assets/logo.svg public/logo.svg",
-    "generate-pwa-icons": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --icon-only",
+    "generate-pwa-icons": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 0% --opaque false --type png --maskable --path-override /assets --icon-only",
     "generate-pwa-splash-light": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --background white --splash-only",
     "generate-pwa-splash-dark": "npx pwa-asset-generator src/assets/logo.svg public/assets -i index.html -m public/manifest.webmanifest --padding 15% --opaque false --type png --maskable --path-override /assets --background black --dark-mode --splash-only",
     "format-index": "prettier --write index.html",

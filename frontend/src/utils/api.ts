@@ -1,15 +1,50 @@
 import type { Location } from '@/components/LocationSelect'
 import type { IItem } from '@/utils/index'
 
-export const fetchItems = async ({
-  sort,
-  page,
-  limit,
-  search,
-  locations,
-  signal,
-  shelves,
-}: {
+let reauthInProgress = false
+
+// Navigate to /reauth, which is excluded from the service worker's
+// navigateFallback so the request reaches the Cloudflare edge and
+// triggers the Access login flow. Nginx bounces it back to / afterwards.
+const reauth = () => {
+  if (reauthInProgress) return
+  reauthInProgress = true
+  console.warn('Session expired, redirecting to Cloudflare Access login...')
+  window.location.href = '/reauth'
+}
+
+const apiFetch = async <T>(
+  url: string,
+  options: RequestInit = {}
+): Promise<T> => {
+  const res = await fetch(url, {
+    credentials: 'include', // send Cloudflare Access cookies
+    redirect: 'manual', // don't follow the cross-origin Access login redirect
+    ...options,
+  })
+
+  // An expired Cloudflare Access session answers with a redirect to the
+  // login page, which surfaces as an opaque response when unfollowed
+  if (res.type === 'opaqueredirect' || res.status === 0) {
+    reauth()
+    throw new Error('Session expired')
+  }
+
+  // Fallback: some Access configurations return the login page directly
+  const contentType = res.headers.get('content-type') || ''
+  if (contentType.includes('text/html')) {
+    reauth()
+    throw new Error('Session expired')
+  }
+
+  if (!res.ok) {
+    throw new Error(`API error: ${res.status} ${res.statusText}`)
+  }
+
+  return res.json() as Promise<T>
+}
+
+export const fetchItems = async (params: {
   sort: string
   page: number
   limit: number
@@ -18,26 +53,22 @@ export const fetchItems = async ({
   shelves?: string[]
   signal: AbortSignal
 }) => {
-  if (signal.aborted) {
-    throw new Error('Fetch aborted')
-  }
-  const res = await fetch(
-    `/api/items?sort=${sort}&page=${page}&limit=${limit}&search=${search}&locations=${locations?.join(',')}&shelves=${shelves?.join(',')}`,
-    { signal }
-  )
-  if (!res.ok) throw new Error('Failed to fetch items')
-  const data = await res.json()
-  return data
+  const { sort, page, limit, search, locations, shelves, signal } = params
+
+  const query = new URLSearchParams({
+    sort,
+    page: page.toString(),
+    limit: limit.toString(),
+    search,
+    locations: locations?.join(',') ?? '',
+    shelves: shelves?.join(',') ?? '',
+  })
+
+  return apiFetch(`/api/items?${query}`, { signal })
 }
 
 export const fetchLocations = async ({ signal }: { signal: AbortSignal }) => {
-  if (signal.aborted) {
-    throw new Error('Fetch aborted')
-  }
-  const res = await fetch('/api/locations', { signal })
-  if (!res.ok) throw new Error('Failed to fetch locations')
-  const data = await res.json()
-  return data
+  return apiFetch('/api/locations', { signal })
 }
 
 export const fetchShelves = async ({
@@ -47,45 +78,27 @@ export const fetchShelves = async ({
   locationId: string
   signal: AbortSignal
 }) => {
-  if (signal.aborted) {
-    throw new Error('Fetch aborted')
-  }
-  const res = await fetch(`/api/locations/${locationId}/shelves`, { signal })
-  if (!res.ok) throw new Error('Failed to fetch location')
-  const data = await res.json()
-  return data
+  return apiFetch(`/api/locations/${locationId}/shelves`, { signal })
 }
 
 export const deleteItem = async (itemId: string) => {
-  const res = await fetch(`/api/items/${itemId}`, {
-    method: 'DELETE',
-  })
-  if (!res.ok) throw new Error('Failed to delete item')
-  return res.json()
+  return apiFetch(`/api/items/${itemId}`, { method: 'DELETE' })
 }
 
 export const updateItem = async (itemId: string, data: Partial<IItem>) => {
-  const res = await fetch(`/api/items/${itemId}`, {
+  return apiFetch(`/api/items/${itemId}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error('Failed to update item')
-  return res.json()
 }
 
 export const moveItem = async (itemId: string, location: string) => {
-  const res = await fetch(`/api/items/${itemId}`, {
+  return apiFetch(`/api/items/${itemId}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ location }),
   })
-  if (!res.ok) throw new Error('Failed to move item')
-  return res.json()
 }
 
 export const movePartialItem = async (
@@ -93,54 +106,38 @@ export const movePartialItem = async (
   location: string,
   amount: number
 ) => {
-  const res = await fetch(`/api/items/${itemId}/partial`, {
+  return apiFetch(`/api/items/${itemId}/partial`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ location, amount }),
   })
-  if (!res.ok) throw new Error('Failed to move partial item')
-  return res.json()
 }
 
 export const editItem = async (itemId: string, data: Partial<IItem>) => {
-  const res = await fetch(`/api/items/${itemId}`, {
+  return apiFetch(`/api/items/${itemId}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error('Failed to edit item')
-  return res.json()
 }
 
 export const updateLocation = async (
   locationId: string,
   data: Partial<Location>
 ) => {
-  const res = await fetch(`/api/locations/${locationId}`, {
+  return apiFetch(`/api/locations/${locationId}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error('Failed to update location')
-  return res.json()
 }
 
 export const createLocation = async (data: Partial<Location>) => {
-  const res = await fetch('/api/locations', {
+  return apiFetch('/api/locations', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error('Failed to create location')
-  return res.json()
 }
 
 interface CreateItemPayload {
@@ -153,15 +150,11 @@ interface CreateItemPayload {
 }
 
 export const createItem = async (data: CreateItemPayload) => {
-  const res = await fetch('/api/items', {
+  return apiFetch('/api/items', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error('Failed to create item')
-  return res.json()
 }
 
 export const fetchFeaturedItems = async ({
@@ -169,21 +162,11 @@ export const fetchFeaturedItems = async ({
 }: {
   signal: AbortSignal
 }) => {
-  if (signal.aborted) {
-    throw new Error('Fetch aborted')
-  }
-  const res = await fetch('/api/items/featured', { signal })
-  if (!res.ok) throw new Error('Failed to fetch featured items')
-  return res.json()
+  return apiFetch('/api/items/featured', { signal })
 }
 
 export const getPresignUrl = async ({ signal }: { signal: AbortSignal }) => {
-  if (signal.aborted) {
-    throw new Error('Fetch aborted')
-  }
-  const res = await fetch('/api/s3/presign', { signal, cache: 'no-store' })
-  if (!res.ok) throw new Error('Failed to get presigned URL')
-  return res.json()
+  return apiFetch('/api/s3/presign', { signal, cache: 'no-store' })
 }
 
 export const getPresignUrlForId = async ({
@@ -193,12 +176,7 @@ export const getPresignUrlForId = async ({
   signal: AbortSignal
   id: string
 }) => {
-  if (signal.aborted) {
-    throw new Error('Fetch aborted')
-  }
-  const res = await fetch(`/api/s3/presign/${id}`, { signal })
-  if (!res.ok) throw new Error('Failed to get presigned URL for ID')
-  return res.json()
+  return apiFetch(`/api/s3/presign/${id}`, { signal })
 }
 
 export const uploadFileToS3 = (
@@ -233,13 +211,9 @@ export const uploadFileToS3 = (
 }
 
 export const deleteFileFromS3 = async (url: string) => {
-  const res = await fetch('/api/s3', {
+  return apiFetch('/api/s3', {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ url }),
   })
-  if (!res.ok) throw new Error('Failed to create item')
-  return res.json()
 }
